@@ -1,0 +1,40 @@
+export type Province = { name: string; latitude: number; longitude: number };
+
+// 34 đơn vị hành chính cấp tỉnh của Việt Nam sau sắp xếp năm 2025.
+// Tọa độ đại diện đặt tại trung tâm hành chính/thành phố trung tâm để lấy dự báo.
+export const provinces: Province[] = [
+  { name: "Hà Nội", latitude: 21.0285, longitude: 105.8542 },
+  { name: "Cao Bằng", latitude: 22.6666, longitude: 106.2640 },
+  { name: "Tuyên Quang", latitude: 21.8236, longitude: 105.2143 },
+  { name: "Điện Biên", latitude: 21.3860, longitude: 103.0230 },
+  { name: "Lai Châu", latitude: 22.3862, longitude: 103.4703 },
+  { name: "Sơn La", latitude: 21.3270, longitude: 103.9141 },
+  { name: "Lào Cai", latitude: 22.4809, longitude: 103.9755 },
+  { name: "Thái Nguyên", latitude: 21.5942, longitude: 105.8482 },
+  { name: "Lạng Sơn", latitude: 21.8537, longitude: 106.7610 },
+  { name: "Quảng Ninh", latitude: 20.9510, longitude: 107.0800 },
+  { name: "Bắc Ninh", latitude: 21.1861, longitude: 106.0763 },
+  { name: "Phú Thọ", latitude: 21.3988, longitude: 105.2220 },
+  { name: "Hải Phòng", latitude: 20.8449, longitude: 106.6881 },
+  { name: "Hưng Yên", latitude: 20.6464, longitude: 106.0511 },
+  { name: "Ninh Bình", latitude: 20.2506, longitude: 105.9745 },
+  { name: "Thanh Hóa", latitude: 19.8067, longitude: 105.7852 },
+  { name: "Nghệ An", latitude: 18.6796, longitude: 105.6813 },
+  { name: "Hà Tĩnh", latitude: 18.3559, longitude: 105.8877 },
+  { name: "Quảng Trị", latitude: 16.8163, longitude: 107.1003 },
+  { name: "Huế", latitude: 16.4637, longitude: 107.5909 },
+  { name: "Đà Nẵng", latitude: 16.0544, longitude: 108.2022 },
+  { name: "Quảng Ngãi", latitude: 15.1214, longitude: 108.8044 },
+  { name: "Gia Lai", latitude: 13.9833, longitude: 108.0000 },
+  { name: "Khánh Hòa", latitude: 12.2388, longitude: 109.1967 },
+  { name: "Lâm Đồng", latitude: 11.9404, longitude: 108.4583 },
+  { name: "Đắk Lắk", latitude: 12.6667, longitude: 108.0500 },
+  { name: "Đồng Nai", latitude: 10.9574, longitude: 106.8427 },
+  { name: "Tây Ninh", latitude: 11.3352, longitude: 106.1099 },
+  { name: "TP. Hồ Chí Minh", latitude: 10.7769, longitude: 106.7009 },
+  { name: "Đồng Tháp", latitude: 10.4938, longitude: 105.6882 },
+  { name: "Vĩnh Long", latitude: 10.2537, longitude: 105.9722 },
+  { name: "An Giang", latitude: 10.3759, longitude: 105.4185 },
+  { name: "Cần Thơ", latitude: 10.0452, longitude: 105.7469 },
+  { name: "Cà Mau", latitude: 9.1769, longitude: 105.1524 }
+];

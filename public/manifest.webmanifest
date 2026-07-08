@@ -1,0 +1,13 @@
+{
+  "name": "WeatherNow - Thời tiết Việt Nam",
+  "short_name": "WeatherNow",
+  "description": "Dự báo thời tiết, AQI, UV, lịch âm và bản đồ tương tác.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eff6ff",
+  "theme_color": "#2563eb",
+  "lang": "vi",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

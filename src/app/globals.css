@@ -1,0 +1,4846 @@
+@import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --wn-bg: #f4f8ff;
+  --wn-surface: rgba(255, 255, 255, 0.88);
+  --wn-surface-solid: #ffffff;
+  --wn-surface-soft: #f7faff;
+  --wn-border: rgba(109, 138, 176, 0.18);
+  --wn-text: #0d1b36;
+  --wn-muted: #6c7c98;
+  --wn-primary: #0876ed;
+  --wn-primary-2: #18bde5;
+  --wn-shadow: 0 18px 50px rgba(40, 84, 143, 0.11);
+  --wn-radius-xl: 26px;
+  --wn-radius-lg: 20px;
+  --wn-radius-md: 15px;
+}
+
+:root[data-theme="dark"] {
+  --wn-bg: #071321;
+  --wn-surface: rgba(12, 29, 48, 0.9);
+  --wn-surface-solid: #0e2136;
+  --wn-surface-soft: #112942;
+  --wn-border: rgba(142, 183, 225, 0.14);
+  --wn-text: #eef7ff;
+  --wn-muted: #91a7c0;
+  --wn-primary: #35a8ff;
+  --wn-primary-2: #23d1e9;
+  --wn-shadow: 0 20px 60px rgba(0, 0, 0, 0.26);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--wn-bg);
+  color: var(--wn-text);
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wn-app {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 8% 11%, rgba(59, 130, 246, 0.13), transparent 24rem),
+    radial-gradient(circle at 93% 20%, rgba(34, 211, 238, 0.1), transparent 24rem),
+    var(--wn-bg);
+}
+
+.wn-atmosphere {
+  position: fixed;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+.wn-atmosphere--one {
+  top: 11rem;
+  left: -12rem;
+  width: 28rem;
+  height: 28rem;
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.wn-atmosphere--two {
+  top: 24rem;
+  right: -10rem;
+  width: 25rem;
+  height: 25rem;
+  background: rgba(34, 211, 238, 0.13);
+}
+
+.wn-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--wn-border);
+  background: color-mix(in srgb, var(--wn-surface-solid) 84%, transparent);
+  backdrop-filter: blur(22px);
+}
+
+.wn-header__inner {
+  width: min(1500px, calc(100% - 40px));
+  min-height: 86px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 28px;
+}
+
+.wn-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.wn-brand__icon {
+  width: 49px;
+  height: 49px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  color: #fff;
+  background: linear-gradient(145deg, #126fe8, #10bfe2);
+  box-shadow: 0 12px 28px rgba(17, 118, 232, 0.28);
+}
+
+.wn-brand__copy {
+  display: grid;
+  gap: 1px;
+}
+
+.wn-brand__copy strong {
+  font-size: 20px;
+  letter-spacing: -0.55px;
+}
+
+.wn-brand__copy small {
+  color: var(--wn-muted);
+  font-size: 11px;
+}
+
+.wn-nav {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 14px;
+  height: 86px;
+}
+
+.wn-nav a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  color: var(--wn-muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.wn-nav a:first-child {
+  color: var(--wn-primary);
+}
+
+.wn-nav a:first-child::after {
+  position: absolute;
+  right: 18px;
+  bottom: 0;
+  left: 18px;
+  height: 3px;
+  border-radius: 99px 99px 0 0;
+  background: var(--wn-primary);
+  content: "";
+}
+
+.wn-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wn-select,
+.wn-icon-button,
+.wn-menu-button {
+  min-height: 44px;
+  border: 1px solid var(--wn-border);
+  border-radius: 14px;
+  background: var(--wn-surface);
+  color: var(--wn-text);
+  outline: 0;
+}
+
+.wn-select {
+  padding: 0 30px 0 13px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wn-icon-button,
+.wn-menu-button {
+  position: relative;
+  min-width: 44px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: 180ms ease;
+}
+
+.wn-icon-button:hover,
+.wn-menu-button:hover {
+  color: var(--wn-primary);
+  border-color: color-mix(in srgb, var(--wn-primary) 38%, transparent);
+  transform: translateY(-1px);
+}
+
+.wn-language span {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.wn-menu-button {
+  display: none;
+}
+
+.wn-count-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--wn-surface-solid);
+  border-radius: 99px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.wn-count-badge--blue {
+  background: var(--wn-primary);
+}
+
+.wn-count-badge--red {
+  background: #f04444;
+}
+
+.wn-popover-anchor {
+  position: relative;
+}
+
+.wn-popover-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  border: 0;
+  background: transparent;
+}
+
+.wn-popover {
+  position: absolute;
+  top: calc(100% + 13px);
+  right: 0;
+  z-index: 999;
+  width: min(390px, calc(100vw - 24px));
+  max-height: min(560px, calc(100vh - 115px));
+  overflow: auto;
+  padding: 15px;
+  border: 1px solid var(--wn-border);
+  border-radius: 20px;
+  background: var(--wn-surface-solid);
+  box-shadow: 0 25px 80px rgba(15, 40, 75, 0.24);
+}
+
+.wn-popover__header {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.wn-popover__header > div {
+  display: grid;
+  gap: 4px;
+}
+
+.wn-popover__header strong {
+  font-size: 16px;
+}
+
+.wn-popover__header small {
+  color: var(--wn-muted);
+  font-size: 11px;
+}
+
+.wn-popover__close {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--wn-border);
+  border-radius: 11px;
+  background: var(--wn-surface-soft);
+  color: inherit;
+  cursor: pointer;
+}
+
+.wn-popover__primary,
+.wn-mark-read {
+  width: 100%;
+  min-height: 41px;
+  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(8, 118, 237, 0.23);
+  border-radius: 13px;
+  background: rgba(8, 118, 237, 0.08);
+  color: var(--wn-primary);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.wn-mark-read:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.wn-favorite-list,
+.wn-alert-list {
+  display: grid;
+  gap: 8px;
+}
+
+.wn-favorite-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px;
+  gap: 7px;
+  align-items: center;
+  padding: 7px;
+  border: 1px solid var(--wn-border);
+  border-radius: 14px;
+  background: var(--wn-surface-soft);
+}
+
+.wn-favorite-item.is-active {
+  border-color: rgba(8, 118, 237, 0.42);
+  background: rgba(8, 118, 237, 0.08);
+}
+
+.wn-favorite-item__main {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.wn-favorite-item__icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  color: var(--wn-primary);
+  background: rgba(8, 118, 237, 0.11);
+}
+
+.wn-favorite-item__main > span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.wn-favorite-item__main strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.wn-favorite-item__main small {
+  color: var(--wn-muted);
+  font-size: 9px;
+}
+
+.wn-favorite-item__remove {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(240, 68, 68, 0.12);
+  border-radius: 10px;
+  background: rgba(240, 68, 68, 0.07);
+  color: #f04444;
+  cursor: pointer;
+}
+
+.wn-empty-state {
+  min-height: 130px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px dashed var(--wn-border);
+  border-radius: 15px;
+  color: var(--wn-muted);
+  text-align: center;
+}
+
+.wn-empty-state strong {
+  color: var(--wn-text);
+  font-size: 13px;
+}
+
+.wn-empty-state span {
+  font-size: 11px;
+}
+
+.wn-alert-item {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: 14px;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.wn-alert-item > span {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.13);
+}
+
+.wn-alert-item strong {
+  font-size: 12px;
+}
+
+.wn-alert-item p {
+  margin: 3px 0 0;
+  color: var(--wn-muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.wn-mobile-menu {
+  display: none;
+}
+
+.wn-container {
+  position: relative;
+  z-index: 1;
+  width: min(1500px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 28px 0 55px;
+}
+
+.wn-search-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.wn-search {
+  position: relative;
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 47px;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 7px 6px 20px;
+  border: 1px solid var(--wn-border);
+  border-radius: 18px;
+  background: var(--wn-surface);
+  box-shadow: 0 10px 30px rgba(50, 88, 137, 0.06);
+}
+
+.wn-search > svg {
+  color: var(--wn-muted);
+}
+
+.wn-search input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--wn-text);
+  outline: 0;
+  font-size: 14px;
+}
+
+.wn-search input::placeholder {
+  color: color-mix(in srgb, var(--wn-muted) 78%, transparent);
+}
+
+.wn-search > button {
+  width: 47px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(145deg, var(--wn-primary), var(--wn-primary-2));
+  color: #fff;
+  cursor: pointer;
+}
+
+.wn-location-button,
+.wn-outline-button {
+  min-height: 58px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid rgba(8, 118, 237, 0.17);
+  border-radius: 18px;
+  background: var(--wn-surface);
+  color: var(--wn-primary);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.wn-search-results {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  left: 0;
+  z-index: 50;
+  max-height: 360px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid var(--wn-border);
+  border-radius: 16px;
+  background: var(--wn-surface-solid);
+  box-shadow: var(--wn-shadow);
+}
+
+.wn-search-results > button {
+  width: 100%;
+  padding: 11px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.wn-search-results > button:hover {
+  background: var(--wn-surface-soft);
+}
+
+.wn-search-results span {
+  display: grid;
+  gap: 2px;
+}
+
+.wn-search-results strong {
+  font-size: 12px;
+}
+
+.wn-search-results small,
+.wn-search-results__message {
+  color: var(--wn-muted);
+  font-size: 10px;
+}
+
+.wn-search-results__message {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.wn-error {
+  margin-bottom: 17px;
+  padding: 13px 16px;
+  border: 1px solid rgba(240, 68, 68, 0.2);
+  border-radius: 14px;
+  background: rgba(240, 68, 68, 0.08);
+  color: #d93131;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wn-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.46fr) minmax(430px, 0.96fr);
+  gap: 14px;
+}
+
+.wn-hero,
+.wn-panel,
+.wn-metric-strip {
+  border: 1px solid var(--wn-border);
+  box-shadow: var(--wn-shadow);
+}
+
+.wn-hero {
+  position: relative;
+  min-height: 330px;
+  overflow: hidden;
+  border-radius: var(--wn-radius-xl);
+  color: #fff;
+  background: linear-gradient(135deg, #075fc8 0%, #139be5 48%, #70d8ef 100%);
+}
+
+.wn-hero__sky,
+.wn-hero__sky > span {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.wn-hero__sky {
+  overflow: hidden;
+  opacity: 0.95;
+}
+
+.wn-hero__sun {
+  inset: 32px 7% auto auto !important;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: #ffe27b;
+  box-shadow: 0 0 0 16px rgba(255, 232, 139, 0.13), 0 0 60px #ffe27b;
+}
+
+.wn-hero__cloud {
+  width: 190px;
+  height: 60px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.25);
+  filter: blur(2px);
+}
+
+.wn-hero__cloud::before,
+.wn-hero__cloud::after {
+  position: absolute;
+  border-radius: 50%;
+  background: inherit;
+  content: "";
+}
+
+.wn-hero__cloud::before {
+  width: 85px;
+  height: 85px;
+  left: 34px;
+  bottom: 8px;
+}
+
+.wn-hero__cloud::after {
+  width: 110px;
+  height: 110px;
+  right: 15px;
+  bottom: -5px;
+}
+
+.wn-hero__cloud--one {
+  inset: auto 17% 112px auto !important;
+  transform: scale(0.7);
+}
+
+.wn-hero__cloud--two {
+  inset: auto -2% 92px auto !important;
+  transform: scale(1.05);
+}
+
+.wn-hero__mountain {
+  top: auto !important;
+  clip-path: polygon(0 100%, 18% 53%, 36% 77%, 56% 32%, 73% 66%, 87% 41%, 100% 100%);
+}
+
+.wn-hero__mountain--one {
+  right: -2% !important;
+  bottom: 56px !important;
+  left: 36% !important;
+  height: 120px;
+  background: rgba(13, 83, 157, 0.58);
+}
+
+.wn-hero__mountain--two {
+  right: -4% !important;
+  bottom: 36px !important;
+  left: 25% !important;
+  height: 102px;
+  background: rgba(24, 108, 175, 0.5);
+}
+
+.wn-hero__water {
+  top: auto !important;
+  bottom: 0 !important;
+  height: 85px;
+  background: linear-gradient(180deg, rgba(15, 145, 209, 0.1), rgba(2, 84, 157, 0.48));
+}
+
+.wn-hero__content {
+  position: relative;
+  z-index: 2;
+  min-height: 330px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wn-hero__location {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.wn-hero__location > div {
+  display: grid;
+  gap: 7px;
+}
+
+.wn-hero__location span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.wn-hero__location small {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+}
+
+.wn-hero__location button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+}
+
+.wn-hero__main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+.wn-hero__temperature {
+  font-size: clamp(72px, 7vw, 110px);
+  font-weight: 600;
+  letter-spacing: -7px;
+  line-height: 1;
+}
+
+.wn-hero__temperature sup {
+  margin-left: 7px;
+  font-size: 27%;
+  font-weight: 600;
+  letter-spacing: -1px;
+  vertical-align: top;
+}
+
+.wn-hero__condition {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.wn-hero__condition h1 {
+  margin: 0 0 5px;
+  font-size: 20px;
+}
+
+.wn-hero__condition p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 12px;
+}
+
+.wn-hero__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid rgba(255, 255, 255, 0.17);
+  background: rgba(0, 73, 152, 0.15);
+  backdrop-filter: blur(12px);
+}
+
+.wn-hero__metrics > div {
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.wn-hero__metrics > div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.wn-hero__metrics > div > span {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.wn-hero__metrics p {
+  margin: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.wn-hero__metrics small {
+  color: rgba(255, 255, 255, 0.67);
+  font-size: 9px;
+}
+
+.wn-hero__metrics strong {
+  font-size: 12px;
+}
+
+.wn-side-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.wn-panel {
+  border-radius: var(--wn-radius-lg);
+  background: var(--wn-surface);
+  backdrop-filter: blur(15px);
+}
+
+.wn-time-card,
+.wn-aqi-card,
+.wn-mini-card {
+  min-height: 158px;
+  padding: 18px;
+}
+
+.wn-panel__heading,
+.wn-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.wn-panel__heading > div {
+  display: grid;
+  gap: 7px;
+}
+
+.wn-panel__heading span {
+  color: var(--wn-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.wn-panel__heading h2 {
+  margin: 0;
+  font-size: 25px;
+  letter-spacing: -1px;
+}
+
+.wn-calendar-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--wn-border);
+  border-radius: 13px;
+  background: var(--wn-surface-soft);
+  color: var(--wn-primary);
+  cursor: pointer;
+}
+
+.wn-time-card > p {
+  margin: 11px 0 10px;
+  color: var(--wn-muted);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.wn-lunar-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8b5cf6;
+  font-size: 10px;
+}
+
+.wn-holiday {
+  margin-top: 8px;
+  color: #ef4f67;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.wn-aqi-card .wn-panel__heading em {
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.wn-aqi-card__body {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wn-aqi-card__body > div {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+
+.wn-aqi-card__body small {
+  color: var(--wn-muted);
+  font-size: 12px;
+}
+
+.wn-aqi-card__body strong {
+  font-size: 28px;
+}
+
+.wn-aqi-card__body p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--wn-muted);
+  font-size: 9px;
+}
+
+.wn-aqi-card__body > span {
+  width: 55px;
+  height: 55px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.wn-aqi-scale {
+  height: 5px;
+  margin-top: 15px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #28cf62, #facc15, #fb7b2c, #ef334d, #a855f7);
+}
+
+.wn-aqi-scale i {
+  display: block;
+  width: 7px;
+  height: 11px;
+  margin-top: -3px;
+  margin-left: 13%;
+  border-radius: 4px;
+  background: var(--wn-text);
+}
+
+.wn-mini-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wn-mini-card > div {
+  display: grid;
+  gap: 6px;
+}
+
+.wn-mini-card > div > span {
+  color: var(--wn-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.wn-mini-card > div > strong {
+  color: var(--wn-primary);
+  font-size: 28px;
+}
+
+.wn-mini-card > div > small {
+  color: var(--wn-muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.wn-mini-card__icon {
+  width: 58px;
+  height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--wn-primary);
+  background: rgba(8, 118, 237, 0.09);
+}
+
+.wn-mini-card__icon--sun {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.wn-metric-strip {
+  margin-top: 14px;
+  padding: 11px 8px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-radius: 18px;
+  background: var(--wn-surface);
+}
+
+.wn-metric-strip > div {
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.wn-metric-strip > div + div {
+  border-left: 1px solid var(--wn-border);
+}
+
+.wn-metric-strip > div > span {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--wn-primary);
+  background: rgba(8, 118, 237, 0.08);
+}
+
+.wn-metric-strip p {
+  margin: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.wn-metric-strip small {
+  color: var(--wn-muted);
+  font-size: 8px;
+}
+
+.wn-metric-strip strong {
+  font-size: 11px;
+}
+
+.wn-content-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(350px, 0.95fr);
+  gap: 14px;
+}
+
+.wn-content-grid--lower {
+  grid-template-columns: minmax(0, 1.65fr) minmax(350px, 0.95fr);
+}
+
+.wn-forecast-card,
+.wn-daily-card,
+.wn-map-preview,
+.wn-windy-preview,
+.wn-suggestions,
+.wn-full-map {
+  padding: 17px;
+}
+
+.wn-section-heading {
+  margin-bottom: 13px;
+}
+
+.wn-section-heading > div {
+  display: grid;
+  gap: 3px;
+}
+
+.wn-section-heading span {
+  color: var(--wn-primary);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+.wn-section-heading span b {
+  margin-left: 5px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 7px;
+}
+
+.wn-section-heading h2 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.wn-hourly,
+.wn-daily-list {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 3px;
+}
+
+.wn-hour {
+  min-width: 80px;
+  padding: 11px 8px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+}
+
+.wn-hour--active {
+  border-color: rgba(8, 118, 237, 0.35);
+  background: rgba(8, 118, 237, 0.06);
+}
+
+.wn-hour > span {
+  color: var(--wn-muted);
+  font-size: 9px;
+}
+
+.wn-hour--active > span {
+  color: var(--wn-primary);
+  font-weight: 800;
+}
+
+.wn-hour > strong {
+  font-size: 15px;
+}
+
+.wn-hour > small {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--wn-muted);
+  font-size: 8px;
+}
+
+.wn-windy-preview {
+  min-height: 210px;
+  overflow: hidden;
+}
+
+.wn-windy-preview .wn-section-heading a {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--wn-border);
+  border-radius: 11px;
+  color: var(--wn-primary);
+}
+
+.wn-windy-preview iframe {
+  width: 100%;
+  height: 155px;
+  border: 0;
+  border-radius: 14px;
+}
+
+.wn-day {
+  min-width: 105px;
+  padding: 11px;
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  border: 1px solid var(--wn-border);
+  border-radius: 14px;
+  background: var(--wn-surface-soft);
+}
+
+.wn-day--active {
+  border-color: rgba(8, 118, 237, 0.35);
+  background: rgba(8, 118, 237, 0.06);
+}
+
+.wn-day > strong {
+  font-size: 10px;
+}
+
+.wn-day > span {
+  color: var(--wn-muted);
+  font-size: 8px;
+}
+
+.wn-day > div {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.wn-day > div strong {
+  font-size: 15px;
+}
+
+.wn-day > div small {
+  color: var(--wn-muted);
+  font-size: 10px;
+}
+
+.wn-day > small {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--wn-primary);
+  font-size: 8px;
+}
+
+.wn-map-preview {
+  min-height: 265px;
+  overflow: hidden;
+}
+
+.wn-map-preview .wn-section-heading a {
+  color: var(--wn-primary);
+  font-size: 10px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.wn-map-preview > div:last-child,
+.wn-map-preview .leaflet-container {
+  min-height: 195px !important;
+  border-radius: 14px;
+}
+
+.wn-suggestions {
+  margin-top: 14px;
+}
+
+.wn-suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.wn-suggestion-grid > div {
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid var(--wn-border);
+  border-radius: 14px;
+  background: var(--wn-surface-soft);
+}
+
+.wn-suggestion-grid > div > span {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--wn-primary);
+  background: rgba(8, 118, 237, 0.09);
+}
+
+.wn-suggestion-grid p {
+  margin: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.wn-suggestion-grid small {
+  color: var(--wn-muted);
+  font-size: 9px;
+}
+
+.wn-suggestion-grid strong {
+  font-size: 11px;
+}
+
+.wn-full-map {
+  margin-top: 14px;
+}
+
+.wn-section-heading--wrap {
+  align-items: center;
+}
+
+.wn-outline-button {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.wn-layer-tabs {
+  margin-bottom: 12px;
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.wn-layer-tabs button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--wn-border);
+  border-radius: 12px;
+  background: var(--wn-surface-soft);
+  color: var(--wn-muted);
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.wn-layer-tabs button.is-active {
+  border-color: transparent;
+  background: linear-gradient(145deg, var(--wn-primary), var(--wn-primary-2));
+  color: #fff;
+}
+
+.wn-full-map > iframe {
+  width: 100%;
+  height: min(68vh, 680px);
+  border: 0;
+  border-radius: 18px;
+}
+
+.wn-full-map > div:last-child,
+.wn-full-map .leaflet-container {
+  min-height: min(68vh, 680px) !important;
+  border-radius: 18px;
+}
+
+.wn-map-note {
+  margin: 11px 0 0;
+  padding: 11px 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 13px;
+  background: rgba(245, 158, 11, 0.07);
+  color: var(--wn-muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.wn-footer {
+  position: relative;
+  z-index: 1;
+  width: min(1500px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 18px 0 30px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--wn-muted);
+  font-size: 9px;
+}
+
+.wn-bottom-nav {
+  display: none;
+}
+
+.spin {
+  animation: wn-spin 0.9s linear infinite;
+}
+
+@keyframes wn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1180px) {
+  .wn-header__inner {
+    grid-template-columns: auto 1fr;
+  }
+
+  .wn-nav {
+    display: none;
+  }
+
+  .wn-actions {
+    justify-content: flex-end;
+  }
+
+  .wn-menu-button {
+    display: inline-flex;
+  }
+
+  .wn-mobile-menu {
+    width: min(1500px, calc(100% - 40px));
+    margin: 0 auto 12px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 7px;
+    border: 1px solid var(--wn-border);
+    border-radius: 15px;
+    background: var(--wn-surface);
+  }
+
+  .wn-mobile-menu a {
+    padding: 10px;
+    border-radius: 10px;
+    color: var(--wn-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .wn-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .wn-side-cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .wn-metric-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .wn-metric-strip > div:nth-child(4) {
+    border-left: 0;
+  }
+
+  .wn-content-grid,
+  .wn-content-grid--lower {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 800px) {
+  .wn-header__inner,
+  .wn-container,
+  .wn-footer {
+    width: min(100% - 24px, 1500px);
+  }
+
+  .wn-header__inner {
+    min-height: 74px;
+    gap: 12px;
+  }
+
+  .wn-brand__icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 14px;
+  }
+
+  .wn-brand__copy strong {
+    font-size: 17px;
+  }
+
+  .wn-brand__copy small,
+  .wn-select--wind,
+  .wn-language span {
+    display: none;
+  }
+
+  .wn-actions {
+    gap: 5px;
+  }
+
+  .wn-select,
+  .wn-icon-button,
+  .wn-menu-button {
+    min-height: 40px;
+    min-width: 40px;
+    border-radius: 12px;
+  }
+
+  .wn-select {
+    width: 54px;
+    padding-left: 10px;
+  }
+
+  .wn-search-row {
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+  }
+
+  .wn-search {
+    min-height: 52px;
+    padding-left: 15px;
+  }
+
+  .wn-search input {
+    font-size: 12px;
+  }
+
+  .wn-location-button {
+    width: 52px;
+    min-height: 52px;
+    padding: 0;
+  }
+
+  .wn-location-button span {
+    display: none;
+  }
+
+  .wn-hero {
+    min-height: 340px;
+  }
+
+  .wn-hero__content {
+    min-height: 340px;
+    padding: 22px;
+  }
+
+  .wn-hero__main {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .wn-hero__temperature {
+    font-size: 88px;
+  }
+
+  .wn-hero__condition {
+    position: absolute;
+    right: 22px;
+    top: 88px;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .wn-hero__condition h1 {
+    font-size: 16px;
+  }
+
+  .wn-hero__metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wn-hero__metrics > div:nth-child(3) {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .wn-hero__metrics > div:nth-child(4) {
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .wn-side-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wn-metric-strip {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .wn-metric-strip > div {
+    min-width: 160px;
+  }
+
+  .wn-metric-strip > div + div {
+    border-left: 1px solid var(--wn-border) !important;
+  }
+
+  .wn-suggestion-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wn-full-map > iframe,
+  .wn-full-map > div:last-child,
+  .wn-full-map .leaflet-container {
+    height: 480px !important;
+    min-height: 480px !important;
+  }
+
+  .wn-bottom-nav {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    z-index: 90;
+    height: 67px;
+    padding: 7px 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--wn-border);
+    border-radius: 21px;
+    background: color-mix(in srgb, var(--wn-surface-solid) 90%, transparent);
+    box-shadow: 0 18px 55px rgba(21, 54, 98, 0.19);
+    backdrop-filter: blur(18px);
+  }
+
+  .wn-bottom-nav a {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 4px;
+    color: var(--wn-muted);
+    font-size: 9px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .wn-bottom-nav a:first-child {
+    color: var(--wn-primary);
+  }
+
+  .wn-footer {
+    padding-bottom: 100px;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-header__inner {
+    width: calc(100% - 18px);
+  }
+
+  .wn-container {
+    width: calc(100% - 18px);
+    padding-top: 16px;
+  }
+
+  .wn-brand__copy strong {
+    font-size: 15px;
+  }
+
+  .wn-icon-button {
+    padding: 0 9px;
+  }
+
+  .wn-actions > .wn-icon-button:nth-of-type(1),
+  .wn-menu-button {
+    display: none;
+  }
+
+  .wn-mobile-menu {
+    width: calc(100% - 18px);
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wn-search-row {
+    grid-template-columns: minmax(0, 1fr) 48px;
+  }
+
+  .wn-search {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .wn-search > button {
+    display: none;
+  }
+
+  .wn-hero {
+    min-height: 385px;
+    border-radius: 22px;
+  }
+
+  .wn-hero__content {
+    min-height: 385px;
+    padding: 18px;
+  }
+
+  .wn-hero__temperature {
+    font-size: 78px;
+  }
+
+  .wn-hero__condition {
+    top: 92px;
+    right: 18px;
+  }
+
+  .wn-hero__condition > svg {
+    width: 43px;
+    height: 43px;
+  }
+
+  .wn-hero__metrics {
+    margin: auto -18px -18px;
+  }
+
+  .wn-side-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .wn-time-card,
+  .wn-aqi-card,
+  .wn-mini-card {
+    min-height: 145px;
+    padding: 14px;
+  }
+
+  .wn-panel__heading h2 {
+    font-size: 20px;
+  }
+
+  .wn-mini-card > div > strong {
+    font-size: 23px;
+  }
+
+  .wn-mini-card__icon,
+  .wn-aqi-card__body > span {
+    width: 45px;
+    height: 45px;
+  }
+
+  .wn-content-grid {
+    gap: 9px;
+  }
+
+  .wn-forecast-card,
+  .wn-daily-card,
+  .wn-map-preview,
+  .wn-windy-preview,
+  .wn-suggestions,
+  .wn-full-map {
+    padding: 13px;
+    border-radius: 17px;
+  }
+
+  .wn-hour {
+    min-width: 74px;
+  }
+
+  .wn-day {
+    min-width: 95px;
+  }
+
+  .wn-suggestion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wn-section-heading--wrap {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .wn-outline-button {
+    min-height: 38px;
+  }
+
+  .wn-full-map > iframe,
+  .wn-full-map > div:last-child,
+  .wn-full-map .leaflet-container {
+    height: 390px !important;
+    min-height: 390px !important;
+  }
+
+  .wn-popover {
+    position: fixed;
+    top: 78px;
+    right: 9px;
+    left: 9px;
+    width: auto;
+    max-height: calc(100vh - 95px);
+  }
+}
+
+
+/* =========================================================
+   WEATHER MAP — FIX LAYOUT LEAFLET
+   ========================================================= */
+
+.weather-map-container {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #dbeafe;
+  isolation: isolate;
+}
+
+.weather-map {
+  position: relative;
+  z-index: 1;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  border-radius: inherit;
+  overflow: hidden;
+  background: #dbeafe;
+}
+
+.weather-map.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-width: 100%;
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
+}
+
+.weather-map-container .leaflet-pane,
+.weather-map-container .leaflet-control,
+.weather-map-container .leaflet-top,
+.weather-map-container .leaflet-bottom {
+  z-index: auto;
+}
+
+.weather-map-container .leaflet-map-pane {
+  z-index: 1;
+}
+
+.weather-map-container .leaflet-tile-pane {
+  z-index: 2;
+}
+
+.weather-map-container .leaflet-overlay-pane {
+  z-index: 3;
+}
+
+.weather-map-container .leaflet-shadow-pane {
+  z-index: 4;
+}
+
+.weather-map-container .leaflet-marker-pane {
+  z-index: 5;
+}
+
+.weather-map-container .leaflet-tooltip-pane {
+  z-index: 6;
+}
+
+.weather-map-container .leaflet-popup-pane {
+  z-index: 7;
+}
+
+.weather-map-container .leaflet-control-container {
+  position: relative;
+  z-index: 20;
+}
+
+.weather-map-container .leaflet-top,
+.weather-map-container .leaflet-bottom {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.weather-map-container .leaflet-top {
+  top: 0;
+}
+
+.weather-map-container .leaflet-right {
+  right: 0;
+}
+
+.weather-map-container .leaflet-bottom {
+  bottom: 0;
+}
+
+.weather-map-container .leaflet-left {
+  left: 0;
+}
+
+.weather-map-container .leaflet-control {
+  float: none;
+  clear: both;
+  pointer-events: auto;
+}
+
+.weather-map-container .leaflet-control-zoom {
+  margin: 12px !important;
+  overflow: hidden;
+  border: 1px solid rgba(109, 138, 176, 0.2) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(15, 40, 75, 0.14) !important;
+}
+
+.weather-map-container .leaflet-control-zoom a {
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 32px !important;
+  border: 0 !important;
+  background: color-mix(in srgb, var(--wn-surface-solid) 94%, transparent) !important;
+  color: var(--wn-text) !important;
+  font-size: 18px !important;
+}
+
+.weather-map-container .leaflet-control-zoom a + a {
+  border-top: 1px solid var(--wn-border) !important;
+}
+
+.weather-map-container .leaflet-control-attribution {
+  margin: 0 8px 7px 0 !important;
+  padding: 3px 7px !important;
+  border-radius: 8px 0 0 0;
+  background: color-mix(in srgb, var(--wn-surface-solid) 82%, transparent) !important;
+  color: var(--wn-muted) !important;
+  font-size: 8px !important;
+  backdrop-filter: blur(8px);
+}
+
+.weather-map-container .leaflet-control-attribution a {
+  color: var(--wn-primary) !important;
+}
+
+.map-layer-switcher {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 30;
+  max-width: calc(100% - 78px);
+  padding: 5px;
+  display: flex;
+  gap: 4px;
+  border: 1px solid var(--wn-border);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--wn-surface-solid) 90%, transparent);
+  box-shadow: 0 10px 28px rgba(15, 40, 75, 0.16);
+  backdrop-filter: blur(14px);
+}
+
+.map-layer-switcher button {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--wn-muted);
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.map-layer-switcher button:hover {
+  color: var(--wn-primary);
+  background: rgba(8, 118, 237, 0.07);
+}
+
+.map-layer-switcher button.active {
+  background: linear-gradient(145deg, var(--wn-primary), var(--wn-primary-2));
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(8, 118, 237, 0.2);
+}
+
+.map-help {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  z-index: 25;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin: 0 auto;
+  padding: 9px 13px;
+  border: 1px solid var(--wn-border);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--wn-surface-solid) 90%, transparent);
+  color: var(--wn-muted);
+  box-shadow: 0 8px 24px rgba(15, 40, 75, 0.13);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
+.weather-map-marker {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.weather-map-marker-inner {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 4px solid rgba(255, 255, 255, 0.96);
+  border-radius: 50% 50% 50% 10px;
+  background: linear-gradient(145deg, var(--wn-primary), var(--wn-primary-2));
+  box-shadow: 0 9px 24px rgba(8, 118, 237, 0.38);
+  transform: rotate(-45deg);
+}
+
+.weather-map-marker-inner span {
+  width: 10px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  transform: rotate(45deg);
+}
+
+/* Map preview: fixed height, no selector collision */
+.wn-map-preview {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.wn-map-preview > .weather-map-container {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 205px;
+  min-height: 205px;
+}
+
+.wn-map-preview .weather-map,
+.wn-map-preview .leaflet-container {
+  width: 100% !important;
+  height: 205px !important;
+  min-height: 205px !important;
+}
+
+/* Full map: only target the actual map wrapper */
+.wn-full-map > .weather-map-container {
+  width: 100%;
+  height: min(68vh, 680px);
+  min-height: 520px;
+}
+
+.wn-full-map > .weather-map-container .weather-map,
+.wn-full-map > .weather-map-container .leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+}
+
+/* Prevent old broad selectors from stretching heading or notes */
+.wn-full-map > div:last-child:not(.weather-map-container),
+.wn-map-preview > div:last-child:not(.weather-map-container) {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+/* Leaflet popup */
+.weather-map-container .leaflet-popup-content-wrapper {
+  border: 1px solid var(--wn-border);
+  border-radius: 13px;
+  background: var(--wn-surface-solid);
+  color: var(--wn-text);
+  box-shadow: 0 14px 36px rgba(15, 40, 75, 0.18);
+}
+
+.weather-map-container .leaflet-popup-content {
+  margin: 12px 14px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.weather-map-container .leaflet-popup-tip {
+  background: var(--wn-surface-solid);
+}
+
+@media (max-width: 800px) {
+  .wn-map-preview > .weather-map-container,
+  .wn-map-preview .weather-map,
+  .wn-map-preview .leaflet-container {
+    height: 260px !important;
+    min-height: 260px !important;
+  }
+
+  .wn-full-map > .weather-map-container {
+    height: 500px;
+    min-height: 500px;
+  }
+
+  .map-layer-switcher {
+    top: 10px;
+    right: 10px;
+    max-width: calc(100% - 64px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .map-layer-switcher::-webkit-scrollbar {
+    display: none;
+  }
+
+  .map-layer-switcher button {
+    min-height: 32px;
+    padding: 0 9px;
+  }
+
+  .map-help {
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    max-width: calc(100% - 16px);
+    padding: 8px 10px;
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-map-preview > .weather-map-container,
+  .wn-map-preview .weather-map,
+  .wn-map-preview .leaflet-container {
+    height: 230px !important;
+    min-height: 230px !important;
+  }
+
+  .wn-full-map > .weather-map-container {
+    height: 410px;
+    min-height: 410px;
+  }
+
+  .weather-map-container {
+    border-radius: 14px;
+  }
+
+  .map-layer-switcher {
+    justify-content: flex-end;
+  }
+
+  .weather-map-container .leaflet-control-zoom {
+    margin: 9px !important;
+  }
+
+  .weather-map-container .leaflet-control-attribution {
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+/* =========================================================
+   LEAFLET TILE GRID — FIX BROKEN / SCATTERED TILES
+   Tailwind and global img rules can resize Leaflet tiles.
+   ========================================================= */
+
+.leaflet-container img,
+.leaflet-container .leaflet-tile,
+.weather-map-container img,
+.weather-map-container .leaflet-tile {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.leaflet-container .leaflet-tile {
+  width: 256px !important;
+  height: 256px !important;
+  object-fit: fill !important;
+  image-rendering: auto;
+}
+
+.leaflet-container .leaflet-tile-container {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 256px !important;
+  height: 256px !important;
+  pointer-events: none;
+}
+
+.leaflet-container .leaflet-pane,
+.leaflet-container .leaflet-map-pane,
+.leaflet-container .leaflet-tile-pane,
+.leaflet-container .leaflet-overlay-pane,
+.leaflet-container .leaflet-shadow-pane,
+.leaflet-container .leaflet-marker-pane,
+.leaflet-container .leaflet-tooltip-pane,
+.leaflet-container .leaflet-popup-pane {
+  position: absolute !important;
+  left: 0;
+  top: 0;
+}
+
+.leaflet-container .leaflet-map-pane {
+  width: 100%;
+  height: 100%;
+}
+
+.leaflet-container .leaflet-tile-pane {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.leaflet-container .leaflet-tile {
+  position: absolute !important;
+  left: 0;
+  top: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  visibility: inherit;
+}
+
+.leaflet-container {
+  overflow: hidden !important;
+}
+
+.leaflet-container svg,
+.leaflet-container canvas {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Never let generic responsive image rules affect map tiles */
+.weather-map-container picture,
+.weather-map-container img {
+  display: block;
+}
+
+.weather-map-container .leaflet-marker-icon,
+.weather-map-container .leaflet-marker-shadow {
+  max-width: none !important;
+}
+
+
+/* =========================================================
+   MOBILE — FIX HORIZONTAL FORECAST SCROLL + MAP WIDTH
+   ========================================================= */
+
+.wn-content-grid,
+.wn-content-grid--lower,
+.wn-forecast-card,
+.wn-daily-card,
+.wn-windy-preview,
+.wn-map-preview,
+.wn-full-map,
+.wn-panel,
+.wn-hourly,
+.wn-daily-list,
+.weather-map-container {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.wn-hourly,
+.wn-daily-list,
+.wn-layer-tabs {
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.wn-hourly::-webkit-scrollbar,
+.wn-daily-list::-webkit-scrollbar,
+.wn-layer-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.wn-hourly:active,
+.wn-daily-list:active {
+  cursor: grabbing;
+}
+
+.wn-hour,
+.wn-day {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.wn-windy-preview,
+.wn-map-preview {
+  width: 100%;
+  overflow: hidden;
+}
+
+.wn-windy-preview iframe,
+.wn-full-map > iframe {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+.weather-map-container,
+.weather-map,
+.leaflet-container {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+@media (max-width: 800px) {
+  .wn-container {
+    overflow-x: clip;
+  }
+
+  .wn-content-grid,
+  .wn-content-grid--lower {
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .wn-forecast-card,
+  .wn-daily-card,
+  .wn-windy-preview,
+  .wn-map-preview,
+  .wn-full-map {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .wn-hourly,
+  .wn-daily-list {
+    margin-right: -2px;
+    padding-right: 18px;
+  }
+
+  .wn-hour {
+    min-width: 82px;
+  }
+
+  .wn-day {
+    min-width: 102px;
+  }
+
+  .wn-windy-preview iframe {
+    height: 220px !important;
+    border-radius: 14px;
+  }
+
+  .wn-map-preview > .weather-map-container,
+  .wn-map-preview .weather-map,
+  .wn-map-preview .leaflet-container {
+    width: 100% !important;
+    height: 280px !important;
+    min-height: 280px !important;
+    max-width: 100% !important;
+  }
+
+  .wn-full-map > .weather-map-container,
+  .wn-full-map > iframe {
+    width: 100% !important;
+    height: 500px !important;
+    min-height: 500px !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-container {
+    width: calc(100% - 16px);
+    max-width: calc(100% - 16px);
+    padding-left: 0;
+    padding-right: 0;
+    overflow-x: clip;
+  }
+
+  .wn-content-grid,
+  .wn-content-grid--lower,
+  .wn-panel,
+  .wn-forecast-card,
+  .wn-daily-card,
+  .wn-windy-preview,
+  .wn-map-preview,
+  .wn-full-map {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .wn-hourly,
+  .wn-daily-list {
+    gap: 8px;
+    width: calc(100% + 1px);
+    padding: 2px 18px 8px 0;
+  }
+
+  .wn-hour {
+    min-width: 78px;
+    padding: 10px 7px;
+  }
+
+  .wn-day {
+    min-width: 96px;
+    padding: 10px 8px;
+  }
+
+  .wn-windy-preview {
+    min-height: 0;
+  }
+
+  .wn-windy-preview iframe {
+    width: 100% !important;
+    height: 190px !important;
+    min-height: 190px !important;
+    max-width: 100% !important;
+    border-radius: 12px;
+  }
+
+  .wn-map-preview {
+    min-height: 0;
+  }
+
+  .wn-map-preview > .weather-map-container,
+  .wn-map-preview .weather-map,
+  .wn-map-preview .leaflet-container {
+    width: 100% !important;
+    height: 240px !important;
+    min-height: 240px !important;
+    max-width: 100% !important;
+  }
+
+  .wn-full-map > .weather-map-container,
+  .wn-full-map > iframe {
+    width: 100% !important;
+    height: 420px !important;
+    min-height: 420px !important;
+    max-width: 100% !important;
+  }
+
+  .wn-map-preview .map-layer-switcher,
+  .wn-full-map .map-layer-switcher {
+    max-width: calc(100% - 64px);
+  }
+
+  .wn-section-heading {
+    min-width: 0;
+  }
+
+  .wn-section-heading > div {
+    min-width: 0;
+  }
+
+  .wn-section-heading h2 {
+    overflow-wrap: anywhere;
+  }
+}
+
+
+/* =========================================================
+   ACTIVE NAV STATE — DESKTOP / MOBILE / BOTTOM NAV
+   ========================================================= */
+
+.wn-nav a {
+  border-radius: 12px;
+  transition: 180ms ease;
+}
+
+.wn-nav a::after {
+  opacity: 0;
+  transform: scaleX(0.6);
+  transform-origin: center;
+  transition: 180ms ease;
+}
+
+.wn-nav a:hover {
+  color: var(--wn-primary);
+  background: rgba(8, 118, 237, 0.06);
+}
+
+.wn-nav a.is-active {
+  color: var(--wn-primary);
+  background: rgba(8, 118, 237, 0.08);
+}
+
+.wn-nav a.is-active::after {
+  opacity: 1;
+  transform: scaleX(1);
+  position: absolute;
+  right: 18px;
+  bottom: 0;
+  left: 18px;
+  height: 3px;
+  border-radius: 99px 99px 0 0;
+  background: var(--wn-primary);
+  content: "";
+}
+
+.wn-mobile-menu a,
+.wn-bottom-nav a {
+  transition: 180ms ease;
+}
+
+.wn-mobile-menu a:hover {
+  color: var(--wn-primary);
+  background: rgba(8, 118, 237, 0.06);
+}
+
+.wn-mobile-menu a.is-active {
+  color: #ffffff;
+  background: linear-gradient(145deg, var(--wn-primary), var(--wn-primary-2));
+  box-shadow: 0 8px 18px rgba(8, 118, 237, 0.22);
+}
+
+.wn-bottom-nav a.is-active {
+  color: var(--wn-primary);
+}
+
+.wn-bottom-nav a.is-active::before {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(8, 118, 237, 0.10);
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  content: "";
+  z-index: -1;
+}
+
+.wn-bottom-nav a {
+  position: relative;
+}
+
+.wn-bottom-nav a.is-active span {
+  font-weight: 800;
+}
+
+:root[data-theme="dark"] .wn-nav a.is-active {
+  background: rgba(53, 168, 255, 0.10);
+}
+
+:root[data-theme="dark"] .wn-mobile-menu a.is-active {
+  color: #f8fcff;
+  box-shadow: 0 10px 22px rgba(3, 105, 161, 0.28);
+}
+
+:root[data-theme="dark"] .wn-bottom-nav a.is-active::before {
+  background: rgba(53, 168, 255, 0.14);
+}
+
+
+/* Override static first item highlight */
+.wn-nav a:first-child {
+  color: var(--wn-muted);
+}
+.wn-nav a:first-child::after {
+  opacity: 0;
+  transform: scaleX(0.6);
+}
+.wn-bottom-nav a:first-child {
+  color: var(--wn-muted);
+}
+.wn-bottom-nav a.is-active {
+  color: var(--wn-primary) !important;
+}
+
+
+/* =========================================================
+   CALENDAR MODAL — MOBILE FIT + INTERNAL SCROLL
+   ========================================================= */
+
+.wn-calendar-overlay {
+  overflow: hidden;
+}
+
+.wn-calendar-modal {
+  max-height: calc(100dvh - 28px) !important;
+  overflow: hidden !important;
+}
+
+.wn-calendar-modal__body {
+  max-height: calc(100dvh - 118px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(125, 211, 252, 0.38) transparent;
+}
+
+.wn-calendar-modal__body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.wn-calendar-modal__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.wn-calendar-modal__body::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: rgba(125, 211, 252, 0.35);
+}
+
+@media (max-width: 800px) {
+  .wn-calendar-overlay {
+    align-items: flex-start !important;
+    padding: 8px !important;
+    overflow-y: auto;
+  }
+
+  .wn-calendar-modal {
+    width: min(100%, 560px) !important;
+    max-width: 560px !important;
+    max-height: calc(100dvh - 16px) !important;
+    margin: 0 auto;
+    border-radius: 20px !important;
+  }
+
+  .wn-calendar-modal__body {
+    max-height: calc(100dvh - 100px);
+    padding: 12px !important;
+  }
+
+  .wn-calendar-modal__layout {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .wn-calendar-info {
+    gap: 9px !important;
+  }
+
+  .wn-calendar-grid-wrap {
+    padding: 7px !important;
+    border-radius: 16px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-calendar-overlay {
+    padding: 6px !important;
+  }
+
+  .wn-calendar-modal {
+    width: 100% !important;
+    max-width: 430px !important;
+    max-height: calc(100dvh - 12px) !important;
+    border-radius: 18px !important;
+  }
+
+  .wn-calendar-modal__body {
+    max-height: calc(100dvh - 92px);
+    padding: 10px !important;
+  }
+
+  .wn-calendar-modal__layout {
+    gap: 10px !important;
+  }
+
+  .wn-calendar-grid-wrap {
+    padding: 6px !important;
+  }
+
+  /* Make calendar cells compact enough for mobile without becoming tiny */
+  .wn-calendar-grid-wrap button {
+    border-radius: 11px !important;
+  }
+
+  .wn-calendar-info {
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .wn-calendar-modal {
+    max-width: 100% !important;
+  }
+
+  .wn-calendar-modal__body {
+    padding: 8px !important;
+  }
+
+  .wn-calendar-grid-wrap {
+    padding: 5px !important;
+  }
+}
+
+
+/* =========================================================
+   DYNAMIC WEATHER HERO SCENES
+   ========================================================= */
+
+.wn-hero {
+  transition: background 500ms ease, color 300ms ease;
+}
+
+.wn-hero__moon,
+.wn-hero__stars,
+.wn-hero__mist,
+.wn-hero__rain,
+.wn-hero__lightning,
+.wn-hero__cloud--three {
+  opacity: 0;
+}
+
+.wn-hero__sun,
+.wn-hero__moon,
+.wn-hero__cloud,
+.wn-hero__mist,
+.wn-hero__rain,
+.wn-hero__lightning,
+.wn-hero__stars {
+  transition: opacity 450ms ease, transform 700ms ease;
+}
+
+.wn-hero__moon {
+  inset: 30px 7% auto auto !important;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff8d8, #d7e8ff 68%, #a9c6e8);
+  box-shadow:
+    0 0 0 14px rgba(214, 232, 255, 0.10),
+    0 0 54px rgba(202, 226, 255, 0.44);
+}
+
+.wn-hero__moon::after {
+  position: absolute;
+  inset: 13px 10px auto auto;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: rgba(136, 167, 203, 0.22);
+  box-shadow:
+    -29px 17px 0 -4px rgba(136, 167, 203, 0.2),
+    -7px 36px 0 -6px rgba(136, 167, 203, 0.2);
+  content: "";
+}
+
+.wn-hero__stars {
+  inset: 0 !important;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.92) 0 1px, transparent 1.6px),
+    radial-gradient(circle, rgba(185,220,255,.8) 0 1px, transparent 1.4px),
+    radial-gradient(circle, rgba(255,255,255,.7) 0 1px, transparent 1.3px);
+  background-position: 14% 18%, 44% 13%, 76% 25%;
+  background-size: 78px 78px, 112px 112px, 147px 147px;
+  animation: wn-stars 5s ease-in-out infinite alternate;
+}
+
+.wn-hero__cloud--three {
+  inset: auto 38% 120px auto !important;
+  width: 230px;
+  transform: scale(1.08);
+}
+
+.wn-hero__mist {
+  left: -8% !important;
+  width: 116% !important;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(231, 242, 249, 0.32);
+  filter: blur(13px);
+}
+
+.wn-hero__mist--one {
+  top: 44% !important;
+}
+
+.wn-hero__mist--two {
+  top: 61% !important;
+  transform: translateX(8%);
+}
+
+.wn-hero__rain {
+  inset: 0 !important;
+  background-image:
+    repeating-linear-gradient(
+      112deg,
+      transparent 0 17px,
+      rgba(224, 244, 255, 0.0) 17px 22px,
+      rgba(224, 244, 255, 0.72) 23px 25px,
+      transparent 26px 44px
+    );
+  background-size: 68px 86px;
+  animation: wn-rain 0.72s linear infinite;
+}
+
+.wn-hero__rain--two {
+  background-size: 94px 112px;
+  animation-duration: 1.05s;
+  transform: translateX(28px);
+}
+
+.wn-hero__lightning {
+  inset: 24px 17% auto auto !important;
+  width: 48px;
+  height: 116px;
+  clip-path: polygon(45% 0, 100% 0, 67% 39%, 92% 39%, 23% 100%, 40% 55%, 10% 55%);
+  background: linear-gradient(180deg, #fffbd2, #ffe66f 60%, #fff);
+  filter: drop-shadow(0 0 12px rgba(255, 235, 107, 0.9));
+  animation: wn-lightning 4.2s infinite;
+}
+
+.wn-hero--clear-day {
+  background: linear-gradient(135deg, #0875e8 0%, #1ca7ed 52%, #83dff2 100%);
+}
+
+.wn-hero--clear-day .wn-hero__sun {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+.wn-hero--clear-night {
+  background:
+    radial-gradient(circle at 80% 12%, rgba(65, 117, 175, 0.32), transparent 22%),
+    linear-gradient(135deg, #071d45 0%, #0b3764 50%, #12517a 100%);
+}
+
+.wn-hero--clear-night .wn-hero__sun {
+  opacity: 0;
+}
+
+.wn-hero--clear-night .wn-hero__moon,
+.wn-hero--clear-night .wn-hero__stars {
+  opacity: 1;
+}
+
+.wn-hero--partly-cloudy-day {
+  background: linear-gradient(135deg, #0a72d8 0%, #249edc 50%, #8fd5e7 100%);
+}
+
+.wn-hero--partly-cloudy-day .wn-hero__sun {
+  opacity: 0.9;
+}
+
+.wn-hero--partly-cloudy-day .wn-hero__cloud--one,
+.wn-hero--partly-cloudy-day .wn-hero__cloud--two,
+.wn-hero--partly-cloudy-day .wn-hero__cloud--three {
+  opacity: 0.72;
+}
+
+.wn-hero--partly-cloudy-night {
+  background: linear-gradient(135deg, #081c3c 0%, #12395c 55%, #285f7a 100%);
+}
+
+.wn-hero--partly-cloudy-night .wn-hero__sun {
+  opacity: 0;
+}
+
+.wn-hero--partly-cloudy-night .wn-hero__moon,
+.wn-hero--partly-cloudy-night .wn-hero__stars {
+  opacity: 0.92;
+}
+
+.wn-hero--partly-cloudy-night .wn-hero__cloud--one,
+.wn-hero--partly-cloudy-night .wn-hero__cloud--two,
+.wn-hero--partly-cloudy-night .wn-hero__cloud--three {
+  opacity: 0.58;
+  background: rgba(185, 207, 228, 0.25);
+}
+
+.wn-hero--overcast {
+  background: linear-gradient(135deg, #52677d 0%, #6f8496 48%, #91a2ad 100%);
+}
+
+.wn-hero--overcast .wn-hero__sun,
+.wn-hero--overcast .wn-hero__moon,
+.wn-hero--overcast .wn-hero__stars {
+  opacity: 0;
+}
+
+.wn-hero--overcast .wn-hero__cloud--one,
+.wn-hero--overcast .wn-hero__cloud--two,
+.wn-hero--overcast .wn-hero__cloud--three {
+  opacity: 0.95;
+  background: rgba(220, 228, 235, 0.4);
+}
+
+.wn-hero--fog {
+  background: linear-gradient(135deg, #718696 0%, #90a4af 50%, #b2c2c8 100%);
+}
+
+.wn-hero--fog .wn-hero__sun,
+.wn-hero--fog .wn-hero__moon,
+.wn-hero--fog .wn-hero__stars {
+  opacity: 0.15;
+}
+
+.wn-hero--fog .wn-hero__cloud--one,
+.wn-hero--fog .wn-hero__cloud--two {
+  opacity: 0.48;
+}
+
+.wn-hero--fog .wn-hero__mist {
+  opacity: 1;
+  animation: wn-mist 7s ease-in-out infinite alternate;
+}
+
+.wn-hero--drizzle {
+  background: linear-gradient(135deg, #3d6580 0%, #5b8297 50%, #7ea3b0 100%);
+}
+
+.wn-hero--drizzle .wn-hero__sun,
+.wn-hero--drizzle .wn-hero__moon {
+  opacity: 0.08;
+}
+
+.wn-hero--drizzle .wn-hero__cloud--one,
+.wn-hero--drizzle .wn-hero__cloud--two,
+.wn-hero--drizzle .wn-hero__cloud--three {
+  opacity: 0.88;
+  background: rgba(216, 229, 238, 0.35);
+}
+
+.wn-hero--drizzle .wn-hero__rain--two {
+  opacity: 0.48;
+}
+
+.wn-hero--rain {
+  background: linear-gradient(135deg, #284d6c 0%, #3c667f 48%, #5e8797 100%);
+}
+
+.wn-hero--rain .wn-hero__sun,
+.wn-hero--rain .wn-hero__moon,
+.wn-hero--rain .wn-hero__stars {
+  opacity: 0;
+}
+
+.wn-hero--rain .wn-hero__cloud--one,
+.wn-hero--rain .wn-hero__cloud--two,
+.wn-hero--rain .wn-hero__cloud--three {
+  opacity: 0.98;
+  background: rgba(201, 217, 228, 0.38);
+}
+
+.wn-hero--rain .wn-hero__rain--one,
+.wn-hero--rain .wn-hero__rain--two {
+  opacity: 0.68;
+}
+
+.wn-hero--heavy-rain {
+  background: linear-gradient(135deg, #172f4a 0%, #294c67 50%, #41677b 100%);
+}
+
+.wn-hero--heavy-rain .wn-hero__sun,
+.wn-hero--heavy-rain .wn-hero__moon,
+.wn-hero--heavy-rain .wn-hero__stars {
+  opacity: 0;
+}
+
+.wn-hero--heavy-rain .wn-hero__cloud--one,
+.wn-hero--heavy-rain .wn-hero__cloud--two,
+.wn-hero--heavy-rain .wn-hero__cloud--three {
+  opacity: 1;
+  background: rgba(183, 203, 218, 0.42);
+}
+
+.wn-hero--heavy-rain .wn-hero__rain--one,
+.wn-hero--heavy-rain .wn-hero__rain--two {
+  opacity: 0.94;
+  animation-duration: 0.48s;
+}
+
+.wn-hero--storm {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(94, 82, 162, 0.26), transparent 25%),
+    linear-gradient(135deg, #111f35 0%, #263a52 48%, #374e63 100%);
+}
+
+.wn-hero--storm .wn-hero__sun,
+.wn-hero--storm .wn-hero__moon,
+.wn-hero--storm .wn-hero__stars {
+  opacity: 0;
+}
+
+.wn-hero--storm .wn-hero__cloud--one,
+.wn-hero--storm .wn-hero__cloud--two,
+.wn-hero--storm .wn-hero__cloud--three {
+  opacity: 1;
+  background: rgba(171, 188, 205, 0.42);
+}
+
+.wn-hero--storm .wn-hero__rain--one,
+.wn-hero--storm .wn-hero__rain--two,
+.wn-hero--storm .wn-hero__lightning {
+  opacity: 1;
+}
+
+.wn-hero--overcast .wn-hero__mountain,
+.wn-hero--fog .wn-hero__mountain,
+.wn-hero--drizzle .wn-hero__mountain,
+.wn-hero--rain .wn-hero__mountain,
+.wn-hero--heavy-rain .wn-hero__mountain,
+.wn-hero--storm .wn-hero__mountain {
+  opacity: 0.5;
+}
+
+.wn-hero--clear-night .wn-hero__water,
+.wn-hero--partly-cloudy-night .wn-hero__water {
+  background: linear-gradient(180deg, rgba(10, 55, 91, 0.08), rgba(2, 35, 69, 0.62));
+}
+
+@keyframes wn-rain {
+  from {
+    background-position: 0 -40px;
+  }
+  to {
+    background-position: -28px 78px;
+  }
+}
+
+@keyframes wn-mist {
+  from {
+    transform: translateX(-3%);
+  }
+  to {
+    transform: translateX(7%);
+  }
+}
+
+@keyframes wn-stars {
+  from {
+    opacity: 0.68;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wn-lightning {
+  0%, 89%, 93%, 100% {
+    opacity: 0;
+  }
+  90%, 92% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wn-hero__rain,
+  .wn-hero__mist,
+  .wn-hero__stars,
+  .wn-hero__lightning {
+    animation: none !important;
+  }
+}
+
+
+/* =========================================================
+   HOLIDAY IMAGE ON THE OUTSIDE CALENDAR / TIME CARD
+   ========================================================= */
+
+.wn-time-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.wn-time-card__content {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.wn-time-card__holiday-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--wn-surface-soft);
+}
+
+.wn-time-card__holiday-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 500ms ease;
+}
+
+.wn-time-card:hover .wn-time-card__holiday-image img {
+  transform: scale(1.035);
+}
+
+.wn-time-card__image-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(5, 21, 43, 0.96) 0%,
+      rgba(5, 21, 43, 0.88) 52%,
+      rgba(5, 21, 43, 0.38) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(5, 21, 43, 0.18),
+      rgba(5, 21, 43, 0.72)
+    );
+}
+
+.wn-time-card.has-holiday-image {
+  color: #f8fbff;
+  border-color: rgba(125, 211, 252, 0.26);
+  box-shadow:
+    0 18px 42px rgba(4, 22, 48, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.wn-time-card.has-holiday-image .wn-panel__heading span,
+.wn-time-card.has-holiday-image > .wn-time-card__content > p {
+  color: rgba(226, 240, 255, 0.78);
+}
+
+.wn-time-card.has-holiday-image .wn-lunar-line {
+  color: #b9a5ff;
+}
+
+.wn-time-card.has-holiday-image .wn-calendar-button {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  backdrop-filter: blur(12px);
+}
+
+.wn-time-card.has-holiday-image .wn-holiday {
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 157, 178, 0.24);
+  border-radius: 10px;
+  background: rgba(76, 14, 35, 0.42);
+  color: #ffd0dc;
+  backdrop-filter: blur(8px);
+}
+
+.wn-time-card__holiday-image.is-image-error {
+  display: none;
+}
+
+@media (min-width: 1181px) {
+  .wn-time-card.has-holiday-image .wn-time-card__content {
+    max-width: 68%;
+  }
+}
+
+@media (max-width: 1180px) {
+  .wn-time-card__image-overlay {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(5, 21, 43, 0.96) 0%,
+        rgba(5, 21, 43, 0.82) 58%,
+        rgba(5, 21, 43, 0.46) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(5, 21, 43, 0.22),
+        rgba(5, 21, 43, 0.76)
+      );
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-time-card.has-holiday-image {
+    min-height: 168px;
+  }
+
+  .wn-time-card.has-holiday-image .wn-time-card__content {
+    max-width: 76%;
+  }
+
+  .wn-time-card__holiday-image img {
+    object-position: 65% center;
+  }
+
+  .wn-time-card__image-overlay {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(5, 21, 43, 0.98) 0%,
+        rgba(5, 21, 43, 0.88) 60%,
+        rgba(5, 21, 43, 0.45) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(5, 21, 43, 0.16),
+        rgba(5, 21, 43, 0.82)
+      );
+  }
+
+  .wn-time-card.has-holiday-image .wn-holiday {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    font-size: 9px;
+    line-height: 1.35;
+  }
+}
+
+
+/* =========================================================
+   PREMIUM HOLIDAY / TIME CARD — FINAL POLISH
+   ========================================================= */
+
+.wn-time-card {
+  min-height: 188px;
+  padding: 0 !important;
+  display: block;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.96), rgba(246,250,255,0.92));
+}
+
+:root[data-theme="dark"] .wn-time-card {
+  background:
+    linear-gradient(145deg, rgba(13,34,56,0.98), rgba(7,22,40,0.98));
+}
+
+.wn-time-card__content {
+  position: relative;
+  z-index: 3;
+  min-height: 188px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wn-time-card__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wn-time-card__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--wn-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.wn-time-card__status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #0ea5e9, #22d3ee);
+  box-shadow: 0 0 0 5px rgba(14,165,233,0.10);
+}
+
+.wn-time-card__time {
+  margin-top: 10px;
+  font-size: clamp(29px, 3vw, 40px);
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: -1.8px;
+}
+
+.wn-time-card__date {
+  margin-top: 8px;
+  color: var(--wn-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.wn-time-card__meta {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.wn-time-card__meta-item {
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--wn-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--wn-surface-solid) 68%, transparent);
+  color: #8b5cf6;
+  backdrop-filter: blur(10px);
+}
+
+.wn-time-card__meta-item span {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  color: var(--wn-muted);
+  font-size: 10px;
+}
+
+.wn-time-card__meta-item strong {
+  color: var(--wn-text);
+}
+
+.wn-time-card__holiday {
+  margin-top: auto;
+  padding-top: 12px;
+  display: grid;
+  grid-template-columns: 28px minmax(0,1fr);
+  gap: 9px;
+  align-items: start;
+}
+
+.wn-time-card__holiday-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #ff5f82, #ff8ea7);
+  color: white;
+  font-size: 13px;
+  box-shadow: 0 8px 20px rgba(255,95,130,0.25);
+}
+
+.wn-time-card__holiday > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.wn-time-card__holiday small {
+  color: #ff8ea7;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.wn-time-card__holiday strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  color: var(--wn-text);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.wn-time-card__holiday-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.wn-time-card__holiday-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% center;
+  filter: saturate(1.05) contrast(1.02);
+  transform: scale(1.015);
+  transition: transform 700ms ease, filter 400ms ease;
+}
+
+.wn-time-card:hover .wn-time-card__holiday-image img {
+  transform: scale(1.06);
+  filter: saturate(1.12) contrast(1.05);
+}
+
+.wn-time-card__image-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 18, 40, 0.98) 0%,
+      rgba(3, 18, 40, 0.92) 46%,
+      rgba(3, 18, 40, 0.57) 68%,
+      rgba(3, 18, 40, 0.20) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(3,18,40,0.10),
+      rgba(3,18,40,0.72)
+    );
+}
+
+.wn-time-card__image-shine {
+  position: absolute;
+  inset: -40% auto -40% 44%;
+  width: 38%;
+  transform: rotate(12deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.08),
+    transparent
+  );
+  filter: blur(10px);
+}
+
+.wn-time-card.has-holiday-image {
+  color: #f8fbff;
+  border-color: rgba(125,211,252,0.24);
+  box-shadow:
+    0 22px 48px rgba(5,22,48,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.wn-time-card.has-holiday-image .wn-time-card__content {
+  max-width: 66%;
+}
+
+.wn-time-card.has-holiday-image .wn-time-card__eyebrow,
+.wn-time-card.has-holiday-image .wn-time-card__date {
+  color: rgba(231,242,255,0.78);
+}
+
+.wn-time-card.has-holiday-image .wn-time-card__meta-item {
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.10);
+}
+
+.wn-time-card.has-holiday-image .wn-time-card__meta-item span {
+  color: rgba(231,242,255,0.78);
+}
+
+.wn-time-card.has-holiday-image .wn-time-card__meta-item strong {
+  color: #ffffff;
+}
+
+.wn-time-card.has-holiday-image .wn-time-card__holiday small {
+  color: #ffc0ce;
+}
+
+.wn-time-card.has-holiday-image .wn-time-card__holiday strong {
+  color: #ffffff;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.26);
+}
+
+.wn-time-card.has-holiday-image .wn-calendar-button {
+  border-color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 1180px) {
+  .wn-time-card.has-holiday-image .wn-time-card__content {
+    max-width: 72%;
+  }
+}
+
+@media (max-width: 800px) {
+  .wn-time-card {
+    min-height: 174px;
+  }
+
+  .wn-time-card__content {
+    min-height: 174px;
+    padding: 15px;
+  }
+
+  .wn-time-card__time {
+    font-size: 31px;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-time-card {
+    min-height: 164px;
+    border-radius: 18px;
+  }
+
+  .wn-time-card__content {
+    min-height: 164px;
+    padding: 13px;
+  }
+
+  .wn-time-card.has-holiday-image .wn-time-card__content {
+    max-width: 78%;
+  }
+
+  .wn-time-card__time {
+    margin-top: 8px;
+    font-size: 28px;
+  }
+
+  .wn-time-card__date {
+    margin-top: 6px;
+    font-size: 9px;
+  }
+
+  .wn-time-card__meta {
+    margin-top: 9px;
+  }
+
+  .wn-time-card__meta-item {
+    padding: 6px 8px;
+  }
+
+  .wn-time-card__meta-item span {
+    font-size: 9px;
+  }
+
+  .wn-time-card__holiday {
+    padding-top: 9px;
+    grid-template-columns: 24px minmax(0,1fr);
+    gap: 7px;
+  }
+
+  .wn-time-card__holiday-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    font-size: 11px;
+  }
+
+  .wn-time-card__holiday strong {
+    font-size: 9px;
+  }
+
+  .wn-time-card__holiday-image img {
+    object-position: 78% center;
+  }
+
+  .wn-time-card__image-overlay {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(3, 18, 40, 0.99) 0%,
+        rgba(3, 18, 40, 0.94) 55%,
+        rgba(3, 18, 40, 0.48) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(3,18,40,0.08),
+        rgba(3,18,40,0.74)
+      );
+  }
+}
+
+
+/* =========================================================
+   NAVIGATION — SMALLER ACTIVE CHIP + ICONS
+   ========================================================= */
+
+.wn-nav {
+  height: auto;
+  min-height: 86px;
+  gap: 8px;
+  align-items: center;
+}
+
+.wn-nav a {
+  height: 44px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  color: var(--wn-muted);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.wn-nav a svg {
+  flex: 0 0 auto;
+  opacity: 0.78;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.wn-nav a span {
+  white-space: nowrap;
+}
+
+.wn-nav a:hover {
+  color: var(--wn-primary);
+  border-color: rgba(8, 118, 237, 0.10);
+  background: rgba(8, 118, 237, 0.05);
+  transform: translateY(-1px);
+}
+
+.wn-nav a:hover svg,
+.wn-nav a.is-active svg {
+  opacity: 1;
+  transform: translateY(-0.5px);
+}
+
+.wn-nav a.is-active {
+  color: var(--wn-primary);
+  border-color: rgba(8, 118, 237, 0.16);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8, 118, 237, 0.10),
+      rgba(34, 211, 238, 0.07)
+    );
+  box-shadow:
+    0 8px 18px rgba(8, 118, 237, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.wn-nav a::after,
+.wn-nav a.is-active::after,
+.wn-nav a:first-child::after {
+  display: none !important;
+  content: none !important;
+}
+
+:root[data-theme="dark"] .wn-nav a.is-active {
+  color: #7dd3fc;
+  border-color: rgba(125, 211, 252, 0.16);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(14, 165, 233, 0.14),
+      rgba(34, 211, 238, 0.08)
+    );
+  box-shadow:
+    0 8px 18px rgba(2, 132, 199, 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+/* Mobile dropdown menu with matching icon layout */
+.wn-mobile-menu a {
+  min-height: 42px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.wn-mobile-menu a svg {
+  flex: 0 0 auto;
+}
+
+.wn-mobile-menu a span {
+  white-space: nowrap;
+}
+
+.wn-mobile-menu a.is-active {
+  border: 1px solid rgba(8, 118, 237, 0.14);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8, 118, 237, 0.12),
+      rgba(34, 211, 238, 0.08)
+    );
+  color: var(--wn-primary);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .wn-mobile-menu a.is-active {
+  color: #7dd3fc;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(14, 165, 233, 0.16),
+      rgba(34, 211, 238, 0.08)
+    );
+}
+
+@media (max-width: 1280px) {
+  .wn-nav a {
+    padding: 0 11px;
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .wn-nav a svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .wn-nav {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   CALENDAR / HOLIDAY CARD — HORIZONTAL BANNER VERSION
+   ========================================================= */
+
+.wn-time-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  padding: 0 !important;
+  border-radius: 24px;
+  background:
+    linear-gradient(150deg, rgba(8, 31, 66, 0.98), rgba(9, 43, 82, 0.98));
+  color: #f8fbff;
+  box-shadow:
+    0 20px 48px rgba(4, 22, 48, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.wn-time-card__top {
+  position: relative;
+  z-index: 2;
+  padding: 18px 18px 15px;
+}
+
+.wn-time-card__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wn-time-card__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(224, 238, 255, 0.8);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.wn-time-card__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #22d3ee, #0ea5e9);
+  box-shadow: 0 0 0 5px rgba(34, 211, 238, 0.1);
+}
+
+.wn-time-card__time {
+  margin-top: 12px;
+  color: #ffffff;
+  font-size: clamp(42px, 4.5vw, 66px);
+  line-height: 0.98;
+  font-weight: 900;
+  letter-spacing: -2.8px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.wn-time-card__date {
+  margin-top: 10px;
+  color: rgba(231, 242, 255, 0.9);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.wn-time-card__info-row {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.wn-time-card__info-box {
+  min-width: 0;
+  min-height: 72px;
+  padding: 11px 13px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.wn-time-card__info-icon,
+.wn-time-card__holiday-symbol {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  flex: 0 0 auto;
+}
+
+.wn-time-card__info-icon {
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.14);
+}
+
+.wn-time-card__holiday-symbol {
+  color: #ffffff;
+  background: linear-gradient(145deg, #ff5478, #ff8ea7);
+  box-shadow: 0 8px 18px rgba(255, 84, 120, 0.22);
+}
+
+.wn-time-card__info-box > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.wn-time-card__info-box small {
+  color: rgba(219, 234, 254, 0.7);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.45px;
+  text-transform: uppercase;
+}
+
+.wn-time-card__info-box strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.42;
+}
+
+.wn-time-card__banner {
+  position: relative;
+  z-index: 1;
+  margin: 0 14px 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  aspect-ratio: 16 / 7;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 14px 28px rgba(1, 11, 27, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.wn-time-card__banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 550ms ease, filter 400ms ease;
+}
+
+.wn-time-card:hover .wn-time-card__banner img {
+  transform: scale(1.025);
+  filter: saturate(1.06) contrast(1.02);
+}
+
+.wn-time-card__banner-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(3, 18, 40, 0.03), rgba(3, 18, 40, 0.16)),
+    linear-gradient(90deg, rgba(255,255,255,0.03), transparent 35%, transparent 65%, rgba(255,255,255,0.03));
+  pointer-events: none;
+}
+
+.wn-time-card__banner.is-image-error {
+  display: none;
+}
+
+.wn-time-card .wn-calendar-button {
+  width: 42px;
+  height: 42px;
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 800px) {
+  .wn-time-card__top {
+    padding: 16px 16px 13px;
+  }
+
+  .wn-time-card__time {
+    font-size: 48px;
+  }
+
+  .wn-time-card__banner {
+    aspect-ratio: 16 / 8;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-time-card {
+    border-radius: 19px;
+  }
+
+  .wn-time-card__top {
+    padding: 14px 14px 12px;
+  }
+
+  .wn-time-card__time {
+    margin-top: 10px;
+    font-size: 38px;
+    letter-spacing: -1.8px;
+  }
+
+  .wn-time-card__date {
+    margin-top: 7px;
+    font-size: 10px;
+  }
+
+  .wn-time-card__info-row {
+    margin-top: 11px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .wn-time-card__info-box {
+    min-height: 58px;
+    padding: 8px 10px;
+    grid-template-columns: 34px minmax(0, 1fr);
+    border-radius: 13px;
+  }
+
+  .wn-time-card__info-icon,
+  .wn-time-card__holiday-symbol {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+  }
+
+  .wn-time-card__info-box small {
+    font-size: 8px;
+  }
+
+  .wn-time-card__info-box strong {
+    font-size: 10px;
+  }
+
+  .wn-time-card__banner {
+    margin: 0 10px 10px;
+    border-radius: 15px;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+
+/* =========================================================
+   DESKTOP FIX — TIME / HOLIDAY CARD OVERFLOW
+   ========================================================= */
+
+.wn-side-cards {
+  align-items: stretch;
+}
+
+.wn-time-card,
+.wn-aqi-card,
+.wn-mini-card {
+  min-width: 0;
+}
+
+.wn-time-card {
+  height: 100%;
+}
+
+.wn-time-card__top {
+  min-width: 0;
+}
+
+.wn-time-card__heading,
+.wn-time-card__info-row,
+.wn-time-card__info-box,
+.wn-time-card__info-box > div {
+  min-width: 0;
+}
+
+.wn-time-card__time {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: clamp(36px, 4vw, 58px);
+  line-height: 0.96;
+  letter-spacing: -2.2px;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.wn-time-card__date {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wn-time-card__info-box strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wn-time-card__banner {
+  width: auto;
+  max-width: calc(100% - 28px);
+}
+
+/* Desktop side panel is narrower than the large main card */
+@media (min-width: 1181px) {
+  .wn-overview {
+    grid-template-columns: minmax(0, 1.58fr) minmax(360px, 0.82fr);
+  }
+
+  .wn-side-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wn-time-card__top {
+    padding: 16px 16px 13px;
+  }
+
+  .wn-time-card__time {
+    font-size: clamp(34px, 3vw, 52px);
+  }
+
+  .wn-time-card__date {
+    font-size: 11px;
+  }
+
+  .wn-time-card__info-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .wn-time-card__info-box {
+    min-height: 66px;
+    padding: 9px 10px;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .wn-time-card__info-icon,
+  .wn-time-card__holiday-symbol {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+  }
+
+  .wn-time-card__info-box small {
+    font-size: 8px;
+  }
+
+  .wn-time-card__info-box strong {
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .wn-time-card__banner {
+    margin: 0 12px 12px;
+    max-width: calc(100% - 24px);
+    aspect-ratio: 16 / 7.2;
+    border-radius: 17px;
+  }
+}
+
+/* Mid-size desktop / laptop */
+@media (min-width: 801px) and (max-width: 1180px) {
+  .wn-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .wn-side-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wn-time-card__time {
+    font-size: clamp(40px, 5vw, 58px);
+  }
+}
+
+/* Keep mobile layout unchanged */
+@media (max-width: 800px) {
+  .wn-time-card__time {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-time-card__time {
+    font-size: 37px;
+  }
+}
+
+
+/* =========================================================
+   CALENDAR INFO BOX — SHOW TWO FULL LINES
+   ========================================================= */
+
+.wn-time-card__info-box {
+  align-items: center;
+}
+
+.wn-time-card__info-box > div {
+  min-width: 0;
+}
+
+.wn-time-card__info-box strong {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-height: calc(1.42em * 2);
+  max-height: calc(1.42em * 2);
+  line-height: 1.42;
+}
+
+/* Make the info cards tall enough for two lines on desktop */
+@media (min-width: 801px) {
+  .wn-time-card__info-box {
+    min-height: 76px;
+  }
+
+  .wn-time-card__info-box strong {
+    font-size: 11px;
+  }
+}
+
+/* Keep both boxes balanced and readable on mobile */
+@media (max-width: 520px) {
+  .wn-time-card__info-box {
+    min-height: 64px;
+  }
+
+  .wn-time-card__info-box strong {
+    font-size: 10px;
+    min-height: calc(1.42em * 2);
+    max-height: calc(1.42em * 2);
+  }
+}
+
+
+/* =========================================================
+   CALENDAR INFO — STACK LIKE MOBILE ON ALL SCREEN SIZES
+   ========================================================= */
+
+.wn-time-card__info-row {
+  grid-template-columns: 1fr !important;
+  gap: 9px;
+}
+
+.wn-time-card__info-box {
+  width: 100%;
+  min-height: 62px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  padding: 10px 12px;
+}
+
+.wn-time-card__info-icon,
+.wn-time-card__holiday-symbol {
+  width: 40px;
+  height: 40px;
+}
+
+.wn-time-card__info-box small {
+  font-size: 9px;
+}
+
+.wn-time-card__info-box strong {
+  font-size: 11px;
+  min-height: auto;
+  max-height: none;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+}
+
+/* Keep the desktop card compact even though info is vertical */
+@media (min-width: 801px) {
+  .wn-time-card__top {
+    padding-bottom: 13px;
+  }
+
+  .wn-time-card__info-row {
+    margin-top: 12px;
+  }
+
+  .wn-time-card__info-box {
+    min-height: 60px;
+  }
+
+  .wn-time-card__banner {
+    margin-top: 1px;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-time-card__info-box {
+    min-height: 58px;
+    grid-template-columns: 33px minmax(0, 1fr);
+  }
+
+  .wn-time-card__info-icon,
+  .wn-time-card__holiday-symbol {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+
+/* =========================================================
+   LIGHT PERPETUAL CALENDAR MODAL
+   ========================================================= */
+
+.wn-calendar-light-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(14px);
+}
+
+.wn-calendar-light-modal {
+  width: min(880px, calc(100vw - 28px));
+  max-height: calc(100dvh - 28px);
+  overflow: auto;
+  border: 1px solid rgba(59, 130, 246, 0.14);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 92% 5%, rgba(96, 165, 250, 0.24), transparent 24rem),
+    linear-gradient(145deg, #fafdff 0%, #eef7ff 48%, #e7f2ff 100%);
+  box-shadow:
+    0 34px 110px rgba(30, 64, 175, 0.22),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  color: #10225c;
+}
+
+.wn-calendar-light-header {
+  padding: 8px 30px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.13);
+}
+
+.wn-calendar-light-kicker,
+.wn-calendar-light-selected-kicker {
+  display: block;
+  color: #1473e6;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.wn-calendar-light-header h2 {
+  margin: 7px 0 0;
+  color: #0d1f64;
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.wn-calendar-light-close,
+.wn-calendar-light-arrow {
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  background: rgba(255,255,255,0.84);
+  color: #1065d6;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+  cursor: pointer;
+}
+
+.wn-calendar-light-close {
+  width: 60px;
+  height: 60px;
+  border-radius: 19px;
+}
+
+.wn-calendar-light-arrow {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+}
+
+.wn-calendar-light-body {
+  padding: 10px 20px 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.wn-calendar-light-left,
+.wn-calendar-light-right {
+  min-width: 0;
+}
+
+.wn-calendar-light-controls {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 135px 52px;
+  gap: 10px;
+  align-items: center;
+}
+
+.wn-calendar-light-select-wrap {
+  position: relative;
+  min-width: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 16px;
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.9);
+  color: #0e55b8;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.06);
+}
+
+.wn-calendar-light-select-wrap select {
+  width: 100%;
+  height: 100%;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #14245f;
+  outline: 0;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.wn-calendar-light-select-wrap > svg:last-child {
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+}
+
+.wn-calendar-light-today {
+  width: 100%;
+  min-height: 58px;
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #18d3e6, #1b8df0);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(14, 165, 233, 0.22);
+  cursor: pointer;
+}
+
+.wn-calendar-light-grid {
+  margin-top: 16px;
+  padding: 18px;
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: 24px;
+  background: rgba(255,255,255,0.72);
+  box-shadow:
+    0 18px 44px rgba(37, 99, 235, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.85);
+}
+
+.wn-calendar-light-weekdays,
+.wn-calendar-light-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wn-calendar-light-weekdays {
+  margin-bottom: 8px;
+}
+
+.wn-calendar-light-weekdays span {
+  padding: 5px 0;
+  color: #45618c;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.wn-calendar-light-weekdays .is-saturday {
+  color: #1473e6;
+}
+
+.wn-calendar-light-weekdays .is-sunday {
+  color: #ef2f67;
+}
+
+.wn-calendar-light-day {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1 / 1.02;
+  padding: 6px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 1px solid rgba(96, 165, 250, 0.14);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.86);
+  color: #11255f;
+  box-shadow: 0 7px 16px rgba(37,99,235,0.05);
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.wn-calendar-light-day:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37,99,235,0.26);
+  box-shadow: 0 10px 22px rgba(37,99,235,0.10);
+}
+
+.wn-calendar-light-day strong {
+  font-size: clamp(16px, 1.8vw, 21px);
+  line-height: 1;
+}
+
+.wn-calendar-light-day small {
+  color: #55709d;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.wn-calendar-light-day.is-saturday strong,
+.wn-calendar-light-day.is-saturday small {
+  color: #1473e6;
+}
+
+.wn-calendar-light-day.is-sunday strong,
+.wn-calendar-light-day.is-sunday small {
+  color: #ef2f67;
+}
+
+.wn-calendar-light-day.is-holiday {
+  border-color: rgba(244, 63, 94, 0.28);
+  background: linear-gradient(145deg, #fff7fa, #fff0f5);
+}
+
+.wn-calendar-light-day.is-holiday strong,
+.wn-calendar-light-day.is-holiday small {
+  color: #e5225b;
+}
+
+.wn-calendar-light-day.is-selected {
+  border-color: transparent;
+  background: linear-gradient(145deg, #20ccf0, #1677ed);
+  color: #ffffff;
+  box-shadow: 0 12px 26px rgba(22,119,237,0.28);
+}
+
+.wn-calendar-light-day.is-selected strong,
+.wn-calendar-light-day.is-selected small {
+  color: #ffffff;
+}
+
+.wn-calendar-light-day.is-today:not(.is-selected) {
+  border: 2px solid #f5b400;
+}
+
+.wn-calendar-light-day.is-outside {
+  opacity: 0.48;
+}
+
+.wn-calendar-light-day i {
+  position: absolute;
+  bottom: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.wn-calendar-light-right {
+  display: grid;
+  gap: 16px;
+}
+
+.wn-calendar-light-selected-card,
+.wn-calendar-light-today-card {
+  border: 1px solid rgba(59, 130, 246, 0.13);
+  background: rgba(255,255,255,0.76);
+  box-shadow:
+    0 18px 44px rgba(37,99,235,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.wn-calendar-light-selected-card {
+  padding: 24px;
+  border-radius: 26px;
+}
+
+.wn-calendar-light-selected-card h3 {
+  margin: 8px 0 0;
+  color: #10225f;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.15;
+  letter-spacing: -1.1px;
+}
+
+.wn-calendar-light-lunar-chip {
+  width: fit-content;
+  margin-top: 14px;
+  padding: 9px 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(14,165,233,0.16);
+  border-radius: 14px;
+  background: rgba(224, 247, 255, 0.85);
+  color: #0891b2;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.wn-calendar-light-holiday-image,
+.wn-calendar-light-empty-image {
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 20px;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(145deg, #eef7ff, #dfeeff);
+}
+
+.wn-calendar-light-holiday-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.wn-calendar-light-holiday-image.is-image-error {
+  display: none;
+}
+
+.wn-calendar-light-empty-image {
+  display: grid;
+  place-items: center;
+  color: #78a7df;
+}
+
+.wn-calendar-light-holiday-label,
+.wn-calendar-light-no-holiday {
+  margin-top: 14px;
+  min-height: 58px;
+  border-radius: 16px;
+}
+
+.wn-calendar-light-holiday-label {
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgba(244,63,94,0.15);
+  background: linear-gradient(145deg, #fff8fb, #fff0f5);
+  color: #d9215a;
+}
+
+.wn-calendar-light-holiday-label > span {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #ff4f7a, #ff7fa0);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(255,79,122,0.22);
+}
+
+.wn-calendar-light-holiday-label strong {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.wn-calendar-light-no-holiday {
+  padding: 14px;
+  border: 1px solid rgba(59,130,246,0.10);
+  background: rgba(239,246,255,0.75);
+  color: #61789d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wn-calendar-light-today-card {
+  width: min(100%, 480px);
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 13px;
+  align-items: center;
+  border-radius: 22px;
+}
+
+.wn-calendar-light-today-card > span {
+  width: 54px;
+  height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #1a95f2, #1671ea);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(22,113,234,0.20);
+}
+
+.wn-calendar-light-today-card > div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.wn-calendar-light-today-card small {
+  color: #1473e6;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.wn-calendar-light-today-card strong {
+  color: #11255f;
+  font-size: 15px;
+}
+
+.wn-calendar-light-today-card em {
+  color: #1473e6;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+@media (max-width: 860px) {
+  .wn-calendar-light-overlay {
+    align-items: flex-start;
+    padding: 8px;
+  }
+
+  .wn-calendar-light-modal {
+    width: min(100%, 620px);
+    max-height: calc(100dvh - 16px);
+    border-radius: 22px;
+  }
+
+  .wn-calendar-light-header {
+    padding: 20px 18px 16px;
+  }
+
+  .wn-calendar-light-header h2 {
+    font-size: 34px;
+  }
+
+  .wn-calendar-light-close {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+  }
+
+  .wn-calendar-light-body {
+    padding: 16px;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .wn-calendar-light-controls {
+    grid-template-columns: 46px minmax(0, 1fr) 120px 46px;
+  }
+
+  .wn-calendar-light-arrow {
+    width: 46px;
+    height: 46px;
+  }
+
+  .wn-calendar-light-select-wrap {
+    height: 46px;
+    padding: 0 12px;
+  }
+
+  .wn-calendar-light-grid {
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .wn-calendar-light-days,
+  .wn-calendar-light-weekdays {
+    gap: 6px;
+  }
+
+  .wn-calendar-light-day {
+    border-radius: 13px;
+  }
+
+  .wn-calendar-light-selected-card {
+    padding: 18px;
+  }
+
+  .wn-calendar-light-today-card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .wn-calendar-light-overlay {
+    padding: 5px;
+  }
+
+  .wn-calendar-light-modal {
+    border-radius: 18px;
+  }
+
+  .wn-calendar-light-header {
+    padding: 16px 14px 13px;
+  }
+
+  .wn-calendar-light-header h2 {
+    font-size: 29px;
+  }
+
+  .wn-calendar-light-kicker {
+    font-size: 10px;
+  }
+
+  .wn-calendar-light-body {
+    padding: 12px 10px 14px;
+  }
+
+  .wn-calendar-light-controls {
+    grid-template-columns: 42px minmax(0, 1fr) 96px 42px;
+    gap: 6px;
+  }
+
+  .wn-calendar-light-arrow {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
+
+  .wn-calendar-light-select-wrap {
+    height: 42px;
+    padding: 0 10px;
+    border-radius: 13px;
+  }
+
+  .wn-calendar-light-select-wrap > svg:first-child {
+    display: none;
+  }
+
+  .wn-calendar-light-select-wrap select {
+    font-size: 12px;
+  }
+
+  .wn-calendar-light-today {
+    min-height: 48px;
+    border-radius: 14px;
+    font-size: 14px;
+  }
+
+  .wn-calendar-light-grid {
+    padding: 9px;
+    border-radius: 17px;
+  }
+
+  .wn-calendar-light-weekdays span {
+    font-size: 10px;
+  }
+
+  .wn-calendar-light-day {
+    border-radius: 11px;
+  }
+
+  .wn-calendar-light-day strong {
+    font-size: 14px;
+  }
+
+  .wn-calendar-light-day small {
+    font-size: 8px;
+  }
+
+  .wn-calendar-light-selected-card {
+    padding: 15px;
+    border-radius: 20px;
+  }
+
+  .wn-calendar-light-selected-card h3 {
+    font-size: 22px;
+  }
+
+  .wn-calendar-light-holiday-image,
+  .wn-calendar-light-empty-image {
+    border-radius: 16px;
+  }
+
+  .wn-calendar-light-today-card {
+    grid-template-columns: 46px minmax(0, 1fr);
+    padding: 13px;
+  }
+
+  .wn-calendar-light-today-card > span {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+  }
+}

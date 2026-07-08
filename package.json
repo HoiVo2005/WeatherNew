@@ -1,0 +1,87 @@
+{
+  "name": "weather-now-nextjs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "desktop:dev": "npm run build && electron .",
+    "desktop:start": "electron .",
+    "desktop:win": "electron-builder --win nsis",
+    "desktop:portable": "electron-builder --win portable"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "lucide-react": "^1.21.0",
+    "lunar-javascript": "^1.7.7",
+    "next": "16.2.9",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-leaflet": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.0",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "electron": "^42.5.0",
+    "electron-builder": "^26.15.3",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "typescript": "latest"
+  },
+  "main": "electron-main.cjs",
+  "build": {
+    "appId": "vn.hoikroos.weathernow",
+    "productName": "WeatherNow",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron-main.cjs",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".next/standalone",
+        "to": "app-server"
+      },
+      {
+        "from": ".next/static",
+        "to": "app-server/.next/static"
+      },
+      {
+        "from": "public",
+        "to": "app-server/public"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.png",
+      "artifactName": "WeatherNow-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "WeatherNow",
+      "installerLanguages": [
+        "vi_VN",
+        "en_US"
+      ]
+    }
+  },
+  "description": "Ứng dụng thời tiết WeatherNow cho web và Windows desktop",
+  "author": "HoiKroos"
+}
