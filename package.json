@@ -1,13 +1,20 @@
 {
-  "name": "weather-now-nextjs",
+   "name": "weather-now-nextjs",
   "version": "1.0.0",
   "private": true,
+  "description": "Ứng dụng thời tiết WeatherNow cho web và Windows desktop",
+  "author": "HoiKroos",
+  "main": "electron-main.cjs",
+  "engines": {
+    "node": "24.x"
+  },
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "desktop:dev": "npm run build && electron .",
+    "desktop:dev": "pnpm build && electron .",
     "desktop:start": "electron .",
     "desktop:win": "electron-builder --win nsis",
     "desktop:portable": "electron-builder --win portable"
@@ -23,16 +30,15 @@
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.0",
-    "@types/node": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "electron": "^42.5.0",
     "electron-builder": "^26.15.3",
-    "eslint": "latest",
-    "eslint-config-next": "latest",
-    "typescript": "latest"
+    "eslint": "9.39.2",
+    "eslint-config-next": "16.2.9",
+    "typescript": "5.9.3"
   },
-  "main": "electron-main.cjs",
   "build": {
     "appId": "vn.hoikroos.weathernow",
     "productName": "WeatherNow",
@@ -81,7 +87,5 @@
         "en_US"
       ]
     }
-  },
-  "description": "Ứng dụng thời tiết WeatherNow cho web và Windows desktop",
-  "author": "HoiKroos"
+  }
 }
