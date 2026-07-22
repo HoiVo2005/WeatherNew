@@ -15,7 +15,6 @@ import {
   CloudLightning,
   CloudRain,
   CloudSun,
-  Compass,
   Droplets,
   Eye,
   ExternalLink,
@@ -29,11 +28,8 @@ import {
   Plus,
   Menu,
   Moon,
-  Navigation,
   Search,
   Sun,
-  Sunrise,
-  Sunset,
   Thermometer,
   Trash2,
   Umbrella,
@@ -569,7 +565,7 @@ const LUNAR_HOLIDAY_IMAGES: Record<string, HolidayVisual> = {
 };
 
 const DYNAMIC_HOLIDAY_IMAGES: Record<string, HolidayVisual> = {
-  "easter": {
+  easter: {
     src: "/holidays/le-phuc-sinh.jpg",
     alt: {
       vi: "Lễ Phục Sinh",
@@ -624,12 +620,15 @@ function getDynamicHolidayImageKey(date: Date): string | null {
 function getHolidayVisual(
   date: Date,
   language: "vi" | "en",
-): { src: string; alt: string } | null {
+): HolidayVisual | null {
   // Kiểm tra Giao thừa âm lịch trước
   if (isLunarNewYearEve(date)) {
     return {
       src: LUNAR_NEW_YEAR_EVE_IMAGE.src,
-      alt: LUNAR_NEW_YEAR_EVE_IMAGE.alt[language],
+      alt: {
+        vi: LUNAR_NEW_YEAR_EVE_IMAGE.alt.vi,
+        en: LUNAR_NEW_YEAR_EVE_IMAGE.alt.en,
+      },
     };
   }
 
@@ -638,7 +637,10 @@ function getHolidayVisual(
   if (lunarVisual) {
     return {
       src: lunarVisual.src,
-      alt: lunarVisual.alt[language],
+      alt: {
+        vi: lunarVisual.alt.vi,
+        en: lunarVisual.alt.en,
+      },
     };
   }
 
@@ -647,7 +649,10 @@ function getHolidayVisual(
   if (solarVisual) {
     return {
       src: solarVisual.src,
-      alt: solarVisual.alt[language],
+      alt: {
+        vi: solarVisual.alt.vi,
+        en: solarVisual.alt.en,
+      },
     };
   }
 
@@ -660,7 +665,10 @@ function getHolidayVisual(
   if (dynamicVisual) {
     return {
       src: dynamicVisual.src,
-      alt: dynamicVisual.alt[language],
+      alt: {
+        vi: dynamicVisual.alt.vi,
+        en: dynamicVisual.alt.en,
+      },
     };
   }
 
@@ -668,51 +676,48 @@ function getHolidayVisual(
 }
 
 const SOLAR_HOLIDAYS: Record<string, HolidayName[]> = {
-  "01-01": [
-    { vi: "Tết Dương lịch", en: "New Year's Day" },
-  ],
+  "01-01": [{ vi: "Tết Dương lịch", en: "New Year's Day" }],
   "01-09": [
-    { vi: "Ngày Học sinh - Sinh viên Việt Nam", en: "Vietnamese Students' Day" },
+    {
+      vi: "Ngày Học sinh - Sinh viên Việt Nam",
+      en: "Vietnamese Students' Day",
+    },
   ],
   "02-03": [
-    { vi: "Ngày thành lập Đảng Cộng sản Việt Nam", en: "Communist Party of Vietnam Foundation Day" },
+    {
+      vi: "Ngày thành lập Đảng Cộng sản Việt Nam",
+      en: "Communist Party of Vietnam Foundation Day",
+    },
   ],
-  "02-14": [
-    { vi: "Ngày Lễ Tình nhân", en: "Valentine's Day" },
-  ],
-  "02-27": [
-    { vi: "Ngày Thầy thuốc Việt Nam", en: "Vietnamese Doctors' Day" },
-  ],
-  "03-08": [
-    { vi: "Ngày Quốc tế Phụ nữ", en: "International Women's Day" },
-  ],
+  "02-14": [{ vi: "Ngày Lễ Tình nhân", en: "Valentine's Day" }],
+  "02-27": [{ vi: "Ngày Thầy thuốc Việt Nam", en: "Vietnamese Doctors' Day" }],
+  "03-08": [{ vi: "Ngày Quốc tế Phụ nữ", en: "International Women's Day" }],
   "03-20": [
     { vi: "Ngày Quốc tế Hạnh phúc", en: "International Day of Happiness" },
   ],
-  "03-22": [
-    { vi: "Ngày Nước Thế giới", en: "World Water Day" },
-  ],
+  "03-22": [{ vi: "Ngày Nước Thế giới", en: "World Water Day" }],
   "03-26": [
-    { vi: "Ngày thành lập Đoàn TNCS Hồ Chí Minh", en: "Ho Chi Minh Communist Youth Union Foundation Day" },
+    {
+      vi: "Ngày thành lập Đoàn TNCS Hồ Chí Minh",
+      en: "Ho Chi Minh Communist Youth Union Foundation Day",
+    },
   ],
-  "04-01": [
-    { vi: "Ngày Cá tháng Tư", en: "April Fools' Day" },
-  ],
-  "04-07": [
-    { vi: "Ngày Sức khỏe Thế giới", en: "World Health Day" },
-  ],
-  "04-22": [
-    { vi: "Ngày Trái Đất", en: "Earth Day" },
-  ],
+  "04-01": [{ vi: "Ngày Cá tháng Tư", en: "April Fools' Day" }],
+  "04-07": [{ vi: "Ngày Sức khỏe Thế giới", en: "World Health Day" }],
+  "04-22": [{ vi: "Ngày Trái Đất", en: "Earth Day" }],
   "04-23": [
-    { vi: "Ngày Sách và Bản quyền Thế giới", en: "World Book and Copyright Day" },
+    {
+      vi: "Ngày Sách và Bản quyền Thế giới",
+      en: "World Book and Copyright Day",
+    },
   ],
   "04-30": [
-    { vi: "Ngày Giải phóng miền Nam, thống nhất đất nước", en: "Reunification Day" },
+    {
+      vi: "Ngày Giải phóng miền Nam, thống nhất đất nước",
+      en: "Reunification Day",
+    },
   ],
-  "05-01": [
-    { vi: "Ngày Quốc tế Lao động", en: "International Workers' Day" },
-  ],
+  "05-01": [{ vi: "Ngày Quốc tế Lao động", en: "International Workers' Day" }],
   "05-07": [
     { vi: "Ngày Chiến thắng Điện Biên Phủ", en: "Dien Bien Phu Victory Day" },
   ],
@@ -720,46 +725,45 @@ const SOLAR_HOLIDAYS: Record<string, HolidayName[]> = {
     { vi: "Ngày Quốc tế Gia đình", en: "International Day of Families" },
   ],
   "05-19": [
-    { vi: "Ngày sinh Chủ tịch Hồ Chí Minh", en: "President Ho Chi Minh's Birthday" },
+    {
+      vi: "Ngày sinh Chủ tịch Hồ Chí Minh",
+      en: "President Ho Chi Minh's Birthday",
+    },
   ],
-  "05-31": [
-    { vi: "Ngày Thế giới Không thuốc lá", en: "World No Tobacco Day" },
-  ],
+  "05-31": [{ vi: "Ngày Thế giới Không thuốc lá", en: "World No Tobacco Day" }],
   "06-01": [
     { vi: "Ngày Quốc tế Thiếu nhi", en: "International Children's Day" },
   ],
-  "06-05": [
-    { vi: "Ngày Môi trường Thế giới", en: "World Environment Day" },
-  ],
-  "06-08": [
-    { vi: "Ngày Đại dương Thế giới", en: "World Oceans Day" },
-  ],
+  "06-05": [{ vi: "Ngày Môi trường Thế giới", en: "World Environment Day" }],
+  "06-08": [{ vi: "Ngày Đại dương Thế giới", en: "World Oceans Day" }],
   "06-21": [
-    { vi: "Ngày Báo chí Cách mạng Việt Nam", en: "Vietnam Revolutionary Press Day" },
+    {
+      vi: "Ngày Báo chí Cách mạng Việt Nam",
+      en: "Vietnam Revolutionary Press Day",
+    },
   ],
   "06-26": [
-    { vi: "Ngày Quốc tế phòng, chống ma túy", en: "International Day against Drug Abuse and Illicit Trafficking" },
+    {
+      vi: "Ngày Quốc tế phòng, chống ma túy",
+      en: "International Day against Drug Abuse and Illicit Trafficking",
+    },
   ],
-  "06-28": [
-    { vi: "Ngày Gia đình Việt Nam", en: "Vietnamese Family Day" },
-  ],
-  "07-11": [
-    { vi: "Ngày Dân số Thế giới", en: "World Population Day" },
-  ],
+  "06-28": [{ vi: "Ngày Gia đình Việt Nam", en: "Vietnamese Family Day" }],
+  "07-11": [{ vi: "Ngày Dân số Thế giới", en: "World Population Day" }],
   "07-27": [
-    { vi: "Ngày Thương binh - Liệt sĩ", en: "Vietnam War Invalids and Martyrs Day" },
+    {
+      vi: "Ngày Thương binh - Liệt sĩ",
+      en: "Vietnam War Invalids and Martyrs Day",
+    },
   ],
-  "07-28": [
-    { vi: "Ngày Viêm gan Thế giới", en: "World Hepatitis Day" },
-  ],
-  "08-12": [
-    { vi: "Ngày Quốc tế Thanh niên", en: "International Youth Day" },
-  ],
-  "08-19": [
-    { vi: "Ngày Cách mạng Tháng Tám", en: "August Revolution Day" },
-  ],
+  "07-28": [{ vi: "Ngày Viêm gan Thế giới", en: "World Hepatitis Day" }],
+  "08-12": [{ vi: "Ngày Quốc tế Thanh niên", en: "International Youth Day" }],
+  "08-19": [{ vi: "Ngày Cách mạng Tháng Tám", en: "August Revolution Day" }],
   "09-02": [
-    { vi: "Quốc khánh nước Cộng hòa Xã hội Chủ nghĩa Việt Nam", en: "Vietnam National Day" },
+    {
+      vi: "Quốc khánh nước Cộng hòa Xã hội Chủ nghĩa Việt Nam",
+      en: "Vietnam National Day",
+    },
   ],
   "09-05": [
     { vi: "Ngày Quốc tế Từ thiện", en: "International Day of Charity" },
@@ -767,18 +771,15 @@ const SOLAR_HOLIDAYS: Record<string, HolidayName[]> = {
   "09-08": [
     { vi: "Ngày Quốc tế Xóa mù chữ", en: "International Literacy Day" },
   ],
-  "09-21": [
-    { vi: "Ngày Quốc tế Hòa bình", en: "International Day of Peace" },
-  ],
-  "09-27": [
-    { vi: "Ngày Du lịch Thế giới", en: "World Tourism Day" },
-  ],
+  "09-21": [{ vi: "Ngày Quốc tế Hòa bình", en: "International Day of Peace" }],
+  "09-27": [{ vi: "Ngày Du lịch Thế giới", en: "World Tourism Day" }],
   "10-01": [
-    { vi: "Ngày Quốc tế Người cao tuổi", en: "International Day of Older Persons" },
+    {
+      vi: "Ngày Quốc tế Người cao tuổi",
+      en: "International Day of Older Persons",
+    },
   ],
-  "10-05": [
-    { vi: "Ngày Nhà giáo Thế giới", en: "World Teachers' Day" },
-  ],
+  "10-05": [{ vi: "Ngày Nhà giáo Thế giới", en: "World Teachers' Day" }],
   "10-10": [
     { vi: "Ngày Giải phóng Thủ đô", en: "Hanoi Liberation Day" },
     { vi: "Ngày Sức khỏe Tâm thần Thế giới", en: "World Mental Health Day" },
@@ -786,106 +787,63 @@ const SOLAR_HOLIDAYS: Record<string, HolidayName[]> = {
   "10-13": [
     { vi: "Ngày Doanh nhân Việt Nam", en: "Vietnamese Entrepreneurs' Day" },
   ],
-  "10-16": [
-    { vi: "Ngày Lương thực Thế giới", en: "World Food Day" },
-  ],
-  "10-20": [
-    { vi: "Ngày Phụ nữ Việt Nam", en: "Vietnamese Women's Day" },
-  ],
-  "10-24": [
-    { vi: "Ngày Liên Hợp Quốc", en: "United Nations Day" },
-  ],
-  "10-31": [
-    { vi: "Lễ hội Halloween", en: "Halloween" },
-  ],
-  "11-09": [
-    { vi: "Ngày Pháp luật Việt Nam", en: "Vietnam Law Day" },
-  ],
-  "11-14": [
-    { vi: "Ngày Đái tháo đường Thế giới", en: "World Diabetes Day" },
-  ],
-  "11-19": [
-    { vi: "Ngày Quốc tế Nam giới", en: "International Men's Day" },
-  ],
+  "10-16": [{ vi: "Ngày Lương thực Thế giới", en: "World Food Day" }],
+  "10-20": [{ vi: "Ngày Phụ nữ Việt Nam", en: "Vietnamese Women's Day" }],
+  "10-24": [{ vi: "Ngày Liên Hợp Quốc", en: "United Nations Day" }],
+  "10-31": [{ vi: "Lễ hội Halloween", en: "Halloween" }],
+  "11-09": [{ vi: "Ngày Pháp luật Việt Nam", en: "Vietnam Law Day" }],
+  "11-14": [{ vi: "Ngày Đái tháo đường Thế giới", en: "World Diabetes Day" }],
+  "11-19": [{ vi: "Ngày Quốc tế Nam giới", en: "International Men's Day" }],
   "11-20": [
     { vi: "Ngày Nhà giáo Việt Nam", en: "Vietnamese Teachers' Day" },
     { vi: "Ngày Trẻ em Thế giới", en: "World Children's Day" },
   ],
   "11-25": [
-    { vi: "Ngày Quốc tế xóa bỏ bạo lực đối với phụ nữ", en: "International Day for the Elimination of Violence against Women" },
+    {
+      vi: "Ngày Quốc tế xóa bỏ bạo lực đối với phụ nữ",
+      en: "International Day for the Elimination of Violence against Women",
+    },
   ],
-  "12-01": [
-    { vi: "Ngày Thế giới phòng, chống AIDS", en: "World AIDS Day" },
-  ],
+  "12-01": [{ vi: "Ngày Thế giới phòng, chống AIDS", en: "World AIDS Day" }],
   "12-03": [
-    { vi: "Ngày Quốc tế Người khuyết tật", en: "International Day of Persons with Disabilities" },
+    {
+      vi: "Ngày Quốc tế Người khuyết tật",
+      en: "International Day of Persons with Disabilities",
+    },
   ],
   "12-05": [
     { vi: "Ngày Tình nguyện viên Quốc tế", en: "International Volunteer Day" },
   ],
-  "12-10": [
-    { vi: "Ngày Nhân quyền Quốc tế", en: "Human Rights Day" },
-  ],
+  "12-10": [{ vi: "Ngày Nhân quyền Quốc tế", en: "Human Rights Day" }],
   "12-22": [
-    { vi: "Ngày thành lập Quân đội Nhân dân Việt Nam", en: "Vietnam People's Army Foundation Day" },
+    {
+      vi: "Ngày thành lập Quân đội Nhân dân Việt Nam",
+      en: "Vietnam People's Army Foundation Day",
+    },
   ],
-  "12-24": [
-    { vi: "Đêm Giáng sinh", en: "Christmas Eve" },
-  ],
-  "12-25": [
-    { vi: "Lễ Giáng sinh", en: "Christmas Day" },
-  ],
-  "12-31": [
-    { vi: "Đêm Giao thừa Dương lịch", en: "New Year's Eve" },
-  ],
+  "12-24": [{ vi: "Đêm Giáng sinh", en: "Christmas Eve" }],
+  "12-25": [{ vi: "Lễ Giáng sinh", en: "Christmas Day" }],
+  "12-31": [{ vi: "Đêm Giao thừa Dương lịch", en: "New Year's Eve" }],
 };
 
 const LUNAR_HOLIDAYS: Record<string, HolidayName[]> = {
-  "01-01": [
-    { vi: "Tết Nguyên Đán", en: "Lunar New Year" },
-  ],
+  "01-01": [{ vi: "Tết Nguyên Đán", en: "Lunar New Year" }],
   "01-02": [
     { vi: "Mùng 2 Tết Nguyên Đán", en: "Second day of Lunar New Year" },
   ],
-  "01-03": [
-    { vi: "Mùng 3 Tết Nguyên Đán", en: "Third day of Lunar New Year" },
-  ],
-  "01-10": [
-    { vi: "Ngày Vía Thần Tài", en: "God of Wealth Day" },
-  ],
-  "01-15": [
-    { vi: "Tết Nguyên Tiêu", en: "Lantern Festival" },
-  ],
-  "03-03": [
-    { vi: "Tết Hàn Thực", en: "Cold Food Festival" },
-  ],
-  "03-10": [
-    { vi: "Giỗ Tổ Hùng Vương", en: "Hung Kings Commemoration Day" },
-  ],
-  "04-15": [
-    { vi: "Lễ Phật Đản", en: "Vesak Day" },
-  ],
-  "05-05": [
-    { vi: "Tết Đoan Ngọ", en: "Dragon Boat Festival" },
-  ],
-  "07-07": [
-    { vi: "Lễ Thất Tịch", en: "Qixi Festival" },
-  ],
-  "07-15": [
-    { vi: "Lễ Vu Lan", en: "Vu Lan Festival" },
-  ],
-  "08-15": [
-    { vi: "Tết Trung Thu", en: "Mid-Autumn Festival" },
-  ],
-  "09-09": [
-    { vi: "Tết Trùng Cửu", en: "Double Ninth Festival" },
-  ],
-  "10-10": [
-    { vi: "Tết Trùng Thập", en: "Double Tenth Festival" },
-  ],
-  "12-23": [
-    { vi: "Tết Ông Công Ông Táo", en: "Kitchen Gods Festival" },
-  ],
+  "01-03": [{ vi: "Mùng 3 Tết Nguyên Đán", en: "Third day of Lunar New Year" }],
+  "01-10": [{ vi: "Ngày Vía Thần Tài", en: "God of Wealth Day" }],
+  "01-15": [{ vi: "Tết Nguyên Tiêu", en: "Lantern Festival" }],
+  "03-03": [{ vi: "Tết Hàn Thực", en: "Cold Food Festival" }],
+  "03-10": [{ vi: "Giỗ Tổ Hùng Vương", en: "Hung Kings Commemoration Day" }],
+  "04-15": [{ vi: "Lễ Phật Đản", en: "Vesak Day" }],
+  "05-05": [{ vi: "Tết Đoan Ngọ", en: "Dragon Boat Festival" }],
+  "07-07": [{ vi: "Lễ Thất Tịch", en: "Qixi Festival" }],
+  "07-15": [{ vi: "Lễ Vu Lan", en: "Vu Lan Festival" }],
+  "08-15": [{ vi: "Tết Trung Thu", en: "Mid-Autumn Festival" }],
+  "09-09": [{ vi: "Tết Trùng Cửu", en: "Double Ninth Festival" }],
+  "10-10": [{ vi: "Tết Trùng Thập", en: "Double Tenth Festival" }],
+  "12-23": [{ vi: "Tết Ông Công Ông Táo", en: "Kitchen Gods Festival" }],
 };
 
 function getDateKey(date: Date) {
@@ -996,10 +954,7 @@ function getDynamicHolidays(date: Date): HolidayName[] {
   return holidays;
 }
 
-function getCalendarHolidays(
-  date: Date,
-  language: "vi" | "en",
-): string[] {
+function getCalendarHolidays(date: Date, language: "vi" | "en"): string[] {
   const solarHolidays = SOLAR_HOLIDAYS[getDateKey(date)] ?? [];
   const lunarHolidays = LUNAR_HOLIDAYS[getLunarKey(date)] ?? [];
   const dynamicHolidays = getDynamicHolidays(date);
@@ -1021,10 +976,7 @@ function getCalendarHolidays(
   ].map((holiday) => holiday[language]);
 }
 
-function getSolarHoliday(
-  date: Date,
-  language: "vi" | "en" = "vi",
-) {
+function getSolarHoliday(date: Date, language: "vi" | "en" = "vi") {
   const holidays = getCalendarHolidays(date, language);
   return holidays.length > 0 ? holidays.join(" • ") : null;
 }
@@ -1404,14 +1356,11 @@ function formatHourlyUpdateLabel(date: Date, language: Language) {
   const roundedHour = new Date(date);
   roundedHour.setMinutes(0, 0, 0);
 
-  const time = new Intl.DateTimeFormat(
-    language === "vi" ? "vi-VN" : "en-US",
-    {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    },
-  ).format(roundedHour);
+  const time = new Intl.DateTimeFormat(language === "vi" ? "vi-VN" : "en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(roundedHour);
 
   const weekday = new Intl.DateTimeFormat(
     language === "vi" ? "vi-VN" : "en-US",
@@ -1467,6 +1416,37 @@ function getCalendarNote(date: Date, language: Language) {
   return getCalendarHolidays(date, language).join(" • ");
 }
 
+function getDateCountdownLabel(date: Date, language: Language) {
+  const today = new Date();
+  const todayDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+  const targetDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+  const diffDays = Math.round(
+    (targetDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24),
+  );
+
+  if (diffDays === 0) {
+    return language === "vi" ? "Hôm nay" : "Today";
+  }
+
+  if (diffDays > 0) {
+    return language === "vi"
+      ? `Còn ${diffDays} ngày`
+      : `${diffDays} day${diffDays > 1 ? "s" : ""} left`;
+  }
+
+  return language === "vi"
+    ? `Đã qua ${Math.abs(diffDays)} ngày`
+    : `${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? "s" : ""} ago`;
+}
+
 async function fetchPlaceName(
   latitude: number,
   longitude: number,
@@ -1498,7 +1478,6 @@ async function fetchPlaceName(
   }
 }
 
-
 export default function HomePage() {
   const [language, setLanguage] = useState<Language>("vi");
   const [theme, setTheme] = useState<Theme>("light");
@@ -1509,9 +1488,8 @@ export default function HomePage() {
   const [readAlertSignature, setReadAlertSignature] = useState("");
   const [windyOverlay, setWindyOverlay] = useState<WindyOverlay>("wind");
 
-  const [coordinates, setCoordinates] = useState<Coordinates>(
-    defaultCoordinates,
-  );
+  const [coordinates, setCoordinates] =
+    useState<Coordinates>(defaultCoordinates);
   const [locationName, setLocationName] = useState("TP. Hồ Chí Minh");
 
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
@@ -1541,8 +1519,6 @@ export default function HomePage() {
 
   const text = translations[language];
   const isSelectedToday = isSameDate(selectedDate, currentTime);
-  const isHydrated = hasMounted;
-  const selectedHoliday = getSolarHoliday(selectedDate, language);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -1788,9 +1764,12 @@ export default function HomePage() {
       void loadWeather();
     }, 0);
 
-    const hourlyTimer = window.setInterval(() => {
-      void loadWeather();
-    }, 60 * 60 * 1000);
+    const hourlyTimer = window.setInterval(
+      () => {
+        void loadWeather();
+      },
+      60 * 60 * 1000,
+    );
 
     const refreshWhenVisible = () => {
       if (document.visibilityState === "visible") {
@@ -2343,7 +2322,6 @@ export default function HomePage() {
       ]
     : [];
 
-
   useEffect(() => {
     const sectionIds = ["overview", "forecast", "weather-map", "windy-storm"];
     const sections = sectionIds
@@ -2356,7 +2334,9 @@ export default function HomePage() {
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
-          .sort((left, right) => right.intersectionRatio - left.intersectionRatio);
+          .sort(
+            (left, right) => right.intersectionRatio - left.intersectionRatio,
+          );
 
         if (visible.length > 0) {
           setActiveSection(visible[0].target.id);
@@ -2391,10 +2371,7 @@ export default function HomePage() {
     ? getWeatherScene(weather.current.weather_code, weather.current.is_day)
     : "clear-day";
 
-  const selectedCalendarHoliday = getCalendarNote(
-    selectedDate,
-    language,
-  );
+  const selectedCalendarHoliday = getCalendarNote(selectedDate, language);
   const selectedCalendarHolidayVisual = getHolidayVisual(
     selectedDate,
     language,
@@ -2445,9 +2422,7 @@ export default function HomePage() {
               onClick={() => setActiveSection("windy-storm")}
             >
               <Wind size={17} />
-              <span>
-                {language === "vi" ? "Bão & Windy" : "Storm & Windy"}
-              </span>
+              <span>{language === "vi" ? "Bão & Windy" : "Storm & Windy"}</span>
             </a>
           </nav>
 
@@ -2787,9 +2762,7 @@ export default function HomePage() {
               }}
             >
               <Wind size={17} />
-              <span>
-                {language === "vi" ? "Bão & Windy" : "Storm & Windy"}
-              </span>
+              <span>{language === "vi" ? "Bão & Windy" : "Storm & Windy"}</span>
             </a>
           </nav>
         )}
@@ -2983,9 +2956,9 @@ export default function HomePage() {
                       {
                         icon: Eye,
                         label: text.visibility,
-                        value: `${(
-                          weather.current.visibility / 1000
-                        ).toFixed(1)} km`,
+                        value: `${(weather.current.visibility / 1000).toFixed(
+                          1,
+                        )} km`,
                       },
                     ].map(({ icon: Icon, label, value }) => (
                       <div key={label}>
@@ -3044,7 +3017,9 @@ export default function HomePage() {
                   </button>
                 </div>
 
-                <div className="wn-time-card__time">{formatTime(currentTime)}</div>
+                <div className="wn-time-card__time">
+                  {formatTime(currentTime)}
+                </div>
 
                 <div className="wn-time-card__date">
                   {formatDate(selectedDate, language)}
@@ -3081,7 +3056,7 @@ export default function HomePage() {
                 <div className="wn-time-card__banner">
                   <img
                     src={selectedCalendarHolidayVisual.src}
-                    alt={selectedCalendarHolidayVisual.alt}
+                    alt={selectedCalendarHolidayVisual.alt[language]}
                     loading="lazy"
                     onError={(event) => {
                       event.currentTarget.parentElement?.classList.add(
@@ -3097,9 +3072,7 @@ export default function HomePage() {
             <article className="wn-panel wn-aqi-card">
               <div className="wn-panel__heading">
                 <span>
-                  {language === "vi"
-                    ? "Chất lượng không khí"
-                    : "Air quality"}
+                  {language === "vi" ? "Chất lượng không khí" : "Air quality"}
                 </span>
                 <em>{getAqiLabel(currentAqi)}</em>
               </div>
@@ -3183,9 +3156,9 @@ export default function HomePage() {
               {
                 icon: CloudRain,
                 label: language === "vi" ? "Lượng mưa" : "Rain total",
-                value: `${(
-                  weather.daily.precipitation_sum[0] ?? 0
-                ).toFixed(1)} mm`,
+                value: `${(weather.daily.precipitation_sum[0] ?? 0).toFixed(
+                  1,
+                )} mm`,
               },
               {
                 icon: Droplets,
@@ -3233,9 +3206,7 @@ export default function HomePage() {
             <div className="wn-hourly">
               {nextHours.map((hour, index) => (
                 <article
-                  className={`wn-hour ${
-                    index === 0 ? "wn-hour--active" : ""
-                  }`}
+                  className={`wn-hour ${index === 0 ? "wn-hour--active" : ""}`}
                   key={hour.time}
                 >
                   <span>
@@ -3317,16 +3288,10 @@ export default function HomePage() {
                     />
                     <div>
                       <strong>
-                        {Math.round(
-                          weather.daily.temperature_2m_max[index],
-                        )}
-                        °
+                        {Math.round(weather.daily.temperature_2m_max[index])}°
                       </strong>
                       <small>
-                        {Math.round(
-                          weather.daily.temperature_2m_min[index],
-                        )}
-                        °
+                        {Math.round(weather.daily.temperature_2m_min[index])}°
                       </small>
                     </div>
                     <small>
@@ -3526,7 +3491,11 @@ function CalendarModal({
   onSelectDate,
   onClose,
 }: CalendarModalProps) {
-  if (!open) return null;
+  const [previewHoliday, setPreviewHoliday] = useState<{
+    visual: HolidayVisual;
+    title: string;
+    dateLabel: string;
+  } | null>(null);
 
   const year = displayMonth.getFullYear();
   const month = displayMonth.getMonth();
@@ -3553,6 +3522,9 @@ function CalendarModal({
 
   const selectedHoliday = getCalendarNote(selectedDate, language);
   const selectedHolidayVisual = getHolidayVisual(selectedDate, language);
+  const countdownLabel = getDateCountdownLabel(selectedDate, language);
+
+  if (!open) return null;
 
   return (
     <div
@@ -3593,7 +3565,9 @@ function CalendarModal({
                 onClick={() =>
                   onDisplayMonthChange(new Date(year, month - 1, 1))
                 }
-                aria-label={language === "vi" ? "Tháng trước" : "Previous month"}
+                aria-label={
+                  language === "vi" ? "Tháng trước" : "Previous month"
+                }
               >
                 <ChevronLeft size={22} />
               </button>
@@ -3717,24 +3691,28 @@ function CalendarModal({
                         .join(" ")}
                       onClick={() => {
                         onSelectDate(date);
+                        setPreviewHoliday(null);
 
                         if (
                           date.getMonth() !== month ||
                           date.getFullYear() !== year
                         ) {
                           onDisplayMonthChange(
-                            new Date(
-                              date.getFullYear(),
-                              date.getMonth(),
-                              1,
-                            ),
+                            new Date(date.getFullYear(), date.getMonth(), 1),
                           );
                         }
                       }}
                     >
                       <strong>{date.getDate()}</strong>
                       <small>{getLunarDayLabel(date)}</small>
-                      {/* {holiday ? <i /> : null} */}
+                      {holiday ? (
+                        <span
+                          className="wn-calendar-light-day__bubble"
+                          aria-hidden="true"
+                        >
+                          ✦
+                        </span>
+                      ) : null}
                     </button>
                   );
                 })}
@@ -3755,11 +3733,27 @@ function CalendarModal({
                 <span>{getLunarDate(selectedDate, language)}</span>
               </div>
 
+              <div className="wn-calendar-light-countdown">
+                <span>{countdownLabel}</span>
+              </div>
+
               {selectedHolidayVisual ? (
-                <div className="wn-calendar-light-holiday-image">
+                <button
+                  type="button"
+                  className="wn-calendar-light-holiday-image"
+                  onClick={() =>
+                    setPreviewHoliday({
+                      visual: selectedHolidayVisual,
+                      title:
+                        selectedHoliday ||
+                        (language === "vi" ? "Ngày lễ" : "Holiday"),
+                      dateLabel: formatDate(selectedDate, language),
+                    })
+                  }
+                >
                   <img
                     src={selectedHolidayVisual.src}
-                    alt={selectedHolidayVisual.alt}
+                    alt={selectedHolidayVisual.alt[language]}
                     loading="lazy"
                     onError={(event) => {
                       event.currentTarget.parentElement?.classList.add(
@@ -3767,7 +3761,7 @@ function CalendarModal({
                       );
                     }}
                   />
-                </div>
+                </button>
               ) : (
                 <div className="wn-calendar-light-empty-image">
                   <CalendarDays size={42} />
@@ -3803,47 +3797,55 @@ function CalendarModal({
           </aside>
         </div>
       </div>
+
+      {previewHoliday ? (
+        <div
+          className="wn-holiday-preview-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={
+            language === "vi" ? "Xem ảnh ngày lễ" : "View holiday image"
+          }
+          onMouseDown={() => setPreviewHoliday(null)}
+        >
+          <div
+            className="wn-holiday-preview-card"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="wn-holiday-preview-close"
+              onClick={() => setPreviewHoliday(null)}
+              aria-label={
+                language === "vi" ? "Đóng ảnh lễ" : "Close holiday image"
+              }
+            >
+              <X size={20} />
+            </button>
+
+            <div className="wn-holiday-preview-badge">
+              <Star size={16} />
+              <span>
+                {language === "vi" ? "Ngày lễ nổi bật" : "Featured holiday"}
+              </span>
+            </div>
+
+            <div className="wn-holiday-preview-image">
+              <img
+                src={previewHoliday.visual.src}
+                alt={previewHoliday.visual.alt[language]}
+                loading="lazy"
+              />
+            </div>
+
+            <div className="wn-holiday-preview-meta">
+              <small>{previewHoliday.dateLabel}</small>
+              <strong>{previewHoliday.title}</strong>
+              <p>{countdownLabel}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
-
-const modalIconButtonStyle = {
-  width: 48,
-  height: 48,
-  borderRadius: 16,
-  border: "1px solid rgba(103, 232, 249, 0.14)",
-  background:
-    "linear-gradient(145deg, rgba(16, 46, 78, 0.98), rgba(10, 29, 51, 0.98))",
-  color: "#eef6ff",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  cursor: "pointer",
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
-} as const;
-
-const modalSmallButtonStyle = {
-  width: 40,
-  height: 38,
-  borderRadius: 12,
-  border: "1px solid rgba(103, 232, 249, 0.12)",
-  background: "rgba(18, 43, 70, 0.92)",
-  color: "#e2eef9",
-  fontSize: 20,
-  fontWeight: 800,
-  cursor: "pointer",
-} as const;
-
-
-const modalSecondaryButtonStyle = {
-  minHeight: 48,
-  borderRadius: 16,
-  border: "1px solid rgba(61, 220, 255, 0.24)",
-  background:
-    "linear-gradient(135deg, rgba(26, 151, 210, 0.28), rgba(22, 110, 197, 0.22))",
-  color: "#82e7ff",
-  padding: "0 16px",
-  fontWeight: 800,
-  cursor: "pointer",
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
-} as const;
