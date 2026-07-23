@@ -35,6 +35,8 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 body {
@@ -514,6 +516,58 @@ a {
   color: var(--wn-text);
   outline: 0;
   font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .wn-search input {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wn-header__inner {
+    min-height: 64px;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .wn-nav {
+    display: none;
+  }
+
+  .wn-menu-button {
+    display: inline-flex;
+  }
+
+  .wn-actions {
+    gap: 8px;
+  }
+
+  .wn-icon-button,
+  .wn-menu-button,
+  .wn-select,
+  .wn-popover__close,
+  .wn-location-button,
+  .wn-outline-button {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wn-language span {
+    display: none;
+  }
+
+  .wn-brand__copy strong {
+    font-size: 18px;
+  }
 }
 
 .wn-search input::placeholder {
@@ -1485,6 +1539,201 @@ a {
   .wn-header__inner,
   .wn-container,
   .wn-footer {
+
+    /* Holiday modal */
+    .wn-holiday-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wn-holiday-modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(2, 6, 23, 0.6), rgba(2, 6, 23, 0.45));
+      backdrop-filter: blur(6px);
+    }
+
+    .wn-holiday-modal__card {
+      position: relative;
+      width: min(920px, calc(100% - 36px));
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), #fff);
+      box-shadow: 0 30px 80px rgba(2, 6, 23, 0.35);
+      z-index: 1;
+    }
+
+    .wn-holiday-modal__close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 3;
+      border: 0;
+      background: rgba(255, 255, 255, 0.86);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .wn-holiday-modal__visual img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .wn-holiday-modal__content {
+      padding: 14px 20px 26px;
+      text-align: center;
+    }
+
+    .wn-holiday-modal__content h3 {
+      margin: 0 0 6px;
+      font-size: 20px;
+    }
+
+    .wn-holiday-modal__subtitle {
+      margin: 0;
+      color: var(--wn-muted);
+      font-size: 13px;
+    }
+
+    /* Balloons */
+    .wn-balloons {
+      position: absolute;
+      inset: auto 0 8px 8px;
+      pointer-events: none;
+    }
+
+    .balloon {
+      display: inline-block;
+      width: 28px;
+      height: 36px;
+      border-radius: 50% 50% 50% 50%;
+      margin: 0 6px;
+      transform-origin: bottom center;
+      animation: floatUp 5500ms linear infinite;
+      opacity: 0.95;
+    }
+
+    .b1 {
+      background: #ff6b6b;
+      animation-delay: 0ms;
+      left: 6%;
+      position: relative;
+    }
+
+    .b2 {
+      background: #ffd93d;
+      animation-delay: 400ms;
+      left: 18%;
+      position: relative;
+    }
+
+    .b3 {
+      background: #6bcB77;
+      animation-delay: 800ms;
+      left: 30%;
+      position: relative;
+    }
+
+    .b4 {
+      background: #4d8cff;
+      animation-delay: 1200ms;
+      left: 42%;
+      position: relative;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.95);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-220px) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* Simple fireworks */
+    .wn-fireworks {
+      position: absolute;
+      inset: 6px 12px auto auto;
+      width: 140px;
+      height: 120px;
+      pointer-events: none;
+    }
+
+    .fw {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff, #ffd700);
+      opacity: 0;
+      animation: fwburst 1600ms ease-in-out infinite;
+    }
+
+    .fw1 {
+      right: 12px;
+      top: 10px;
+      animation-delay: 0ms;
+    }
+
+    .fw2 {
+      right: 50px;
+      top: 32px;
+      animation-delay: 300ms;
+    }
+
+    .fw3 {
+      right: 90px;
+      top: 8px;
+      animation-delay: 700ms;
+    }
+
+    @keyframes fwburst {
+      0% {
+        transform: scale(0.4);
+        opacity: 0;
+      }
+
+      30% {
+        transform: scale(1.6);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(2.4);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wn-holiday-modal__card {
+        width: calc(100% - 20px);
+        border-radius: 12px;
+      }
+
+      .balloon {
+        width: 20px;
+        height: 26px;
+      }
+    }
+
     width: min(100% - 24px, 1500px);
   }
 

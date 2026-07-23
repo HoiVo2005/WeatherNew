@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Solar } from "lunar-javascript";
+import HolidayModal from "@/components/HolidayModal";
 
 type HolidayName = {
   vi: string;
@@ -1517,6 +1518,13 @@ export default function HomePage() {
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   );
 
+  const [holidayModalOpen, setHolidayModalOpen] = useState(false);
+  const [todayHolidayVisual, setTodayHolidayVisual] =
+    useState<HolidayVisual | null>(null);
+  const [todayHolidayTitle, setTodayHolidayTitle] = useState<string | null>(
+    null,
+  );
+
   const text = translations[language];
   const isSelectedToday = isSameDate(selectedDate, currentTime);
 
@@ -1660,6 +1668,44 @@ export default function HomePage() {
 
     return () => window.clearInterval(timer);
   }, []);
+
+  // Holiday modal: show on holiday dates unless user already dismissed for today
+  useEffect(() => {
+    if (!hasMounted) return;
+
+    const today = new Date();
+    const visual = getHolidayVisual(today, language);
+
+    if (!visual) return;
+
+    const dateKey = getDateKey(today);
+    const dismissedKey = `holiday-dismissed-${dateKey}`;
+
+    try {
+      const dismissed = window.localStorage.getItem(dismissedKey);
+
+      if (dismissed !== "1") {
+        setTodayHolidayVisual(visual);
+        const title =
+          getSolarHoliday(today, language) ??
+          getCalendarNote(today, language) ??
+          visual.alt?.[language] ??
+          "";
+        setTodayHolidayTitle(title);
+        setHolidayModalOpen(true);
+      }
+    } catch {
+      // ignore localStorage errors
+      setTodayHolidayVisual(visual);
+      const title =
+        getSolarHoliday(today, language) ??
+        getCalendarNote(today, language) ??
+        visual.alt?.[language] ??
+        "";
+      setTodayHolidayTitle(title);
+      setHolidayModalOpen(true);
+    }
+  }, [hasMounted, language]);
 
   const loadWeather = useCallback(async () => {
     setWeatherLoading(true);
@@ -2473,6 +2519,21 @@ export default function HomePage() {
             >
               {theme === "light" ? <Moon size={19} /> : <Sun size={19} />}
             </button>
+
+            {holidayModalOpen && todayHolidayVisual && todayHolidayTitle ? (
+              <HolidayModal
+                src={todayHolidayVisual.src}
+                alt={todayHolidayVisual.alt?.[language] ?? todayHolidayTitle}
+                title={todayHolidayTitle}
+                onClose={() => {
+                  const key = `holiday-dismissed-${getDateKey(new Date())}`;
+                  try {
+                    window.localStorage.setItem(key, "1");
+                  } catch {}
+                  setHolidayModalOpen(false);
+                }}
+              />
+            ) : null}
 
             <div className="wn-popover-anchor">
               <button
