@@ -522,6 +522,265 @@ a {
   .wn-search input {
     font-size: 16px;
   }
+
+  /* confetti canvas */
+  .wn-confetti-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1210;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* SVG confetti animation */
+  @keyframes confettiFall {
+    0% {
+      transform: translateY(-10%) rotate(0deg);
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(110%) rotate(360deg);
+      opacity: 0.95;
+    }
+  }
+
+  .wn-confetti-svg {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1215;
+  }
+
+  /* Lanterns */
+  .wn-lanterns {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1205;
+  }
+
+  .wn-lantern {
+    position: absolute;
+    bottom: -10vh;
+    width: 28px;
+    height: 40px;
+    background: linear-gradient(180deg, #ff9f43, #ff6b6b);
+    border-radius: 8px 8px 12px 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    transform-origin: center bottom;
+    animation: lanternRise 8s linear infinite;
+  }
+
+  @keyframes lanternRise {
+    0% {
+      transform: translateY(0) scale(0.9) rotate(0deg);
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(-120vh) scale(1) rotate(12deg);
+      opacity: 0;
+    }
+  }
+
+  /* Advanced snow canvas */
+  .wn-advanced-snow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1190;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* Fireworks canvas */
+  .wn-fireworks-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1220;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* Parallax clouds in hero */
+  .wn-parallax {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .wn-parallax__layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200%;
+    height: 100%;
+    background-repeat: repeat-x;
+    opacity: 0.9;
+  }
+
+  .wn-parallax__layer--back {
+    background-image: url('/holidays/clouds-back.png');
+    animation: parallaxBack 80s linear infinite;
+    opacity: 0.45;
+  }
+
+  .wn-parallax__layer--mid {
+    background-image: url('/holidays/clouds-mid.png');
+    animation: parallaxMid 50s linear infinite;
+    opacity: 0.6;
+  }
+
+  .wn-parallax__layer--front {
+    background-image: url('/holidays/clouds-front.png');
+    animation: parallaxFront 32s linear infinite;
+    opacity: 0.85;
+  }
+
+  @keyframes parallaxBack {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes parallaxMid {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-40%);
+    }
+  }
+
+  @keyframes parallaxFront {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-30%);
+    }
+  }
+
+  /* Snow effect */
+  .wn-snow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1195;
+    overflow: hidden;
+  }
+
+  .wn-snow__flake {
+    position: absolute;
+    top: -10vh;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    opacity: 0.95;
+    animation: snowFall linear infinite;
+  }
+
+  .wn-snow__flake.f1 {
+    left: 3%;
+    animation-duration: 8s;
+    animation-delay: 0s;
+    transform: scale(0.9);
+  }
+
+  .wn-snow__flake.f2 {
+    left: 12%;
+    animation-duration: 10s;
+    animation-delay: 1s;
+    transform: scale(0.7);
+  }
+
+  .wn-snow__flake.f3 {
+    left: 24%;
+    animation-duration: 12s;
+    animation-delay: 0.6s;
+    transform: scale(1);
+  }
+
+  .wn-snow__flake.f4 {
+    left: 36%;
+    animation-duration: 9s;
+    animation-delay: 0.2s;
+    transform: scale(0.85);
+  }
+
+  .wn-snow__flake.f5 {
+    left: 58%;
+    animation-duration: 11s;
+    animation-delay: 0.8s;
+    transform: scale(0.6);
+  }
+
+  .wn-snow__flake.f6 {
+    left: 78%;
+    animation-duration: 13s;
+    animation-delay: 0.3s;
+    transform: scale(1.1);
+  }
+
+  @keyframes snowFall {
+    0% {
+      transform: translateY(-10vh) rotate(0deg);
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(110vh) rotate(360deg);
+      opacity: 0.9;
+    }
+  }
+
+  /* Holiday title shimmer */
+  .wn-brand__copy.is-holiday strong {
+    animation: holidayShimmer 2.6s ease-in-out infinite;
+    text-shadow: 0 2px 18px rgba(255, 200, 100, 0.12);
+  }
+
+  @keyframes holidayShimmer {
+    0% {
+      transform: translateY(0);
+      filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+    }
+
+    50% {
+      transform: translateY(-2px);
+      filter: drop-shadow(0 8px 30px rgba(255, 200, 120, 0.12));
+    }
+
+    100% {
+      transform: translateY(0);
+    }
+  }
 }
 
 @media (max-width: 600px) {

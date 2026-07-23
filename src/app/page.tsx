@@ -40,6 +40,13 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Solar } from "lunar-javascript";
 import HolidayModal from "@/components/HolidayModal";
+import SnowEffect from "@/components/SnowEffect";
+import AdvancedSnow from "@/components/AdvancedSnow";
+import ConfettiSVG from "@/components/ConfettiSVG";
+import Lanterns from "@/components/Lanterns";
+import Fireworks from "@/components/Fireworks";
+import HolidayEffectsSettings from "@/components/HolidayEffectsSettings";
+import { Settings } from "lucide-react";
 
 type HolidayName = {
   vi: string;
@@ -1524,6 +1531,8 @@ export default function HomePage() {
   const [todayHolidayTitle, setTodayHolidayTitle] = useState<string | null>(
     null,
   );
+  const [effectsConfig, setEffectsConfig] = useState<any>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const text = translations[language];
   const isSelectedToday = isSameDate(selectedDate, currentTime);
@@ -1626,6 +1635,11 @@ export default function HomePage() {
         setReadAlertSignature(savedReadAlerts);
       }
 
+      try {
+        const savedEffects = window.localStorage.getItem("holiday-effects-config");
+        if (savedEffects) setEffectsConfig(JSON.parse(savedEffects));
+      } catch {}
+
       // Đánh dấu hoàn tất khôi phục dữ liệu sau khi component đã mount.
       setHasMounted(true);
     }, 0);
@@ -1680,11 +1694,13 @@ export default function HomePage() {
 
     const dateKey = getDateKey(today);
     const dismissedKey = `holiday-dismissed-${dateKey}`;
+    const dismissedForeverKey = `${dismissedKey}-forever`;
 
     try {
       const dismissed = window.localStorage.getItem(dismissedKey);
+      const forever = window.localStorage.getItem(dismissedForeverKey);
 
-      if (dismissed !== "1") {
+      if (dismissed !== "1" && forever !== "1") {
         setTodayHolidayVisual(visual);
         const title =
           getSolarHoliday(today, language) ??
@@ -2431,7 +2447,9 @@ export default function HomePage() {
             <span className="wn-brand__icon">
               <CloudSun size={27} />
             </span>
-            <span className="wn-brand__copy">
+            <span
+              className={`wn-brand__copy ${todayHolidayVisual ? "is-holiday" : ""}`}
+            >
               <strong>Thời tiết hôm nay</strong>
               <small>Thời tiết Việt Nam</small>
             </span>
@@ -2521,19 +2539,64 @@ export default function HomePage() {
             </button>
 
             {holidayModalOpen && todayHolidayVisual && todayHolidayTitle ? (
-              <HolidayModal
-                src={todayHolidayVisual.src}
-                alt={todayHolidayVisual.alt?.[language] ?? todayHolidayTitle}
-                title={todayHolidayTitle}
-                onClose={() => {
-                  const key = `holiday-dismissed-${getDateKey(new Date())}`;
+              <>
+                <HolidayModal
+                  src={todayHolidayVisual.src}
+                  alt={todayHolidayVisual.alt?.[language] ?? todayHolidayTitle}
+                  title={todayHolidayTitle}
+                  dismissKey={`holiday-dismissed-${getDateKey(new Date())}`}
+                  onClose={() => {
+                    const key = `holiday-dismissed-${getDateKey(new Date())}`;
+                    try {
+                      window.localStorage.setItem(key, "1");
+                    } catch {}
+                    setHolidayModalOpen(false);
+                  }}
+                />
+
+                {/* Snow for Christmas-like days */}
+                {(() => {
+                  const k = getDateKey(new Date());
+                  const snowDays = new Set([
+                    "12-24",
+                    "12-25",
+                    "12-31",
+                    "01-01",
+                  ]);
+                  // If effectsConfig exists, prefer its settings per holiday
+                  const cfgKey = `holiday-effects-config`;
+                  let cfg = null;
                   try {
-                    window.localStorage.setItem(key, "1");
-                  } catch {}
-                  setHolidayModalOpen(false);
-                }}
-              />
+                    cfg = effectsConfig ?? (window.localStorage.getItem(cfgKey) ? JSON.parse(window.localStorage.getItem(cfgKey) as string) : null);
+                  } catch {
+                    cfg = effectsConfig;
+                  }
+
+                  if (cfg && cfg.holidays && cfg.holidays[k] && cfg.holidays[k].enabled) {
+                    const e = cfg.holidays[k].effects;
+                    const snow = e.snow || { density: 1, wind: 0.3, layers: 3 };
+                    const confetti = e.confetti || { count: 0, colors: [] };
+                    const fireworks = e.fireworks || { enabled: false };
+                    const lanterns = e.lanterns || { enabled: false };
+
+                    return (
+                      <>
+                        {snow ? <AdvancedSnow density={snow.density} wind={snow.wind} layers={snow.layers} /> : null}
+                        {confetti && confetti.count > 0 ? <ConfettiSVG count={confetti.count} colors={confetti.colors} /> : null}
+                        {fireworks && fireworks.enabled ? <Fireworks max={4} /> : null}
+                        {lanterns && lanterns.enabled ? <Lanterns count={8} /> : null}
+                      </>
+                    );
+                  }
+
+                  return snowDays.has(k) ? <SnowEffect count={80} /> : null;
+                })()}
+              </>
             ) : null}
+
+            <button type="button" className="wn-icon-button" aria-label="Cài đặt hiệu ứng" onClick={() => setSettingsOpen(true)}>
+              <Settings size={18} />
+            </button>
 
             <div className="wn-popover-anchor">
               <button
@@ -2567,8 +2630,29 @@ export default function HomePage() {
                       <div>
                         <strong>
                           {language === "vi"
-                            ? "Địa điểm yêu thích"
+                      </>
                             : "Favorite locations"}
+                    {/* Holiday-scoped visual effects for the hero */}
+                    {(() => {
+                      const today = new Date();
+                      const k = getDateKey(today);
+                      const lunarK = getLunarKey(today);
+                      const snowDays = new Set(["12-24", "12-25", "12-31", "01-01"]);
+                      const confettiDays = new Set(["01-01", "01-02", "05-01"]);
+                      const fireworksDays = new Set(["12-31"]);
+                      const lanternDays = new Set(["01-01"]);
+
+                      return (
+                        <>
+                          {snowDays.has(k) ? <AdvancedSnow wind={0.3} layers={3} /> : null}
+                          {confettiDays.has(k) || lanternDays.has(lunarK) ? (
+                            <ConfettiSVG count={48} />
+                          ) : null}
+                          {fireworksDays.has(k) ? <Fireworks max={4} /> : null}
+                          {lanternDays.has(lunarK) ? <Lanterns count={10} /> : null}
+                        </>
+                      );
+                    })()}
                         </strong>
                         <small>
                           {favorites.length}/8{" "}
@@ -2945,6 +3029,12 @@ export default function HomePage() {
                   <span className="wn-hero__mountain wn-hero__mountain--one" />
                   <span className="wn-hero__mountain wn-hero__mountain--two" />
                   <span className="wn-hero__water" />
+                  {/* Parallax cloud layers */}
+                  <div className="wn-parallax" aria-hidden>
+                    <div className="wn-parallax__layer wn-parallax__layer--back" />
+                    <div className="wn-parallax__layer wn-parallax__layer--mid" />
+                    <div className="wn-parallax__layer wn-parallax__layer--front" />
+                  </div>
                 </div>
 
                 <div className="wn-hero__content">
@@ -3529,6 +3619,7 @@ export default function HomePage() {
           <span>Windy</span>
         </a>
       </nav>
+      <HolidayEffectsSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </main>
   );
 }
