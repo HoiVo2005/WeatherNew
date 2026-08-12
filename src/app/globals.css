@@ -92,6 +92,49 @@ a {
   background: rgba(34, 211, 238, 0.13);
 }
 
+.wn-bubble-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.wn-bubble {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(circle at 30% 30%,
+      rgba(255, 255, 255, 0.9),
+      rgba(168, 220, 255, 0.7) 30%,
+      rgba(95, 162, 255, 0.28) 60%,
+      rgba(95, 162, 255, 0) 100%);
+  border: 1px solid rgba(118, 182, 255, 0.35);
+  box-shadow:
+    inset -12px -12px 18px rgba(49, 121, 214, 0.12),
+    0 0 18px rgba(117, 205, 255, 0.2);
+  animation-name: bubble-rise;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes bubble-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.6);
+  }
+
+  15% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--bubble-drift, 0px), -220px, 0) scale(1.35);
+  }
+}
+
 .wn-header {
   position: sticky;
   top: 0;

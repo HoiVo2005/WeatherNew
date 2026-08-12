@@ -37,7 +37,13 @@ import {
   Star,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from "react";
 import { Solar } from "lunar-javascript";
 import HolidayModal from "@/components/HolidayModal";
 import SnowEffect from "@/components/SnowEffect";
@@ -2439,8 +2445,41 @@ export default function HomePage() {
     language,
   );
 
+  const bubbleData = Array.from({ length: 14 }, (_, index) => {
+    const size = 18 + (index % 6) * 12;
+    const left = 26 + ((index * 11) % 48);
+    const top = 52 + (index % 5) * 9;
+    const drift = (index % 2 === 0 ? 1 : -1) * (18 + (index % 5) * 12);
+
+    return {
+      id: index,
+      size,
+      left,
+      top,
+      delay: index * 0.7,
+      duration: 9 + (index % 5) * 2.2,
+      drift,
+    };
+  });
+
   return (
     <main className="wn-app">
+      <div className="wn-bubble-scene" aria-hidden="true">
+        {bubbleData.map((bubble) => {
+          const bubbleStyle: CSSProperties = {
+            left: `${bubble.left}%`,
+            top: `${bubble.top}%`,
+            width: `${bubble.size}px`,
+            height: `${bubble.size}px`,
+            animationDelay: `${bubble.delay}s`,
+            animationDuration: `${bubble.duration}s`,
+            ["--bubble-drift" as string]: `${bubble.drift}px`,
+          };
+
+          return <span key={bubble.id} className="wn-bubble" style={bubbleStyle} />;
+        })}
+      </div>
+
       <header className="wn-header">
         <div className="wn-header__inner">
           <a className="wn-brand" href="#overview" aria-label="WeatherNow">
