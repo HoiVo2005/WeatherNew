@@ -73,6 +73,40 @@ export default function WeatherMap({
   onSelectLocation,
 }: WeatherMapProps) {
   const [layer, setLayer] = useState<"street" | "topo" | "dark">("street");
+  const [showRadar, setShowRadar] = useState(false);
+  const [radarPath, setRadarPath] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!showRadar || radarPath) return;
+
+    let cancelled = false;
+
+    fetch("https://api.rainviewer.com/public/weather-maps.json")
+      .then((response) => response.json())
+      .then((data: {
+        data?: {
+          radar?: {
+            past?: Array<{ path?: string; time?: number }>;
+            nowcast?: Array<{ path?: string; time?: number }>;
+          };
+        };
+      }) => {
+        if (cancelled) return;
+        const frames = [
+          ...(data?.data?.radar?.past ?? []),
+          ...(data?.data?.radar?.nowcast ?? []),
+        ].filter((frame) => typeof frame.path === "string");
+        const latest = frames[frames.length - 1];
+        if (latest?.path) setRadarPath(latest.path);
+      })
+      .catch(() => {
+        // Radar unavailable — ignore
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showRadar, radarPath]);
 
   const tile = useMemo(() => {
     if (layer === "topo") {
@@ -106,6 +140,14 @@ export default function WeatherMap({
       >
         <TileLayer attribution={tile.attribution} url={tile.url} />
 
+        {showRadar && radarPath && (
+          <TileLayer
+            url={`https://tilecache.rainviewer.com${radarPath}/256/{z}/{x}/{y}/2/1_1.png`}
+            opacity={0.7}
+            zIndex={400}
+          />
+        )}
+
         <Marker
           position={[coordinates.latitude, coordinates.longitude]}
           icon={markerIcon}
@@ -131,6 +173,13 @@ export default function WeatherMap({
         </button>
         <button className={layer === "dark" ? "active" : ""} onClick={() => setLayer("dark")}>
           Tối
+        </button>
+        <button
+          className={showRadar ? "active" : ""}
+          onClick={() => setShowRadar((previous) => !previous)}
+          title="Radar mưa (RainViewer)"
+        >
+          Mưa
         </button>
       </div>
 

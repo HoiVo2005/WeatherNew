@@ -18,3 +18,7 @@ Thumbs.db
 
 coverage/
 .vercel/
+
+# Build caches
+tsconfig.tsbuildinfo
+*.tsbuildinfo

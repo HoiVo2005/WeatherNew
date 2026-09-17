@@ -41,6 +41,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type CSSProperties,
 } from "react";
@@ -52,7 +53,10 @@ import ConfettiSVG from "@/components/ConfettiSVG";
 import Lanterns from "@/components/Lanterns";
 import Fireworks from "@/components/Fireworks";
 import HolidayEffectsSettings from "@/components/HolidayEffectsSettings";
-import { Settings } from "lucide-react";
+import WeatherFX from "@/components/WeatherFX";
+import SunCard, { type SunCardHour } from "@/components/SunCard";
+import { Settings, Share2 } from "lucide-react";
+import type { HolidayEffectsConfig } from "@/types/holiday-effects";
 
 type HolidayName = {
   vi: string;
@@ -69,392 +73,392 @@ type HolidayVisual = {
 
 const SOLAR_HOLIDAY_IMAGES: Record<string, HolidayVisual> = {
   "01-01": {
-    src: "/holidays/tet-duong-lich.jpg",
+    src: "/holidays/tet-duong-lich.png",
     alt: {
       vi: "Tết Dương lịch",
       en: "New Year's Day",
     },
   },
   "01-09": {
-    src: "/holidays/ngay-hoc-sinh-sinh-vien-viet-nam.jpg",
+    src: "/holidays/ngay-hoc-sinh-sinh-vien-viet-nam.png",
     alt: {
       vi: "Ngày Học sinh - Sinh viên Việt Nam",
       en: "Vietnamese Students' Day",
     },
   },
   "02-03": {
-    src: "/holidays/ngay-thanh-lap-dang-cong-san-viet-nam.jpg",
+    src: "/holidays/ngay-thanh-lap-dang-cong-san-viet-nam.png",
     alt: {
       vi: "Ngày thành lập Đảng Cộng sản Việt Nam",
       en: "Communist Party of Vietnam Foundation Day",
     },
   },
   "02-14": {
-    src: "/holidays/ngay-le-tinh-nhan.jpg",
+    src: "/holidays/ngay-le-tinh-nhan.png",
     alt: {
       vi: "Ngày Lễ Tình nhân",
       en: "Valentine's Day",
     },
   },
   "02-27": {
-    src: "/holidays/ngay-thay-thuoc-viet-nam.jpg",
+    src: "/holidays/ngay-thay-thuoc-viet-nam.png",
     alt: {
       vi: "Ngày Thầy thuốc Việt Nam",
       en: "Vietnamese Doctors' Day",
     },
   },
   "03-08": {
-    src: "/holidays/ngay-quoc-te-phu-nu.jpg",
+    src: "/holidays/ngay-quoc-te-phu-nu.png",
     alt: {
       vi: "Ngày Quốc tế Phụ nữ",
       en: "International Women's Day",
     },
   },
   "03-20": {
-    src: "/holidays/ngay-quoc-te-hanh-phuc.jpg",
+    src: "/holidays/ngay-quoc-te-hanh-phuc.png",
     alt: {
       vi: "Ngày Quốc tế Hạnh phúc",
       en: "International Day of Happiness",
     },
   },
   "03-22": {
-    src: "/holidays/ngay-nuoc-the-gioi.jpg",
+    src: "/holidays/ngay-nuoc-the-gioi.png",
     alt: {
       vi: "Ngày Nước Thế giới",
       en: "World Water Day",
     },
   },
   "03-26": {
-    src: "/holidays/ngay-thanh-lap-doan-tncs-ho-chi-minh.jpg",
+    src: "/holidays/ngay-thanh-lap-doan-tncs-ho-chi-minh.png",
     alt: {
       vi: "Ngày thành lập Đoàn TNCS Hồ Chí Minh",
       en: "Ho Chi Minh Communist Youth Union Foundation Day",
     },
   },
   "04-01": {
-    src: "/holidays/ngay-ca-thang-tu.jpg",
+    src: "/holidays/ngay-ca-thang-tu.png",
     alt: {
       vi: "Ngày Cá tháng Tư",
       en: "April Fools' Day",
     },
   },
   "04-07": {
-    src: "/holidays/ngay-suc-khoe-the-gioi.jpg",
+    src: "/holidays/ngay-suc-khoe-the-gioi.png",
     alt: {
       vi: "Ngày Sức khỏe Thế giới",
       en: "World Health Day",
     },
   },
   "04-22": {
-    src: "/holidays/ngay-trai-dat.jpg",
+    src: "/holidays/ngay-trai-dat.png",
     alt: {
       vi: "Ngày Trái Đất",
       en: "Earth Day",
     },
   },
   "04-23": {
-    src: "/holidays/ngay-sach-va-ban-quyen-the-gioi.jpg",
+    src: "/holidays/ngay-sach-va-ban-quyen-the-gioi.png",
     alt: {
       vi: "Ngày Sách và Bản quyền Thế giới",
       en: "World Book and Copyright Day",
     },
   },
   "04-30": {
-    src: "/holidays/ngay-giai-phong-mien-nam-thong-nhat-dat-nuoc.jpg",
+    src: "/holidays/ngay-giai-phong-mien-nam-thong-nhat-dat-nuoc.png",
     alt: {
       vi: "Ngày Giải phóng miền Nam, thống nhất đất nước",
       en: "Reunification Day",
     },
   },
   "05-01": {
-    src: "/holidays/ngay-quoc-te-lao-dong.jpg",
+    src: "/holidays/ngay-quoc-te-lao-dong.png",
     alt: {
       vi: "Ngày Quốc tế Lao động",
       en: "International Workers' Day",
     },
   },
   "05-07": {
-    src: "/holidays/ngay-chien-thang-dien-bien-phu.jpg",
+    src: "/holidays/ngay-chien-thang-dien-bien-phu.png",
     alt: {
       vi: "Ngày Chiến thắng Điện Biên Phủ",
       en: "Dien Bien Phu Victory Day",
     },
   },
   "05-15": {
-    src: "/holidays/ngay-quoc-te-gia-dinh.jpg",
+    src: "/holidays/ngay-quoc-te-gia-dinh.png",
     alt: {
       vi: "Ngày Quốc tế Gia đình",
       en: "International Day of Families",
     },
   },
   "05-19": {
-    src: "/holidays/ngay-sinh-chu-tich-ho-chi-minh.jpg",
+    src: "/holidays/ngay-sinh-chu-tich-ho-chi-minh.png",
     alt: {
       vi: "Ngày sinh Chủ tịch Hồ Chí Minh",
       en: "President Ho Chi Minh's Birthday",
     },
   },
   "05-31": {
-    src: "/holidays/ngay-the-gioi-khong-thuoc-la.jpg",
+    src: "/holidays/ngay-the-gioi-khong-thuoc-la.png",
     alt: {
       vi: "Ngày Thế giới Không thuốc lá",
       en: "World No Tobacco Day",
     },
   },
   "06-01": {
-    src: "/holidays/ngay-quoc-te-thieu-nhi.jpg",
+    src: "/holidays/ngay-quoc-te-thieu-nhi.png",
     alt: {
       vi: "Ngày Quốc tế Thiếu nhi",
       en: "International Children's Day",
     },
   },
   "06-05": {
-    src: "/holidays/ngay-moi-truong-the-gioi.jpg",
+    src: "/holidays/ngay-moi-truong-the-gioi.png",
     alt: {
       vi: "Ngày Môi trường Thế giới",
       en: "World Environment Day",
     },
   },
   "06-08": {
-    src: "/holidays/ngay-dai-duong-the-gioi.jpg",
+    src: "/holidays/ngay-dai-duong-the-gioi.png",
     alt: {
       vi: "Ngày Đại dương Thế giới",
       en: "World Oceans Day",
     },
   },
   "06-21": {
-    src: "/holidays/ngay-bao-chi-cach-mang-viet-nam.jpg",
+    src: "/holidays/ngay-bao-chi-cach-mang-viet-nam.png",
     alt: {
       vi: "Ngày Báo chí Cách mạng Việt Nam",
       en: "Vietnam Revolutionary Press Day",
     },
   },
   "06-26": {
-    src: "/holidays/ngay-quoc-te-phong-chong-ma-tuy.jpg",
+    src: "/holidays/ngay-quoc-te-phong-chong-ma-tuy.png",
     alt: {
       vi: "Ngày Quốc tế phòng, chống ma túy",
       en: "International Day against Drug Abuse and Illicit Trafficking",
     },
   },
   "06-28": {
-    src: "/holidays/ngay-gia-dinh-viet-nam.jpg",
+    src: "/holidays/ngay-gia-dinh-viet-nam.png",
     alt: {
       vi: "Ngày Gia đình Việt Nam",
       en: "Vietnamese Family Day",
     },
   },
   "07-11": {
-    src: "/holidays/ngay-dan-so-the-gioi.jpg",
+    src: "/holidays/ngay-dan-so-the-gioi.png",
     alt: {
       vi: "Ngày Dân số Thế giới",
       en: "World Population Day",
     },
   },
   "07-27": {
-    src: "/holidays/ngay-thuong-binh-liet-si.jpg",
+    src: "/holidays/ngay-thuong-binh-liet-si.png",
     alt: {
       vi: "Ngày Thương binh - Liệt sĩ",
       en: "Vietnam War Invalids and Martyrs Day",
     },
   },
   "07-28": {
-    src: "/holidays/ngay-viem-gan-the-gioi.jpg",
+    src: "/holidays/ngay-viem-gan-the-gioi.png",
     alt: {
       vi: "Ngày Viêm gan Thế giới",
       en: "World Hepatitis Day",
     },
   },
   "08-12": {
-    src: "/holidays/ngay-quoc-te-thanh-nien.jpg",
+    src: "/holidays/ngay-quoc-te-thanh-nien.png",
     alt: {
       vi: "Ngày Quốc tế Thanh niên",
       en: "International Youth Day",
     },
   },
   "08-19": {
-    src: "/holidays/ngay-cach-mang-thang-tam.jpg",
+    src: "/holidays/ngay-cach-mang-thang-tam.png",
     alt: {
       vi: "Ngày Cách mạng Tháng Tám",
       en: "August Revolution Day",
     },
   },
   "09-02": {
-    src: "/holidays/quoc-khanh-nuoc-cong-hoa-xa-hoi-chu-nghia-viet-nam.jpg",
+    src: "/holidays/quoc-khanh-nuoc-cong-hoa-xa-hoi-chu-nghia-viet-nam.png",
     alt: {
       vi: "Quốc khánh nước Cộng hòa Xã hội Chủ nghĩa Việt Nam",
       en: "Vietnam National Day",
     },
   },
   "09-05": {
-    src: "/holidays/ngay-quoc-te-tu-thien.jpg",
+    src: "/holidays/ngay-quoc-te-tu-thien.png",
     alt: {
       vi: "Ngày Quốc tế Từ thiện",
       en: "International Day of Charity",
     },
   },
   "09-08": {
-    src: "/holidays/ngay-quoc-te-xoa-mu-chu.jpg",
+    src: "/holidays/ngay-quoc-te-xoa-mu-chu.png",
     alt: {
       vi: "Ngày Quốc tế Xóa mù chữ",
       en: "International Literacy Day",
     },
   },
   "09-21": {
-    src: "/holidays/ngay-quoc-te-hoa-binh.jpg",
+    src: "/holidays/ngay-quoc-te-hoa-binh.png",
     alt: {
       vi: "Ngày Quốc tế Hòa bình",
       en: "International Day of Peace",
     },
   },
   "09-27": {
-    src: "/holidays/ngay-du-lich-the-gioi.jpg",
+    src: "/holidays/ngay-du-lich-the-gioi.png",
     alt: {
       vi: "Ngày Du lịch Thế giới",
       en: "World Tourism Day",
     },
   },
   "10-01": {
-    src: "/holidays/ngay-quoc-te-nguoi-cao-tuoi.jpg",
+    src: "/holidays/ngay-quoc-te-nguoi-cao-tuoi.png",
     alt: {
       vi: "Ngày Quốc tế Người cao tuổi",
       en: "International Day of Older Persons",
     },
   },
   "10-05": {
-    src: "/holidays/ngay-nha-giao-the-gioi.jpg",
+    src: "/holidays/ngay-nha-giao-the-gioi.png",
     alt: {
       vi: "Ngày Nhà giáo Thế giới",
       en: "World Teachers' Day",
     },
   },
   "10-10": {
-    src: "/holidays/ngay-giai-phong-thu-do.jpg",
+    src: "/holidays/ngay-giai-phong-thu-do.png",
     alt: {
       vi: "Ngày Giải phóng Thủ đô",
       en: "Hanoi Liberation Day",
     },
   },
   "10-13": {
-    src: "/holidays/ngay-doanh-nhan-viet-nam.jpg",
+    src: "/holidays/ngay-doanh-nhan-viet-nam.png",
     alt: {
       vi: "Ngày Doanh nhân Việt Nam",
       en: "Vietnamese Entrepreneurs' Day",
     },
   },
   "10-16": {
-    src: "/holidays/ngay-luong-thuc-the-gioi.jpg",
+    src: "/holidays/ngay-luong-thuc-the-gioi.png",
     alt: {
       vi: "Ngày Lương thực Thế giới",
       en: "World Food Day",
     },
   },
   "10-20": {
-    src: "/holidays/ngay-phu-nu-viet-nam.jpg",
+    src: "/holidays/ngay-phu-nu-viet-nam.png",
     alt: {
       vi: "Ngày Phụ nữ Việt Nam",
       en: "Vietnamese Women's Day",
     },
   },
   "10-24": {
-    src: "/holidays/ngay-lien-hop-quoc.jpg",
+    src: "/holidays/ngay-lien-hop-quoc.png",
     alt: {
       vi: "Ngày Liên Hợp Quốc",
       en: "United Nations Day",
     },
   },
   "10-31": {
-    src: "/holidays/le-hoi-halloween.jpg",
+    src: "/holidays/le-hoi-halloween.png",
     alt: {
       vi: "Lễ hội Halloween",
       en: "Halloween",
     },
   },
   "11-09": {
-    src: "/holidays/ngay-phap-luat-viet-nam.jpg",
+    src: "/holidays/ngay-phap-luat-viet-nam.png",
     alt: {
       vi: "Ngày Pháp luật Việt Nam",
       en: "Vietnam Law Day",
     },
   },
   "11-14": {
-    src: "/holidays/ngay-dai-thao-duong-the-gioi.jpg",
+    src: "/holidays/ngay-dai-thao-duong-the-gioi.png",
     alt: {
       vi: "Ngày Đái tháo đường Thế giới",
       en: "World Diabetes Day",
     },
   },
   "11-19": {
-    src: "/holidays/ngay-quoc-te-nam-gioi.jpg",
+    src: "/holidays/ngay-quoc-te-nam-gioi.png",
     alt: {
       vi: "Ngày Quốc tế Nam giới",
       en: "International Men's Day",
     },
   },
   "11-20": {
-    src: "/holidays/ngay-nha-giao-viet-nam.jpg",
+    src: "/holidays/ngay-nha-giao-viet-nam.png",
     alt: {
       vi: "Ngày Nhà giáo Việt Nam",
       en: "Vietnamese Teachers' Day",
     },
   },
   "11-25": {
-    src: "/holidays/ngay-quoc-te-xoa-bo-bao-luc-doi-voi-phu-nu.jpg",
+    src: "/holidays/ngay-quoc-te-xoa-bo-bao-luc-doi-voi-phu-nu.png",
     alt: {
       vi: "Ngày Quốc tế xóa bỏ bạo lực đối với phụ nữ",
       en: "International Day for the Elimination of Violence against Women",
     },
   },
   "12-01": {
-    src: "/holidays/ngay-the-gioi-phong-chong-aids.jpg",
+    src: "/holidays/ngay-the-gioi-phong-chong-aids.png",
     alt: {
       vi: "Ngày Thế giới phòng, chống AIDS",
       en: "World AIDS Day",
     },
   },
   "12-03": {
-    src: "/holidays/ngay-quoc-te-nguoi-khuyet-tat.jpg",
+    src: "/holidays/ngay-quoc-te-nguoi-khuyet-tat.png",
     alt: {
       vi: "Ngày Quốc tế Người khuyết tật",
       en: "International Day of Persons with Disabilities",
     },
   },
   "12-05": {
-    src: "/holidays/ngay-tinh-nguyen-vien-quoc-te.jpg",
+    src: "/holidays/ngay-tinh-nguyen-vien-quoc-te.png",
     alt: {
       vi: "Ngày Tình nguyện viên Quốc tế",
       en: "International Volunteer Day",
     },
   },
   "12-10": {
-    src: "/holidays/ngay-nhan-quyen-quoc-te.jpg",
+    src: "/holidays/ngay-nhan-quyen-quoc-te.png",
     alt: {
       vi: "Ngày Nhân quyền Quốc tế",
       en: "Human Rights Day",
     },
   },
   "12-22": {
-    src: "/holidays/ngay-thanh-lap-quan-doi-nhan-dan-viet-nam.jpg",
+    src: "/holidays/ngay-thanh-lap-quan-doi-nhan-dan-viet-nam.png",
     alt: {
       vi: "Ngày thành lập Quân đội Nhân dân Việt Nam",
       en: "Vietnam People's Army Foundation Day",
     },
   },
   "12-24": {
-    src: "/holidays/dem-giang-sinh.jpg",
+    src: "/holidays/dem-giang-sinh.png",
     alt: {
       vi: "Đêm Giáng sinh",
       en: "Christmas Eve",
     },
   },
   "12-25": {
-    src: "/holidays/le-giang-sinh.jpg",
+    src: "/holidays/le-giang-sinh.png",
     alt: {
       vi: "Lễ Giáng sinh",
       en: "Christmas Day",
     },
   },
   "12-31": {
-    src: "/holidays/dem-giao-thua-duong-lich.jpg",
+    src: "/holidays/dem-giao-thua-duong-lich.png",
     alt: {
       vi: "Đêm Giao thừa Dương lịch",
       en: "New Year's Eve",
@@ -463,7 +467,7 @@ const SOLAR_HOLIDAY_IMAGES: Record<string, HolidayVisual> = {
 };
 
 const LUNAR_NEW_YEAR_EVE_IMAGE: HolidayVisual = {
-  src: "/holidays/dem-giao-thua-am-lich.jpg",
+  src: "/holidays/dem-giao-thua-am-lich.png",
   alt: {
     vi: "Đêm Giao thừa Âm lịch",
     en: "Lunar New Year's Eve",
@@ -472,105 +476,105 @@ const LUNAR_NEW_YEAR_EVE_IMAGE: HolidayVisual = {
 
 const LUNAR_HOLIDAY_IMAGES: Record<string, HolidayVisual> = {
   "01-01": {
-    src: "/holidays/tet-mung-1.jpg",
+    src: "/holidays/tet-mung-1.png",
     alt: {
       vi: "Tết Nguyên Đán",
       en: "Lunar New Year",
     },
   },
   "01-02": {
-    src: "/holidays/tet-mung-2.jpg",
+    src: "/holidays/tet-mung-2.png",
     alt: {
       vi: "Mùng 2 Tết Nguyên Đán",
       en: "Second day of Lunar New Year",
     },
   },
   "01-03": {
-    src: "/holidays/tet-mung-3.jpg",
+    src: "/holidays/tet-mung-3.png",
     alt: {
       vi: "Mùng 3 Tết Nguyên Đán",
       en: "Third day of Lunar New Year",
     },
   },
   "01-10": {
-    src: "/holidays/via-than-tai.jpg",
+    src: "/holidays/via-than-tai.png",
     alt: {
       vi: "Ngày Vía Thần Tài",
       en: "God of Wealth Day",
     },
   },
   "01-15": {
-    src: "/holidays/tet-nguyen-tieu.jpg",
+    src: "/holidays/tet-nguyen-tieu.png",
     alt: {
       vi: "Tết Nguyên Tiêu",
       en: "Lantern Festival",
     },
   },
   "03-03": {
-    src: "/holidays/tet-han-thuc.jpg",
+    src: "/holidays/tet-han-thuc.png",
     alt: {
       vi: "Tết Hàn Thực",
       en: "Cold Food Festival",
     },
   },
   "03-10": {
-    src: "/holidays/gio-to-hung-vuong.jpg",
+    src: "/holidays/gio-to-hung-vuong.png",
     alt: {
       vi: "Giỗ Tổ Hùng Vương",
       en: "Hung Kings Commemoration Day",
     },
   },
   "04-15": {
-    src: "/holidays/le-phat-dan.jpg",
+    src: "/holidays/le-phat-dan.png",
     alt: {
       vi: "Lễ Phật Đản",
       en: "Vesak Day",
     },
   },
   "05-05": {
-    src: "/holidays/tet-doan-ngo.jpg",
+    src: "/holidays/tet-doan-ngo.png",
     alt: {
       vi: "Tết Đoan Ngọ",
       en: "Dragon Boat Festival",
     },
   },
   "07-07": {
-    src: "/holidays/le-that-tich.jpg",
+    src: "/holidays/le-that-tich.png",
     alt: {
       vi: "Lễ Thất Tịch",
       en: "Qixi Festival",
     },
   },
   "07-15": {
-    src: "/holidays/le-vu-lan.jpg",
+    src: "/holidays/le-vu-lan.png",
     alt: {
       vi: "Lễ Vu Lan",
       en: "Vu Lan Festival",
     },
   },
   "08-15": {
-    src: "/holidays/tet-trung-thu.jpg",
+    src: "/holidays/tet-trung-thu.png",
     alt: {
       vi: "Tết Trung Thu",
       en: "Mid-Autumn Festival",
     },
   },
   "09-09": {
-    src: "/holidays/tet-trung-cuu.jpg",
+    src: "/holidays/tet-trung-cuu.png",
     alt: {
       vi: "Tết Trùng Cửu",
       en: "Double Ninth Festival",
     },
   },
   "10-10": {
-    src: "/holidays/tet-trung-thap.jpg",
+    src: "/holidays/tet-trung-thap.png",
     alt: {
       vi: "Tết Trùng Thập",
       en: "Double Tenth Festival",
     },
   },
   "12-23": {
-    src: "/holidays/tet-ong-cong-ong-tao.jpg",
+    src: "/holidays/tet-ong-cong-ong-tao.png",
     alt: {
       vi: "Tết Ông Công Ông Táo",
       en: "Kitchen Gods Festival",
@@ -580,28 +584,28 @@ const LUNAR_HOLIDAY_IMAGES: Record<string, HolidayVisual> = {
 
 const DYNAMIC_HOLIDAY_IMAGES: Record<string, HolidayVisual> = {
   easter: {
-    src: "/holidays/le-phuc-sinh.jpg",
+    src: "/holidays/le-phuc-sinh.png",
     alt: {
       vi: "Lễ Phục Sinh",
       en: "Easter Sunday",
     },
   },
   "mothers-day": {
-    src: "/holidays/ngay-cua-me.jpg",
+    src: "/holidays/ngay-cua-me.png",
     alt: {
       vi: "Ngày của Mẹ",
       en: "Mother's Day",
     },
   },
   "fathers-day": {
-    src: "/holidays/ngay-cua-cha.jpg",
+    src: "/holidays/ngay-cua-cha.png",
     alt: {
       vi: "Ngày của Cha",
       en: "Father's Day",
     },
   },
   "earth-hour": {
-    src: "/holidays/gio-trai-dat.jpg",
+    src: "/holidays/gio-trai-dat.png",
     alt: {
       vi: "Giờ Trái Đất",
       en: "Earth Hour",
@@ -876,6 +880,36 @@ function getLunarKey(date: Date) {
   const month = String(Math.abs(lunar.getMonth())).padStart(2, "0");
   const day = String(lunar.getDay()).padStart(2, "0");
   return `${month}-${day}`;
+}
+
+// Những ngày lễ "quan trọng" được hiển thị modal chúc mừng kèm bóng bay + pháo hoa.
+// Ngày lễ thường vẫn hiện modal thông thường (chỉ có bóng bay) như cũ.
+const IMPORTANT_SOLAR_HOLIDAYS = new Set([
+  "01-01", // Tết Dương lịch
+  "04-30", // Ngày Giải phóng miền Nam, thống nhất đất nước
+  "05-01", // Ngày Quốc tế Lao động
+  "09-02", // Quốc khánh nước CHXHCN Việt Nam
+  "12-24", // Đêm Giáng sinh
+  "12-25", // Lễ Giáng sinh
+  "12-31", // Đêm Giao thừa Dương lịch
+]);
+
+const IMPORTANT_LUNAR_HOLIDAYS = new Set([
+  "01-01", // Tết Nguyên Đán (mùng 1)
+  "01-02", // Mùng 2 Tết Nguyên Đán
+  "01-03", // Mùng 3 Tết Nguyên Đán
+  "01-15", // Tết Nguyên Tiêu
+  "03-10", // Giỗ Tổ Hùng Vương
+  "08-15", // Tết Trung Thu
+  "12-23", // Tết Ông Công Ông Táo
+]);
+
+function isImportantHoliday(date: Date) {
+  if (isLunarNewYearEve(date)) return true; // Đêm Giao thừa âm lịch
+
+  if (IMPORTANT_SOLAR_HOLIDAYS.has(getDateKey(date))) return true;
+
+  return IMPORTANT_LUNAR_HOLIDAYS.has(getLunarKey(date));
 }
 
 function isLunarNewYearEve(date: Date) {
@@ -1426,6 +1460,179 @@ function getLunarDayLabel(date: Date) {
   return `${lunar.getDay()}/${Math.abs(lunar.getMonth())}`;
 }
 
+// =========================================================
+// VẠN NIÊN - CAN CHI, TIẾT KHÍ, GIỜ HOÀNG ĐẠO, PHA TRĂNG
+// =========================================================
+
+const GAN_HAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+const GAN_VIET = [
+  "Giáp",
+  "Ất",
+  "Bính",
+  "Đinh",
+  "Mậu",
+  "Kỷ",
+  "Canh",
+  "Tân",
+  "Nhâm",
+  "Quý",
+];
+
+const ZHI_HAN = [
+  "子",
+  "丑",
+  "寅",
+  "卯",
+  "辰",
+  "巳",
+  "午",
+  "未",
+  "申",
+  "酉",
+  "戌",
+  "亥",
+];
+const ZHI_VIET = [
+  "Tý",
+  "Sửu",
+  "Dần",
+  "Mão",
+  "Thìn",
+  "Tỵ",
+  "Ngọ",
+  "Mùi",
+  "Thân",
+  "Dậu",
+  "Tuất",
+  "Hợi",
+];
+
+// Chuyển Can Chi chữ Hán (ví dụ "甲子") sang tiếng Việt ("Giáp Tý")
+function toVietnameseCanChi(ganZhi: string) {
+  return ganZhi
+    .split("")
+    .map((char) => {
+      const ganIndex = GAN_HAN.indexOf(char);
+      if (ganIndex >= 0) return GAN_VIET[ganIndex];
+      const zhiIndex = ZHI_HAN.indexOf(char);
+      if (zhiIndex >= 0) return ZHI_VIET[zhiIndex];
+      return char;
+    })
+    .join(" ");
+}
+
+// 24 tiết khí: tên Hán → tên Việt
+const JIE_QI_VIET: Record<string, string> = {
+  立春: "Lập xuân",
+  雨水: "Vũ thủy",
+  惊蛰: "Kinh trập",
+  春分: "Xuân phân",
+  清明: "Thanh minh",
+  谷雨: "Cốc vũ",
+  立夏: "Lập hạ",
+  小满: "Tiểu mãn",
+  芒种: "Mang chủng",
+  夏至: "Hạ chí",
+  小暑: "Tiểu thử",
+  大暑: "Đại thử",
+  立秋: "Lập thu",
+  处暑: "Xử thử",
+  白露: "Bạch lộ",
+  秋分: "Thu phân",
+  寒露: "Hàn lộ",
+  霜降: "Sương giáng",
+  立冬: "Lập đông",
+  小雪: "Tiểu tuyết",
+  大雪: "Đại tuyết",
+  冬至: "Đông chí",
+  小寒: "Tiểu hàn",
+  大寒: "Đại hàn",
+};
+
+// Thông tin vạn niên cho một ngày: can chi, tiết khí, pha trăng, giờ hoàng đạo
+function getAlmanacInfo(date: Date, language: Language) {
+  const solar = Solar.fromYmd(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+  );
+  const lunar = solar.getLunar();
+
+  const canChi =
+    language === "vi"
+      ? `${toVietnameseCanChi(lunar.getDayInGanZhi())} · ${toVietnameseCanChi(lunar.getMonthInGanZhi())} · ${toVietnameseCanChi(lunar.getYearInGanZhi())}`
+      : `${lunar.getDayInGanZhi()} · ${lunar.getMonthInGanZhi()} · ${lunar.getYearInGanZhi()}`;
+
+  let jieQi = language === "vi" ? "—" : "—";
+  try {
+    const raw = lunar.getPrevJieQi(true).getName();
+    jieQi =
+      language === "vi" ? (JIE_QI_VIET[raw] ?? raw) : raw;
+  } catch {
+    // bỏ qua lỗi đọc tiết khí
+  }
+
+  const day = lunar.getDay();
+  let moonIcon = "🌑";
+  let moonLabel = language === "vi" ? "Trăng mới (Sóc)" : "New moon";
+  if (day >= 2 && day <= 6) {
+    moonIcon = "🌒";
+    moonLabel =
+      language === "vi" ? "Trăng lưỡi liềm đầu tháng" : "Waxing crescent";
+  } else if (day >= 7 && day <= 9) {
+    moonIcon = "🌓";
+    moonLabel = language === "vi" ? "Trăng thượng huyền" : "First quarter";
+  } else if (day >= 10 && day <= 13) {
+    moonIcon = "🌔";
+    moonLabel = language === "vi" ? "Trăng gần tròn" : "Waxing gibbous";
+  } else if (day >= 14 && day <= 17) {
+    moonIcon = "🌕";
+    moonLabel = language === "vi" ? "Trăng tròn (Vọng)" : "Full moon";
+  } else if (day >= 18 && day <= 21) {
+    moonIcon = "🌖";
+    moonLabel = language === "vi" ? "Trăng khuyết cuối tháng" : "Waning gibbous";
+  } else if (day >= 22 && day <= 23) {
+    moonIcon = "🌗";
+    moonLabel = language === "vi" ? "Trăng hạ huyền" : "Last quarter";
+  } else if (day >= 24 && day <= 28) {
+    moonIcon = "🌘";
+    moonLabel =
+      language === "vi" ? "Trăng lưỡi liềm cuối tháng" : "Waning crescent";
+  }
+
+  // Giờ hoàng đạo: các giờ có thiên thần loại "黄道" (hoàng đạo)
+  const luckyHours = lunar
+    .getTimes()
+    .filter((time) => time.getTianShenType() === "黄道")
+    .map(
+      (time) =>
+        `${toVietnameseCanChi(time.getZhi())} (${time.getMinHm()}–${time.getMaxHm()})`,
+    );
+
+  return { canChi, jieQi, moonIcon, moonLabel, luckyHours };
+}
+
+// Tìm ngày lễ quan trọng kế tiếp (kể cả hôm nay), tìm tối đa 400 ngày tới
+function getUpcomingImportantHoliday(from: Date, language: Language) {
+  for (let i = 0; i < 400; i += 1) {
+    const date = new Date(
+      from.getFullYear(),
+      from.getMonth(),
+      from.getDate() + i,
+    );
+    if (!isImportantHoliday(date)) continue;
+
+    const name =
+      getSolarHoliday(date, language) ??
+      getCalendarNote(date, language) ??
+      getHolidayVisual(date, language)?.alt?.[language] ??
+      "";
+
+    return { date, name, daysUntil: i };
+  }
+  return null;
+}
+
 function getCalendarNote(date: Date, language: Language) {
   return getCalendarHolidays(date, language).join(" • ");
 }
@@ -1496,11 +1703,16 @@ export default function HomePage() {
   const [language, setLanguage] = useState<Language>("vi");
   const [theme, setTheme] = useState<Theme>("light");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [readAlertSignature, setReadAlertSignature] = useState("");
   const [windyOverlay, setWindyOverlay] = useState<WindyOverlay>("wind");
+  const [notifyPermission, setNotifyPermission] =
+    useState<NotificationPermission | "unsupported">("default");
+  const [shareBusy, setShareBusy] = useState(false);
+  const lastNotifiedSignatureRef = useRef<string | null>(null);
 
   const [coordinates, setCoordinates] =
     useState<Coordinates>(defaultCoordinates);
@@ -1537,11 +1749,31 @@ export default function HomePage() {
   const [todayHolidayTitle, setTodayHolidayTitle] = useState<string | null>(
     null,
   );
-  const [effectsConfig, setEffectsConfig] = useState<any>(null);
+  const [todayHolidayImportant, setTodayHolidayImportant] = useState(false);
+  const [effectsConfig, setEffectsConfig] =
+    useState<HolidayEffectsConfig | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const text = translations[language];
   const isSelectedToday = isSameDate(selectedDate, currentTime);
+
+  // Đếm ngược đến ngày lễ quan trọng kế tiếp (chỉ tính lại khi sang ngày mới)
+  const todayStamp = `${currentTime.getFullYear()}-${currentTime.getMonth()}-${currentTime.getDate()}`;
+  const upcomingHoliday = useMemo(
+    () => getUpcomingImportantHoliday(new Date(), language),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [todayStamp, language],
+  );
+
+  const openHolidayModal = useCallback(
+    (visual: HolidayVisual, title: string, important = false) => {
+      setTodayHolidayVisual(visual);
+      setTodayHolidayTitle(title);
+      setTodayHolidayImportant(important);
+      setHolidayModalOpen(true);
+    },
+    [],
+  );
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -1642,7 +1874,9 @@ export default function HomePage() {
       }
 
       try {
-        const savedEffects = window.localStorage.getItem("holiday-effects-config");
+        const savedEffects = window.localStorage.getItem(
+          "holiday-effects-config",
+        );
         if (savedEffects) setEffectsConfig(JSON.parse(savedEffects));
       } catch {}
 
@@ -1700,34 +1934,38 @@ export default function HomePage() {
 
     const dateKey = getDateKey(today);
     const dismissedKey = `holiday-dismissed-${dateKey}`;
-    const dismissedForeverKey = `${dismissedKey}-forever`;
+    const title =
+      getSolarHoliday(today, language) ??
+      getCalendarNote(today, language) ??
+      visual.alt?.[language] ??
+      "";
+    const important = isImportantHoliday(today);
+    let timerId = 0;
 
     try {
       const dismissed = window.localStorage.getItem(dismissedKey);
-      const forever = window.localStorage.getItem(dismissedForeverKey);
 
-      if (dismissed !== "1" && forever !== "1") {
-        setTodayHolidayVisual(visual);
-        const title =
-          getSolarHoliday(today, language) ??
-          getCalendarNote(today, language) ??
-          visual.alt?.[language] ??
-          "";
-        setTodayHolidayTitle(title);
-        setHolidayModalOpen(true);
+      if (dismissed !== "1") {
+        // Chỉ hiển thị 1 lần: nếu người dùng đã đóng (được lưu localStorage)
+        // thì không tự mở lại nữa cho đến khi sang ngày hôm sau.
+        // Dùng setTimeout để tránh gọi setState đồng bộ trong effect.
+        timerId = window.setTimeout(
+          () => openHolidayModal(visual, title, important),
+          0,
+        );
       }
     } catch {
       // ignore localStorage errors
-      setTodayHolidayVisual(visual);
-      const title =
-        getSolarHoliday(today, language) ??
-        getCalendarNote(today, language) ??
-        visual.alt?.[language] ??
-        "";
-      setTodayHolidayTitle(title);
-      setHolidayModalOpen(true);
+      timerId = window.setTimeout(
+        () => openHolidayModal(visual, title, important),
+        0,
+      );
     }
-  }, [hasMounted, language]);
+
+    return () => {
+      if (timerId) window.clearTimeout(timerId);
+    };
+  }, [hasMounted, language, openHolidayModal]);
 
   const loadWeather = useCallback(async () => {
     setWeatherLoading(true);
@@ -1854,6 +2092,39 @@ export default function HomePage() {
       document.removeEventListener("visibilitychange", refreshWhenVisible);
       window.removeEventListener("focus", refreshWhenVisible);
     };
+  }, [loadWeather]);
+
+  // Keyboard shortcuts: T = theme, L = language, R = refresh, G = forecast
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+
+      const key = event.key.toLowerCase();
+      if (key === "t") {
+        setTheme((previous) => (previous === "light" ? "dark" : "light"));
+      } else if (key === "l") {
+        setLanguage((previous) => (previous === "vi" ? "en" : "vi"));
+      } else if (key === "r") {
+        void loadWeather();
+      } else if (key === "g") {
+        document
+          .getElementById("forecast")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [loadWeather]);
 
   async function handleMapSelect(selected: Coordinates) {
@@ -2023,6 +2294,27 @@ export default function HomePage() {
       });
   }, [currentTime, weather]);
 
+  const next48Hours = useMemo<SunCardHour[]>(() => {
+    if (!weather) return [];
+    const now = currentTime.getTime();
+    const startIndex = weather.hourly.time.findIndex(
+      (time) => new Date(time).getTime() >= now,
+    );
+    const safeStartIndex = startIndex >= 0 ? startIndex : 0;
+
+    return weather.hourly.time
+      .slice(safeStartIndex, safeStartIndex + 48)
+      .map((time, relativeIndex) => {
+        const index = safeStartIndex + relativeIndex;
+        return {
+          time,
+          temperature: weather.hourly.temperature_2m[index],
+          rainChance: weather.hourly.precipitation_probability[index] ?? 0,
+          uvIndex: weather.hourly.uv_index[index] ?? 0,
+        };
+      });
+  }, [currentTime, weather]);
+
   const currentHourIndex = useMemo(() => {
     if (!weather) return 0;
     const now = currentTime.getTime();
@@ -2122,6 +2414,144 @@ export default function HomePage() {
       currentAlertSignature,
     );
   }
+
+  // Desktop notifications: push a notification when new weather alerts appear
+  useEffect(() => {
+    if (notifyPermission !== "granted") return;
+    if (weatherAlerts.length === 0) return;
+
+    const signature = currentAlertSignature;
+    if (lastNotifiedSignatureRef.current === signature) return;
+    lastNotifiedSignatureRef.current = signature;
+
+    try {
+      const body =
+        weatherAlerts.length === 1
+          ? weatherAlerts[0]
+          : language === "vi"
+            ? `${weatherAlerts.length} cảnh báo thời tiết mới`
+            : `${weatherAlerts.length} new weather alerts`;
+      const notification = new Notification(
+        language === "vi"
+          ? "WeatherNow — Cảnh báo thời tiết"
+          : "WeatherNow — Weather alert",
+        { body },
+      );
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    } catch {
+      // Notifications unavailable
+    }
+  }, [currentAlertSignature, weatherAlerts, notifyPermission, language]);
+
+  // Build a shareable weather card image
+  const shareWeatherCard = useCallback(async () => {
+    if (!weather || shareBusy) return;
+    setShareBusy(true);
+
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1200;
+      canvas.height = 675;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const isNight = weather.current.is_day !== 1;
+      const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      if (isNight) {
+        sky.addColorStop(0, "#0f172a");
+        sky.addColorStop(1, "#1e3a5f");
+      } else {
+        sky.addColorStop(0, "#38bdf8");
+        sky.addColorStop(1, "#0ea5e9");
+      }
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.beginPath();
+      ctx.arc(1020, 130, 60, 0, Math.PI * 2);
+      ctx.fillStyle = isNight ? "rgba(226, 232, 240, 0.9)" : "rgba(253, 230, 138, 0.95)";
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+      ctx.font = "600 30px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillText(locationName, 80, 120);
+      ctx.font = "400 22px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.fillText(
+        new Intl.DateTimeFormat(language === "vi" ? "vi-VN" : "en-US", {
+          weekday: "long",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).format(currentTime),
+        80,
+        158,
+      );
+
+      ctx.font = "700 150px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(`${Math.round(weather.current.temperature_2m)}°`, 80, 340);
+
+      ctx.font = "500 34px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+      ctx.fillText(
+        getWeatherDescription(weather.current.weather_code, language),
+        80,
+        400,
+      );
+
+      ctx.font = "400 24px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+      const hi = weather.daily.temperature_2m_max[0] ?? weather.current.temperature_2m;
+      const lo = weather.daily.temperature_2m_min[0] ?? weather.current.temperature_2m;
+      const rain = weather.daily.precipitation_probability_max[0] ?? 0;
+      const sunriseText = weather.daily.sunrise[0]?.slice(11, 16) ?? "--:--";
+      const sunsetText = weather.daily.sunset[0]?.slice(11, 16) ?? "--:--";
+      ctx.fillText(
+        `↑${Math.round(hi)}°  ↓${Math.round(lo)}°   ·   ☔ ${rain}%   ·   ☀ ${sunriseText} → ${sunsetText}`,
+        80,
+        470,
+      );
+
+      ctx.font = "400 20px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.fillText("WeatherNow", 80, 620);
+
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/png"),
+      );
+      if (!blob) return;
+
+      const fileName = `weathernow-${locationName.replace(/\s+/g, "-").toLowerCase()}.png`;
+
+      if (
+        typeof navigator.canShare === "function" &&
+        typeof navigator.share === "function"
+      ) {
+        const file = new File([blob], fileName, { type: "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: "WeatherNow",
+            text: `${locationName} — ${Math.round(weather.current.temperature_2m)}°`,
+          });
+          return;
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setShareBusy(false);
+    }
+  }, [weather, shareBusy, locationName, language, currentTime]);
 
   function saveCurrentFavorite() {
     const exists = favorites.some(
@@ -2464,6 +2894,7 @@ export default function HomePage() {
 
   return (
     <main className="wn-app">
+      {weather && <WeatherFX scene={weatherScene} />}
       <div className="wn-bubble-scene" aria-hidden="true">
         {bubbleData.map((bubble) => {
           const bubbleStyle: CSSProperties = {
@@ -2476,7 +2907,9 @@ export default function HomePage() {
             ["--bubble-drift" as string]: `${bubble.drift}px`,
           };
 
-          return <span key={bubble.id} className="wn-bubble" style={bubbleStyle} />;
+          return (
+            <span key={bubble.id} className="wn-bubble" style={bubbleStyle} />
+          );
         })}
       </div>
 
@@ -2530,27 +2963,40 @@ export default function HomePage() {
           </nav>
 
           <div className="wn-actions">
-            <select
-              className="wn-select"
-              value={temperatureUnit}
-              onChange={(event) =>
-                setTemperatureUnit(event.target.value as TemperatureUnit)
-              }
-              aria-label="Temperature unit"
+            <div
+              className={`wn-actions-settings ${actionsMenuOpen ? "is-open" : ""}`}
             >
-              <option value="celsius">°C</option>
-              <option value="fahrenheit">°F</option>
-            </select>
+            <div className="wn-action-row">
+              <span className="wn-actions-label">
+                {language === "vi" ? "Nhiệt độ" : "Temperature"}
+              </span>
+              <select
+                className="wn-select"
+                value={temperatureUnit}
+                onChange={(event) =>
+                  setTemperatureUnit(event.target.value as TemperatureUnit)
+                }
+                aria-label="Temperature unit"
+              >
+                <option value="celsius">°C</option>
+                <option value="fahrenheit">°F</option>
+              </select>
+            </div>
 
-            <select
-              className="wn-select wn-select--wind"
-              value={windUnit}
-              onChange={(event) => setWindUnit(event.target.value as WindUnit)}
-              aria-label="Wind unit"
-            >
-              <option value="kmh">km/h</option>
-              <option value="ms">m/s</option>
-            </select>
+            <div className="wn-action-row">
+              <span className="wn-actions-label">
+                {language === "vi" ? "Gió" : "Wind"}
+              </span>
+              <select
+                className="wn-select wn-select--wind"
+                value={windUnit}
+                onChange={(event) => setWindUnit(event.target.value as WindUnit)}
+                aria-label="Wind unit"
+              >
+                <option value="kmh">km/h</option>
+                <option value="ms">m/s</option>
+              </select>
+            </div>
 
             <button
               type="button"
@@ -2561,7 +3007,81 @@ export default function HomePage() {
               aria-label="Đổi ngôn ngữ"
             >
               <Languages size={18} />
+              <span className="wn-actions-label">
+                {language === "vi" ? "Ngôn ngữ" : "Language"}
+              </span>
               <span>{language.toUpperCase()}</span>
+            </button>
+
+            <button
+              type="button"
+              className={`wn-icon-button ${notifyPermission === "granted" ? "wn-icon-button--on" : ""}`}
+              onClick={async () => {
+                if (notifyPermission === "unsupported") return;
+                if (notifyPermission === "granted") return;
+                try {
+                  const result = await Notification.requestPermission();
+                  setNotifyPermission(result);
+                  if (result === "granted") {
+                    new Notification(
+                      language === "vi"
+                        ? "WeatherNow — Đã bật thông báo!"
+                        : "WeatherNow — Notifications enabled!",
+                      {
+                        body:
+                          language === "vi"
+                            ? "Bạn sẽ nhận cảnh báo thời tiết ngay khi có."
+                            : "You will receive weather alerts as they happen.",
+                      },
+                    );
+                  }
+                } catch {
+                  // ignore
+                }
+              }}
+              title={
+                notifyPermission === "granted"
+                  ? language === "vi"
+                    ? "Thông báo đã bật"
+                    : "Notifications on"
+                  : notifyPermission === "unsupported"
+                    ? language === "vi"
+                      ? "Trình duyệt không hỗ trợ thông báo"
+                      : "Notifications not supported"
+                    : language === "vi"
+                      ? "Bật thông báo cảnh báo thời tiết"
+                      : "Enable weather alerts"
+              }
+              aria-label="Bật thông báo thời tiết"
+            >
+              <Bell size={18} />
+              <span className="wn-actions-label">
+                {notifyPermission === "granted"
+                  ? language === "vi"
+                    ? "Đã bật thông báo"
+                    : "Notifications on"
+                  : language === "vi"
+                    ? "Bật thông báo"
+                    : "Enable alerts"}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="wn-icon-button"
+              onClick={() => void shareWeatherCard()}
+              disabled={shareBusy || !weather}
+              title={
+                language === "vi"
+                  ? "Tạo ảnh chia sẻ thời tiết"
+                  : "Create shareable weather image"
+              }
+              aria-label="Chia sẻ ảnh thời tiết"
+            >
+              <Share2 size={18} />
+              <span className="wn-actions-label">
+                {language === "vi" ? "Chia sẻ ảnh" : "Share image"}
+              </span>
             </button>
 
             <button
@@ -2573,8 +3093,21 @@ export default function HomePage() {
                 )
               }
               aria-label="Đổi giao diện sáng tối"
+              title={language === "vi" ? "Đổi giao diện (T)" : "Toggle theme (T)"}
             >
               {theme === "light" ? <Moon size={19} /> : <Sun size={19} />}
+              <span className="wn-actions-label">
+                {language === "vi" ? "Giao diện" : "Theme"}
+              </span>
+              <span className="wn-actions-value">
+                {theme === "light"
+                  ? language === "vi"
+                    ? "Sáng"
+                    : "Light"
+                  : language === "vi"
+                    ? "Tối"
+                    : "Dark"}
+              </span>
             </button>
 
             {holidayModalOpen && todayHolidayVisual && todayHolidayTitle ? (
@@ -2583,7 +3116,17 @@ export default function HomePage() {
                   src={todayHolidayVisual.src}
                   alt={todayHolidayVisual.alt?.[language] ?? todayHolidayTitle}
                   title={todayHolidayTitle}
-                  dismissKey={`holiday-dismissed-${getDateKey(new Date())}`}
+                  celebration={todayHolidayImportant}
+                  greeting={
+                    language === "vi"
+                      ? `Chúc mừng ${todayHolidayTitle}!`
+                      : `Happy ${todayHolidayTitle}!`
+                  }
+                  subtitle={
+                    language === "vi"
+                      ? "Chúc bạn và gia đình một ngày lễ thật vui vẻ, an lành và tràn ngập hạnh phúc!"
+                      : "Wishing you and your family a joyful, peaceful and happy holiday!"
+                  }
                   onClose={() => {
                     const key = `holiday-dismissed-${getDateKey(new Date())}`;
                     try {
@@ -2604,14 +3147,25 @@ export default function HomePage() {
                   ]);
                   // If effectsConfig exists, prefer its settings per holiday
                   const cfgKey = `holiday-effects-config`;
-                  let cfg = null;
+                  let cfg: HolidayEffectsConfig | null = null;
                   try {
-                    cfg = effectsConfig ?? (window.localStorage.getItem(cfgKey) ? JSON.parse(window.localStorage.getItem(cfgKey) as string) : null);
+                    cfg =
+                      effectsConfig ??
+                      (window.localStorage.getItem(cfgKey)
+                        ? (JSON.parse(
+                            window.localStorage.getItem(cfgKey) as string,
+                          ) as HolidayEffectsConfig)
+                        : null);
                   } catch {
                     cfg = effectsConfig;
                   }
 
-                  if (cfg && cfg.holidays && cfg.holidays[k] && cfg.holidays[k].enabled) {
+                  if (
+                    cfg &&
+                    cfg.holidays &&
+                    cfg.holidays[k] &&
+                    cfg.holidays[k].enabled
+                  ) {
                     const e = cfg.holidays[k].effects;
                     const snow = e.snow || { density: 1, wind: 0.3, layers: 3 };
                     const confetti = e.confetti || { count: 0, colors: [] };
@@ -2620,10 +3174,25 @@ export default function HomePage() {
 
                     return (
                       <>
-                        {snow ? <AdvancedSnow density={snow.density} wind={snow.wind} layers={snow.layers} /> : null}
-                        {confetti && confetti.count > 0 ? <ConfettiSVG count={confetti.count} colors={confetti.colors} /> : null}
-                        {fireworks && fireworks.enabled ? <Fireworks max={4} /> : null}
-                        {lanterns && lanterns.enabled ? <Lanterns count={8} /> : null}
+                        {snow ? (
+                          <AdvancedSnow
+                            density={snow.density}
+                            wind={snow.wind}
+                            layers={snow.layers}
+                          />
+                        ) : null}
+                        {confetti && confetti.count > 0 ? (
+                          <ConfettiSVG
+                            count={confetti.count}
+                            colors={confetti.colors}
+                          />
+                        ) : null}
+                        {fireworks && fireworks.enabled ? (
+                          <Fireworks max={4} />
+                        ) : null}
+                        {lanterns && lanterns.enabled ? (
+                          <Lanterns count={8} />
+                        ) : null}
                       </>
                     );
                   }
@@ -2633,9 +3202,41 @@ export default function HomePage() {
               </>
             ) : null}
 
-            <button type="button" className="wn-icon-button" aria-label="Cài đặt hiệu ứng" onClick={() => setSettingsOpen(true)}>
+            <button
+              type="button"
+              className="wn-icon-button"
+              aria-label="Cài đặt hiệu ứng"
+              onClick={() => setSettingsOpen(true)}
+            >
               <Settings size={18} />
+              <span className="wn-actions-label">
+                {language === "vi" ? "Hiệu ứng ngày lễ" : "Holiday effects"}
+              </span>
             </button>
+            </div>
+
+            <div className="wn-popover-anchor wn-more-anchor">
+              {actionsMenuOpen && (
+                <button
+                  type="button"
+                  className="wn-popover-backdrop"
+                  onClick={() => setActionsMenuOpen(false)}
+                  aria-label="Đóng menu cài đặt"
+                />
+              )}
+
+              <button
+                type="button"
+                className={`wn-more-button ${actionsMenuOpen ? "is-open" : ""}`}
+                onClick={() => setActionsMenuOpen((previous) => !previous)}
+                aria-label={
+                  language === "vi" ? "Mở menu cài đặt" : "Open settings menu"
+                }
+                aria-expanded={actionsMenuOpen}
+              >
+                <ChevronDown className="chevron" size={20} />
+              </button>
+            </div>
 
             <div className="wn-popover-anchor">
               <button
@@ -2669,29 +3270,8 @@ export default function HomePage() {
                       <div>
                         <strong>
                           {language === "vi"
-                      </>
+                            ? "Địa điểm yêu thích"
                             : "Favorite locations"}
-                    {/* Holiday-scoped visual effects for the hero */}
-                    {(() => {
-                      const today = new Date();
-                      const k = getDateKey(today);
-                      const lunarK = getLunarKey(today);
-                      const snowDays = new Set(["12-24", "12-25", "12-31", "01-01"]);
-                      const confettiDays = new Set(["01-01", "01-02", "05-01"]);
-                      const fireworksDays = new Set(["12-31"]);
-                      const lanternDays = new Set(["01-01"]);
-
-                      return (
-                        <>
-                          {snowDays.has(k) ? <AdvancedSnow wind={0.3} layers={3} /> : null}
-                          {confettiDays.has(k) || lanternDays.has(lunarK) ? (
-                            <ConfettiSVG count={48} />
-                          ) : null}
-                          {fireworksDays.has(k) ? <Fireworks max={4} /> : null}
-                          {lanternDays.has(lunarK) ? <Lanterns count={10} /> : null}
-                        </>
-                      );
-                    })()}
                         </strong>
                         <small>
                           {favorites.length}/8{" "}
@@ -3243,7 +3823,22 @@ export default function HomePage() {
               </div>
 
               {selectedCalendarHolidayVisual && (
-                <div className="wn-time-card__banner">
+                <button
+                  type="button"
+                  className="wn-time-card__banner"
+                  onClick={() => {
+                    const title =
+                      selectedCalendarHoliday ??
+                      selectedCalendarHolidayVisual.alt[language] ??
+                      "";
+                    openHolidayModal(selectedCalendarHolidayVisual, title);
+                  }}
+                  aria-label={
+                    language === "vi"
+                      ? "Xem chi tiết ngày lễ"
+                      : "View holiday details"
+                  }
+                >
                   <img
                     src={selectedCalendarHolidayVisual.src}
                     alt={selectedCalendarHolidayVisual.alt[language]}
@@ -3255,7 +3850,7 @@ export default function HomePage() {
                     }}
                   />
                   <span className="wn-time-card__banner-overlay" />
-                </div>
+                </button>
               )}
             </article>
 
@@ -3329,6 +3924,55 @@ export default function HomePage() {
                 <CloudRain size={28} />
               </span>
             </article>
+
+            {upcomingHoliday ? (
+              <article className="wn-panel wn-mini-card wn-mini-card--upcoming">
+                <div>
+                  <span>
+                    {language === "vi" ? "Sắp đến ngày lễ" : "Upcoming holiday"}
+                  </span>
+                  <strong>
+                    {upcomingHoliday.daysUntil === 0
+                      ? language === "vi"
+                        ? "Hôm nay! 🎉"
+                        : "Today! 🎉"
+                      : upcomingHoliday.daysUntil === 1
+                        ? language === "vi"
+                          ? "Ngày mai! 🎉"
+                          : "Tomorrow! 🎉"
+                        : language === "vi"
+                          ? `Còn ${upcomingHoliday.daysUntil} ngày`
+                          : `In ${upcomingHoliday.daysUntil} days`}
+                  </strong>
+                  <small>{upcomingHoliday.name}</small>
+                </div>
+                <button
+                  type="button"
+                  className="wn-mini-card__icon wn-mini-card__icon--holiday"
+                  onClick={() => {
+                    const visual = getHolidayVisual(
+                      upcomingHoliday.date,
+                      language,
+                    );
+                    if (visual) {
+                      openHolidayModal(visual, upcomingHoliday.name, true);
+                    }
+                  }}
+                  aria-label={
+                    language === "vi"
+                      ? "Xem trước ngày lễ"
+                      : "Preview holiday"
+                  }
+                  title={
+                    language === "vi"
+                      ? "Bấm để xem modal chúc mừng"
+                      : "Preview celebration modal"
+                  }
+                >
+                  🎊
+                </button>
+              </article>
+            ) : null}
           </div>
         </section>
 
@@ -3512,6 +4156,17 @@ export default function HomePage() {
           </section>
         )}
 
+        {weather && next48Hours.length > 1 && weather.daily.sunrise[0] && weather.daily.sunset[0] && (
+          <SunCard
+            sunrise={weather.daily.sunrise[0]}
+            sunset={weather.daily.sunset[0]}
+            uvIndex={currentUv}
+            hours={next48Hours}
+            currentTime={currentTime}
+            language={language}
+          />
+        )}
+
         <section className="wn-panel wn-suggestions">
           <div className="wn-section-heading">
             <div>
@@ -3658,7 +4313,10 @@ export default function HomePage() {
           <span>Windy</span>
         </a>
       </nav>
-      <HolidayEffectsSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <HolidayEffectsSettings
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
     </main>
   );
 }
@@ -3714,6 +4372,19 @@ function CalendarModal({
   const selectedHoliday = getCalendarNote(selectedDate, language);
   const selectedHolidayVisual = getHolidayVisual(selectedDate, language);
   const countdownLabel = getDateCountdownLabel(selectedDate, language);
+
+  // Thông tin vạn niên cho ngày đang chọn (can chi, tiết khí, pha trăng, giờ hoàng đạo)
+  const almanacYear = selectedDate.getFullYear();
+  const almanacMonth = selectedDate.getMonth();
+  const almanacDay = selectedDate.getDate();
+  const almanac = useMemo(
+    () =>
+      getAlmanacInfo(
+        new Date(almanacYear, almanacMonth, almanacDay),
+        language,
+      ),
+    [almanacYear, almanacMonth, almanacDay, language],
+  );
 
   if (!open) return null;
 
@@ -3922,6 +4593,29 @@ function CalendarModal({
               <div className="wn-calendar-light-lunar-chip">
                 <Moon size={17} />
                 <span>{getLunarDate(selectedDate, language)}</span>
+              </div>
+
+              <div className="wn-calendar-light-almanac">
+                <div className="wn-calendar-light-almanac__row">
+                  <small>Can chi</small>
+                  <strong>{almanac.canChi}</strong>
+                </div>
+                <div className="wn-calendar-light-almanac__row">
+                  <small>Tiết khí</small>
+                  <strong>{almanac.jieQi}</strong>
+                </div>
+                <div className="wn-calendar-light-almanac__row">
+                  <small>Pha trăng</small>
+                  <strong>
+                    {almanac.moonIcon} {almanac.moonLabel}
+                  </strong>
+                </div>
+                {almanac.luckyHours.length > 0 ? (
+                  <div className="wn-calendar-light-almanac__hours">
+                    <small>Giờ hoàng đạo</small>
+                    <span>{almanac.luckyHours.join(" · ")}</span>
+                  </div>
+                ) : null}
               </div>
 
               <div className="wn-calendar-light-countdown">

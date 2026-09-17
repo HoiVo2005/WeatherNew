@@ -6,7 +6,36 @@ const net = require('net');
 
 let mainWindow;
 let nextServer;
+let widgetWindow;
 const PORT = 3210;
+
+function toggleWidget() {
+  if (widgetWindow && !widgetWindow.isDestroyed()) {
+    widgetWindow.close();
+    widgetWindow = null;
+    return;
+  }
+
+  widgetWindow = new BrowserWindow({
+    width: 320,
+    height: 220,
+    frame: false,
+    alwaysOnTop: true,
+    resizable: false,
+    skipTaskbar: true,
+    backgroundColor: '#0f2540',
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  widgetWindow.loadURL(`http://127.0.0.1:${PORT}/widget`);
+  widgetWindow.on('closed', () => {
+    widgetWindow = null;
+  });
+}
 
 function waitForPort(port, host = '127.0.0.1', timeout = 30000) {
   const started = Date.now();
@@ -103,6 +132,8 @@ function createMenu() {
         { role: 'zoomIn', label: 'Phóng to' },
         { role: 'zoomOut', label: 'Thu nhỏ' },
         { role: 'resetZoom', label: 'Kích thước mặc định' },
+        { type: 'separator' },
+        { label: 'Mini Widget', accelerator: 'CmdOrCtrl+Shift+W', click: toggleWidget },
       ],
     },
   ];

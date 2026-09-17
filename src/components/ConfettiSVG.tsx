@@ -2,6 +2,17 @@
 
 import React from "react";
 
+// Bộ sinh số ngẫu nhiên theo seed (thuần túy - pure) để không gọi Math.random()
+// trong render (vi phạm react-hooks/purity) và giúp confetti ổn định khi re-render.
+function createSeededRandom(seed: number) {
+  let s = seed % 2147483647;
+  if (s <= 0) s += 2147483646;
+  return () => {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
 export default function ConfettiSVG({
   count = 30,
   colors: customColors,
@@ -13,15 +24,18 @@ export default function ConfettiSVG({
     customColors && customColors.length > 0
       ? customColors
       : ["#ff6b6b", "#ffd93d", "#6bffb8", "#4d8cff", "#ff89d1", "#9b59b6"];
-  const pieces = Array.from({ length: count }, (_, i) => ({
-    id: i,
-    left: Math.random() * 100,
-    delay: Math.random() * 2,
-    dur: 2 + Math.random() * 2,
-    size: 6 + Math.random() * 12,
-    color: colors[Math.floor(Math.random() * colors.length)],
-    rotate: Math.random() * 360,
-  }));
+  const pieces = Array.from({ length: count }, (_, i) => {
+    const rand = createSeededRandom(i * 7919 + 13);
+    return {
+      id: i,
+      left: rand() * 100,
+      delay: rand() * 2,
+      dur: 2 + rand() * 2,
+      size: 6 + rand() * 12,
+      color: colors[Math.floor(rand() * colors.length) % colors.length],
+      rotate: rand() * 360,
+    };
+  });
 
   return (
     <svg

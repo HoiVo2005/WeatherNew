@@ -18,6 +18,7 @@ export default function AdvancedSnow({
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const safeCtx = ctx;
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
@@ -61,14 +62,14 @@ export default function AdvancedSnow({
     function update(now: number) {
       const dt = (now - last) / 16.666;
       last = now;
-      ctx.clearRect(0, 0, width, height);
+      safeCtx.clearRect(0, 0, width, height);
 
       // draw layered flakes with parallax effect
       for (let l = 0; l < layerCount; l++) {
-        ctx.save();
+        safeCtx.save();
         const depth = 1 + l * 0.5;
-        ctx.globalAlpha = 0.9 - l * 0.2;
-        ctx.fillStyle = "#ffffff";
+        safeCtx.globalAlpha = 0.9 - l * 0.2;
+        safeCtx.fillStyle = "#ffffff";
         for (let i = 0; i < flakes.length; i++) {
           const f = flakes[i];
           if (f.layer !== l) continue;
@@ -80,11 +81,11 @@ export default function AdvancedSnow({
             f.y = -10;
             f.x = Math.random() * width;
           }
-          ctx.beginPath();
-          ctx.arc(f.x, f.y, f.r * (1 + l * 0.15), 0, Math.PI * 2);
-          ctx.fill();
+          safeCtx.beginPath();
+          safeCtx.arc(f.x, f.y, f.r * (1 + l * 0.15), 0, Math.PI * 2);
+          safeCtx.fill();
         }
-        ctx.restore();
+        safeCtx.restore();
       }
 
       raf = requestAnimationFrame(update);

@@ -10,6 +10,7 @@ export default function Fireworks({ max = 3 }: { max?: number }) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const safeCtx = ctx;
 
     let w = (canvas.width = window.innerWidth);
     let h = (canvas.height = window.innerHeight);
@@ -58,7 +59,7 @@ export default function Fireworks({ max = 3 }: { max?: number }) {
 
     function loop() {
       tick++;
-      ctx.clearRect(0, 0, w, h);
+      safeCtx.clearRect(0, 0, w, h);
       for (let b = bursts.length - 1; b >= 0; b--) {
         const arr = bursts[b];
         for (let i = arr.length - 1; i >= 0; i--) {
@@ -67,11 +68,11 @@ export default function Fireworks({ max = 3 }: { max?: number }) {
           p.y += p.vy;
           p.vy += 0.02; // gravity
           p.life -= 1;
-          ctx.fillStyle = p.color;
-          ctx.globalAlpha = Math.max(0, p.life / 80);
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
-          ctx.fill();
+          safeCtx.fillStyle = p.color;
+          safeCtx.globalAlpha = Math.max(0, p.life / 80);
+          safeCtx.beginPath();
+          safeCtx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+          safeCtx.fill();
           if (p.life <= 0) arr.splice(i, 1);
         }
         if (arr.length === 0) bursts.splice(b, 1);
