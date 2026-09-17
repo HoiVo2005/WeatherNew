@@ -558,7 +558,8 @@ a {
   background: transparent;
   color: var(--wn-text);
   outline: 0;
-  font-size: 14px;
+  /* Keep >= 16px on touch devices to prevent iOS auto-zoom on focus */
+  font-size: 16px;
 }
 
 @media (max-width: 600px) {
@@ -2228,7 +2229,8 @@ a {
   }
 
   .wn-search input {
-    font-size: 12px;
+    /* Must stay >= 16px on touch devices, otherwise iOS auto-zooms on focus */
+    font-size: 16px;
   }
 
   .wn-location-button {
