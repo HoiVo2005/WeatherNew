@@ -55,6 +55,9 @@ import Fireworks from "@/components/Fireworks";
 import HolidayEffectsSettings from "@/components/HolidayEffectsSettings";
 import WeatherFX from "@/components/WeatherFX";
 import SunCard, { type SunCardHour } from "@/components/SunCard";
+import WindCompass from "@/components/WindCompass";
+import HistoryChart, { type HistoryEntry } from "@/components/HistoryChart";
+import ComparePanel from "@/components/ComparePanel";
 import { Settings, Share2 } from "lucide-react";
 import type { HolidayEffectsConfig } from "@/types/holiday-effects";
 
@@ -1550,6 +1553,62 @@ const JIE_QI_VIET: Record<string, string> = {
 };
 
 // Thông tin vạn niên cho một ngày: can chi, tiết khí, pha trăng, giờ hoàng đạo
+// Bảng dịch các mục 宜 (nên làm) / 忌 (kiêng làm) sang tiếng Việt
+const YI_JI_VIET: Record<string, string> = {
+  祭祀: "Cúng lễ",
+  祈福: "Cầu phước",
+  求嗣: "Cầu con",
+  开光: "Khai quang",
+  出行: "Đi xa",
+  嫁娶: "Cưới hỏi",
+  纳采: "Dâng lễ cầu hôn",
+  订盟: "Đính ương",
+  订婚: "Đính ương",
+  领证: "Đăng ký kết hôn",
+  搬家: "Chuyển nhà",
+  移徙: "Di chuyển",
+  安床: "Đặt giường",
+  入宅: "Về nhà mới",
+  动土: "Động thổ",
+  起基: "Dựng móng",
+  上梁: "Đặt rường cột",
+  竖柱: "Dựng cột",
+  修造: "Sửa chữa nhà",
+  装修: "Tu bổ nhà",
+  盖屋: "Lợp mái nhà",
+  破土: "Phá đất",
+  安葬: "An táng",
+  立碑: "Dựng bia",
+  开市: "Khai trương",
+  交易: "Mua bán",
+  纳财: "Thu tiền của",
+  挂匾: "Treo biển hiệu",
+  栽种: "Trồng trọt",
+  纳畜: "Mua súc vật",
+  牧养: "Chăn nuôi",
+  治病: "Chữa bệnh",
+  求医: "Tìm thầy chữa bệnh",
+  探病: "Thăm bệnh",
+  破屋: "Phá dỡ nhà",
+  拆卸: "Tháo dỡ",
+  修坟: "Sửa mộ",
+  作灶: "Làm bếp",
+  扫舍: "Dọn nhà",
+  修路: "Làm đường",
+  伐木: "Chặt cây",
+  畋猎: "Săn bắn",
+  取渔: "Đánh cá",
+  开池: "Đào ao",
+  穿井: "Đào giếng",
+  补垣: "Vá tường",
+  造仓: "Xây kho",
+  理发: "Cắt tóc",
+  沐浴: "Tắm gội",
+  词讼: "Kiện tụng",
+  乘船: "Đi thuyền",
+  无: "Không",
+};
+
 function getAlmanacInfo(date: Date, language: Language) {
   const solar = Solar.fromYmd(
     date.getFullYear(),
@@ -1609,7 +1668,42 @@ function getAlmanacInfo(date: Date, language: Language) {
         `${toVietnameseCanChi(time.getZhi())} (${time.getMinHm()}–${time.getMaxHm()})`,
     );
 
-  return { canChi, jieQi, moonIcon, moonLabel, luckyHours };
+  // Ngày hoàng đạo / hắc đạo (thiên thần của ngày)
+  let dayLuck: "hoangDao" | "heiDao" = "hoangDao";
+  let dayLuckLabel =
+    language === "vi"
+      ? "Ngày hoàng đạo — tốt"
+      : "Yellow-path day — auspicious";
+  try {
+    const tianShenType = lunar.getDayTianShenType() ?? "";
+    if (tianShenType.includes("heiDao")) {
+      dayLuck = "heiDao";
+      dayLuckLabel =
+        language === "vi"
+          ? "Ngày hắc đạo — nên hạn chế"
+          : "Black-path day — be cautious";
+    }
+  } catch {
+    // bỏ qua lỗi
+  }
+
+  // Nên làm / Kiêng làm (dịch các mục 宜 / 忌 sang tiếng Việt)
+  const translateYiJi = (items: string[]) =>
+    items
+      .slice(0, 6)
+      .map((item) => YI_JI_VIET[item] ?? item)
+      .join(" · ");
+
+  let yi = "";
+  let ji = "";
+  try {
+    yi = translateYiJi(lunar.getDayYi());
+    ji = translateYiJi(lunar.getDayJi());
+  } catch {
+    // bỏ qua lỗi
+  }
+
+  return { canChi, jieQi, moonIcon, moonLabel, luckyHours, dayLuck, dayLuckLabel, yi, ji };
 }
 
 // Tìm ngày lễ quan trọng kế tiếp (kể cả hôm nay), tìm tối đa 400 ngày tới
@@ -1712,6 +1806,16 @@ export default function HomePage() {
   const [notifyPermission, setNotifyPermission] =
     useState<NotificationPermission | "unsupported">("default");
   const [shareBusy, setShareBusy] = useState(false);
+  const [weatherHistory, setWeatherHistory] = useState<HistoryEntry[]>(() => {
+    try {
+      if (typeof window === "undefined") return [];
+      return JSON.parse(
+        window.localStorage.getItem("weather-history") ?? "[]",
+      ) as HistoryEntry[];
+    } catch {
+      return [];
+    }
+  });
   const lastNotifiedSignatureRef = useRef<string | null>(null);
 
   const [coordinates, setCoordinates] =
@@ -2445,6 +2549,35 @@ export default function HomePage() {
       // Notifications unavailable
     }
   }, [currentAlertSignature, weatherAlerts, notifyPermission, language]);
+
+  // Ghi lịch sử nhiệt độ hằng ngày vào localStorage (tối đa 60 ngày)
+  useEffect(() => {
+    if (!weather) return;
+
+    const timer = window.setTimeout(() => {
+      try {
+        const now = new Date();
+        const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        const saved = JSON.parse(
+          window.localStorage.getItem("weather-history") ?? "[]",
+        ) as HistoryEntry[];
+        const next = saved.filter((entry) => entry.date !== key);
+        next.push({
+          date: key,
+          max: weather.daily.temperature_2m_max[0] ?? 0,
+          min: weather.daily.temperature_2m_min[0] ?? 0,
+        });
+        next.sort((a, b) => a.date.localeCompare(b.date));
+        const trimmed = next.slice(-60);
+        setWeatherHistory(trimmed);
+        window.localStorage.setItem("weather-history", JSON.stringify(trimmed));
+      } catch {
+        // bỏ qua lỗi
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [weather]);
 
   // Build a shareable weather card image
   const shareWeatherCard = useCallback(async () => {
@@ -4014,10 +4147,39 @@ export default function HomePage() {
                 label: text.pressure,
                 value: `${Math.round(weather.current.pressure_msl)} hPa`,
               },
-            ].map(({ icon: Icon, label, value }) => (
+              {
+                icon: Wind,
+                label: language === "vi" ? "Gió hiện tại" : "Current wind",
+                value: `${Math.round(
+                  weather.current.wind_speed_10m,
+                )} ${windUnit === "kmh" ? "km/h" : "m/s"} ${getWindDirection(
+                  weather.current.wind_direction_10m,
+                )}`,
+                compass: true,
+                degrees: weather.current.wind_direction_10m,
+              },
+            ].map((
+              {
+                icon: Icon,
+                label,
+                value,
+                compass,
+                degrees,
+              }: {
+                icon: typeof Wind;
+                label: string;
+                value: string;
+                compass?: boolean;
+                degrees?: number;
+              },
+            ) => (
               <div key={label}>
                 <span>
-                  <Icon size={19} />
+                  {compass ? (
+                    <WindCompass degrees={degrees ?? 0} size={24} />
+                  ) : (
+                    <Icon size={19} />
+                  )}
                 </span>
                 <p>
                   <small>{label}</small>
@@ -4165,6 +4327,56 @@ export default function HomePage() {
             currentTime={currentTime}
             language={language}
           />
+        )}
+
+        {weather && weatherHistory.length >= 0 && (
+          <section className="wn-panel wn-history-card">
+            <div className="wn-section-heading">
+              <div>
+                <span>HISTORY</span>
+                <h2>
+                  {language === "vi"
+                    ? "Lịch sử nhiệt độ gần đây"
+                    : "Recent temperature history"}
+                </h2>
+              </div>
+              <small className="wn-history-sub">
+                {language === "vi"
+                  ? `${weatherHistory.length} ngày đã ghi nhận (tối đa 60)`
+                  : `${weatherHistory.length} days recorded`}
+              </small>
+            </div>
+            <HistoryChart entries={weatherHistory} language={language} />
+          </section>
+        )}
+
+        {weather && (
+          <section className="wn-panel wn-compare-card">
+            <div className="wn-section-heading">
+              <div>
+                <span>COMPARE</span>
+                <h2>
+                  {language === "vi"
+                    ? "So sánh hai địa điểm"
+                    : "Compare two locations"}
+                </h2>
+              </div>
+            </div>
+
+            <ComparePanel
+              favorites={favorites}
+              current={{
+                name: locationName,
+                temperature: weather.current.temperature_2m,
+                feels: weather.current.apparent_temperature,
+                humidity: weather.current.relative_humidity_2m,
+                windSpeed: weather.current.wind_speed_10m,
+                weatherCode: weather.current.weather_code,
+              }}
+              windUnit={windUnit}
+              language={language}
+            />
+          </section>
         )}
 
         <section className="wn-panel wn-suggestions">
@@ -4614,6 +4826,29 @@ function CalendarModal({
                   <div className="wn-calendar-light-almanac__hours">
                     <small>Giờ hoàng đạo</small>
                     <span>{almanac.luckyHours.join(" · ")}</span>
+                  </div>
+                ) : null}
+
+                <div
+                  className={`wn-calendar-light-dayluck ${
+                    almanac.dayLuck === "hoangDao" ? "is-good" : "is-bad"
+                  }`}
+                >
+                  {almanac.dayLuck === "hoangDao" ? "☀️" : "🌑"}{" "}
+                  {almanac.dayLuckLabel}
+                </div>
+
+                {almanac.yi ? (
+                  <div className="wn-calendar-light-almanac__hours">
+                    <small>Nên làm</small>
+                    <span>{almanac.yi}</span>
+                  </div>
+                ) : null}
+
+                {almanac.ji ? (
+                  <div className="wn-calendar-light-almanac__hours">
+                    <small>Kiêng làm</small>
+                    <span>{almanac.ji}</span>
                   </div>
                 ) : null}
               </div>

@@ -6129,3 +6129,196 @@ a {
     font-weight: 800;
   }
 }
+
+/* ============ History chart (30-60 ngay) ============ */
+.wn-history-card,
+.wn-compare-card {
+  margin-top: 14px;
+  padding: 17px;
+}
+
+.wn-history-sub {
+  color: var(--wn-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.wn-history-empty,
+.wn-compare-empty {
+  margin: 8px 0 0;
+  padding: 16px;
+  border: 1px dashed var(--wn-border);
+  border-radius: 14px;
+  color: var(--wn-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.wn-history-chart {
+  display: grid;
+  gap: 6px;
+}
+
+.wn-history-note {
+  margin: 4px 0 0;
+  color: var(--wn-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ============ Compare panel ============ */
+.wn-compare {
+  display: grid;
+  gap: 14px;
+}
+
+.wn-compare__picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.wn-compare__picker .wn-select {
+  min-width: 240px;
+  max-width: 100%;
+}
+
+.wn-compare__picker small {
+  color: var(--wn-muted);
+  font-size: 11px;
+}
+
+.wn-compare__error {
+  color: #ef4444;
+}
+
+.wn-compare__grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.wn-compare__card {
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  border: 1px solid var(--wn-border);
+  border-radius: 16px;
+  background: var(--wn-surface-soft);
+}
+
+.wn-compare__card--active {
+  border-color: rgba(8, 118, 237, 0.35);
+  background: rgba(8, 118, 237, 0.06);
+}
+
+.wn-compare__card .sunny { color: #f59e0b; }
+.wn-compare__card .cloudy { color: #0ea5e9; }
+.wn-compare__card .rain { color: #3b82f6; }
+.wn-compare__card .storm { color: #8b5cf6; }
+.wn-compare__card .fog { color: #94a3b8; }
+.wn-compare__card .night { color: #64748b; }
+
+.wn-compare__name {
+  color: var(--wn-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wn-compare__main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wn-compare__main strong {
+  font-size: 38px;
+  line-height: 1;
+}
+
+.wn-compare__desc {
+  color: var(--wn-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wn-compare__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.wn-compare__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--wn-border);
+  border-radius: 99px;
+  color: var(--wn-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.wn-compare__delta {
+  align-self: center;
+  justify-items: center;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(139, 92, 246, 0.12), rgba(14, 165, 233, 0.12));
+  text-align: center;
+}
+
+.wn-compare__delta strong {
+  font-size: 24px;
+  background: linear-gradient(90deg, #8b5cf6, #0ea5e9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.wn-compare__delta small {
+  max-width: 110px;
+  color: var(--wn-muted);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* ============ Day luck chip (hoang dao / hac dao) ============ */
+.wn-calendar-light-dayluck {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.wn-calendar-light-dayluck.is-good {
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.wn-calendar-light-dayluck.is-bad {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.09);
+  color: #dc2626;
+}
+
+@media (max-width: 800px) {
+  .wn-compare__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wn-compare__delta {
+    justify-self: center;
+  }
+}

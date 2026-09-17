@@ -9,6 +9,10 @@ declare module "lunar-javascript" {
     getJieQi(): string;
     getPrevJieQi(wholeDay?: boolean): JieQi;
     getTimes(): LunarTime[];
+    getDayTianShenType(): string;
+    getDayTianShenLuck(): string;
+    getDayYi(sect?: number): string[];
+    getDayJi(sect?: number): string[];
   };
 
   export type JieQi = {
