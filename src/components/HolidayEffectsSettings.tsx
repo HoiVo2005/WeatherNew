@@ -56,7 +56,7 @@ export default function HolidayEffectsSettings({
       const saved = window.localStorage.getItem("holiday-effects-config");
       if (saved) return JSON.parse(saved) as HolidayEffectsConfig;
     } catch {
-      // window chÆ°a sáºµn sÃ ng (SSR) hoáº·c dá»¯ liá»‡u localStorage lá»—i â†’ dÃ¹ng máº·c Ä‘á»‹nh
+      // window chưa sẵn sàng (SSR) hoặc dữ liệu localStorage lỗi → dùng mặc định
     }
     return DEFAULT_CONFIG;
   });
@@ -91,7 +91,7 @@ export default function HolidayEffectsSettings({
           style={{ padding: "12px 22px 14px" }}
         >
           <div>
-            <span className="wn-calendar-light-kicker">CÃ i Ä‘áº·t hiá»‡u á»©ng</span>
+            <span className="wn-calendar-light-kicker">Cài đặt hiệu ứng</span>
             <h3
               style={{
                 margin: "8px 0 0",
@@ -99,14 +99,14 @@ export default function HolidayEffectsSettings({
                 letterSpacing: "-0.04em",
               }}
             >
-              Hiá»‡u á»©ng theo ngÃ y lá»…
+              Hiệu ứng theo ngày lễ
             </h3>
           </div>
 
           <button
             className="wn-calendar-light-close"
             onClick={onClose}
-            aria-label="ÄÃ³ng"
+            aria-label="Đóng"
             style={{
               width: 48,
               height: 48,
@@ -114,7 +114,7 @@ export default function HolidayEffectsSettings({
               background: "rgba(255,255,255,0.9)",
             }}
           >
-            Ã—
+            ×
           </button>
         </header>
 
@@ -189,7 +189,7 @@ export default function HolidayEffectsSettings({
                         }));
                       }}
                     />
-                    Báº­t
+                    Bật
                   </label>
                 </div>
 
@@ -216,7 +216,7 @@ export default function HolidayEffectsSettings({
                         fontWeight: 700,
                       }}
                     >
-                      Máº­t Ä‘á»™ tuyáº¿t:{" "}
+                      Mật độ tuyết:{" "}
                       {Math.round((item.effects.snow.density || 1) * 100)}%
                     </label>
                     <input
@@ -264,7 +264,7 @@ export default function HolidayEffectsSettings({
                         fontWeight: 700,
                       }}
                     >
-                      GiÃ³: {(item.effects.snow.wind || 0).toFixed(2)}
+                      Gió: {(item.effects.snow.wind || 0).toFixed(2)}
                     </label>
                     <input
                       type="range"
@@ -311,7 +311,7 @@ export default function HolidayEffectsSettings({
                         fontWeight: 700,
                       }}
                     >
-                      Sá»‘ phÃ¡o hoa: {item.effects.confetti.count}
+                      Số pháo hoa: {item.effects.confetti.count}
                     </label>
                     <input
                       type="range"
@@ -358,7 +358,7 @@ export default function HolidayEffectsSettings({
                         fontWeight: 700,
                       }}
                     >
-                      MÃ u phÃ¡o hoa
+                      Màu pháo hoa
                     </label>
                     <input
                       type="text"
@@ -438,7 +438,7 @@ export default function HolidayEffectsSettings({
                           }));
                         }}
                       />
-                      PhÃ¡o hoa
+                      Pháo hoa
                     </label>
                   </div>
 
@@ -483,7 +483,7 @@ export default function HolidayEffectsSettings({
                           }));
                         }}
                       />
-                      ÄÃ¨n lá»“ng
+                      Đèn lồng
                     </label>
                   </div>
                 </div>
@@ -516,7 +516,7 @@ export default function HolidayEffectsSettings({
                 borderRadius: 12,
               }}
             >
-              LÆ°u
+              Lưu
             </button>
           </div>
         </div>
