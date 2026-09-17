@@ -504,7 +504,7 @@ export default function HolidayEffectsSettings({
               onClick={onClose}
               style={{ width: 92, height: 42, borderRadius: 12 }}
             >
-              Há»§y
+              Hủy
             </button>
             <button
               className="wn-popover__primary"
