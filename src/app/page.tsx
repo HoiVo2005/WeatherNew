@@ -5063,116 +5063,108 @@ function CalendarModal({
     });
   }
 
+  // Đóng bằng phím Escape + khóa cuộn nền khi đang xem trang lịch
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
     <div
-      className="wn-calendar-light-overlay"
+      className="wn-calendar-page"
       role="dialog"
       aria-modal="true"
-      aria-label={language === "vi" ? "Chọn ngày" : "Select date"}
-      onMouseDown={onClose}
+      aria-label={language === "vi" ? "Xem lịch" : "Calendar"}
     >
-      <div
-        className="wn-calendar-light-modal"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <header className="wn-calendar-light-header">
-          <div>
+      <div className="wn-calendar-page__inner">
+        <header className="wn-calendar-page__header">
+          <div className="wn-calendar-page__title">
             <span className="wn-calendar-light-kicker">
               {language === "vi" ? "Lịch vạn niên" : "Perpetual calendar"}
             </span>
-            <h3>{monthLabel}</h3>
+            <h2>{monthLabel}</h2>
           </div>
 
-          <button
-            type="button"
-            className="wn-calendar-light-close"
-            onClick={onClose}
-            aria-label={language === "vi" ? "Đóng" : "Close"}
-          >
-            <X size={24} />
-          </button>
-        </header>
+          <div className="wn-calendar-page__controls">
+            <button
+              type="button"
+              className="wn-calendar-light-arrow"
+              onClick={() => onDisplayMonthChange(new Date(year, month - 1, 1))}
+              aria-label={language === "vi" ? "Tháng trước" : "Previous month"}
+            >
+              <ChevronLeft size={22} />
+            </button>
 
-        <div className="wn-calendar-light-body">
-          <section className="wn-calendar-light-left">
-            <div className="wn-calendar-light-controls">
-              <button
-                type="button"
-                className="wn-calendar-light-arrow"
-                onClick={() =>
-                  onDisplayMonthChange(new Date(year, month - 1, 1))
+            <div className="wn-calendar-light-select-wrap">
+              <CalendarDays size={18} />
+              <select
+                value={month}
+                onChange={(event) =>
+                  onDisplayMonthChange(
+                    new Date(year, Number(event.target.value), 1),
+                  )
                 }
-                aria-label={
-                  language === "vi" ? "Tháng trước" : "Previous month"
-                }
+                aria-label={language === "vi" ? "Chọn tháng" : "Select month"}
               >
-                <ChevronLeft size={22} />
-              </button>
+                {Array.from({ length: 12 }, (_, index) => (
+                  <option key={index} value={index}>
+                    {language === "vi"
+                      ? `Tháng ${index + 1}`
+                      : new Intl.DateTimeFormat("en-US", {
+                          month: "long",
+                        }).format(new Date(2026, index, 1))}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={16} />
+            </div>
 
-              <div className="wn-calendar-light-select-wrap">
-                <CalendarDays size={18} />
-                <select
-                  value={month}
-                  onChange={(event) =>
-                    onDisplayMonthChange(
-                      new Date(year, Number(event.target.value), 1),
-                    )
-                  }
-                  aria-label={language === "vi" ? "Chọn tháng" : "Select month"}
-                >
-                  {Array.from({ length: 12 }, (_, index) => (
-                    <option key={index} value={index}>
-                      {language === "vi"
-                        ? `Tháng ${index + 1}`
-                        : new Intl.DateTimeFormat("en-US", {
-                            month: "long",
-                          }).format(new Date(2026, index, 1))}
+            <div className="wn-calendar-light-select-wrap wn-calendar-light-select-wrap--year">
+              <select
+                value={year}
+                onChange={(event) =>
+                  onDisplayMonthChange(
+                    new Date(Number(event.target.value), month, 1),
+                  )
+                }
+                aria-label={language === "vi" ? "Chọn năm" : "Select year"}
+              >
+                {Array.from({ length: 201 }, (_, index) => {
+                  const optionYear = 1900 + index;
+
+                  return (
+                    <option key={optionYear} value={optionYear}>
+                      {optionYear}
                     </option>
-                  ))}
-                </select>
-                <ChevronDown size={16} />
-              </div>
-
-              <div className="wn-calendar-light-select-wrap wn-calendar-light-select-wrap--year">
-                <select
-                  value={year}
-                  onChange={(event) =>
-                    onDisplayMonthChange(
-                      new Date(Number(event.target.value), month, 1),
-                    )
-                  }
-                  aria-label={language === "vi" ? "Chọn năm" : "Select year"}
-                >
-                  {Array.from({ length: 201 }, (_, index) => {
-                    const optionYear = 1900 + index;
-
-                    return (
-                      <option key={optionYear} value={optionYear}>
-                        {optionYear}
-                      </option>
-                    );
-                  })}
-                </select>
-                <ChevronDown size={16} />
-              </div>
-
-              <button
-                type="button"
-                className="wn-calendar-light-arrow"
-                onClick={() =>
-                  onDisplayMonthChange(new Date(year, month + 1, 1))
-                }
-                aria-label={language === "vi" ? "Tháng sau" : "Next month"}
-              >
-                <ChevronRight size={22} />
-              </button>
+                  );
+                })}
+              </select>
+              <ChevronDown size={16} />
             </div>
 
             <button
               type="button"
-              className="wn-calendar-light-today"
+              className="wn-calendar-light-arrow"
+              onClick={() => onDisplayMonthChange(new Date(year, month + 1, 1))}
+              aria-label={language === "vi" ? "Tháng sau" : "Next month"}
+            >
+              <ChevronRight size={22} />
+            </button>
+
+            <button
+              type="button"
+              className="wn-calendar-page__today"
               onClick={() => {
                 const now = new Date();
                 onDisplayMonthChange(
@@ -5181,9 +5173,23 @@ function CalendarModal({
                 onSelectDate(now);
               }}
             >
-              <CalendarDays size={20} />
-              {language === "vi" ? "Về hôm nay" : "Go to today"}
+              <CalendarDays size={18} />
+              {language === "vi" ? "Hôm nay" : "Today"}
             </button>
+          </div>
+
+          <button
+            type="button"
+            className="wn-calendar-page__close"
+            onClick={onClose}
+            aria-label={language === "vi" ? "Đóng" : "Close"}
+          >
+            <X size={22} />
+          </button>
+        </header>
+
+        <div className="wn-calendar-page__body">
+          <section className="wn-calendar-light-left">
 
             <div className="wn-calendar-light-grid">
               <div className="wn-calendar-light-weekdays">
