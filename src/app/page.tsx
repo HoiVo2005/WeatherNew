@@ -3293,13 +3293,18 @@ export default function HomePage() {
                     cfg = effectsConfig;
                   }
 
-                  if (
-                    cfg &&
-                    cfg.holidays &&
-                    cfg.holidays[k] &&
-                    cfg.holidays[k].enabled
-                  ) {
-                    const e = cfg.holidays[k].effects;
+                  // Người dùng tắt riêng ngày này → không hiện hiệu ứng
+                  const entry = cfg?.holidays?.[k];
+                  if (entry && !entry.enabled) return null;
+
+                  // Chế độ cài chung: dùng một bộ hiệu ứng duy nhất cho mọi
+                  // ngày lễ; ngược lại dùng cài đặt riêng của từng ngày.
+                  const e =
+                    cfg?.global?.enabled && cfg.global
+                      ? cfg.global.effects
+                      : entry?.effects;
+
+                  if (e) {
                     const snow = e.snow || { density: 1, wind: 0.3, layers: 3 };
                     const confetti = e.confetti || { count: 0, colors: [] };
                     const fireworks = e.fireworks || { enabled: false };
