@@ -1609,6 +1609,157 @@ const YI_JI_VIET: Record<string, string> = {
   无: "Không",
 };
 
+// Hướng xuất hành: dịch mô tả hướng (正北, 东南...) sang Việt/Anh
+const DIRECTION_VIET: Record<string, string> = {
+  正北: "Chính Bắc",
+  东北: "Đông Bắc",
+  正东: "Chính Đông",
+  东南: "Đông Nam",
+  正南: "Chính Nam",
+  西南: "Tây Nam",
+  正西: "Chính Tây",
+  西北: "Tây Bắc",
+  中: "Trung cung",
+};
+
+const DIRECTION_EN: Record<string, string> = {
+  正北: "North",
+  东北: "Northeast",
+  正东: "East",
+  东南: "Southeast",
+  正南: "South",
+  西南: "Southwest",
+  正西: "West",
+  西北: "Northwest",
+  中: "Center",
+};
+
+// 12 Trực (建除十二神): tên + ý nghĩa ngắn gọn
+const TRUC_DATA: Record<
+  string,
+  { vi: string; viDesc: string; en: string; enDesc: string }
+> = {
+  建: {
+    vi: "Kiến",
+    viDesc: "Tốt cho khởi sự, khai trương, cầu phước",
+    en: "Jian (Establish)",
+    enDesc: "Good for starting new ventures",
+  },
+  除: {
+    vi: "Trừ",
+    viDesc: "Tốt cho dọn dẹp, chữa bệnh, gỡ bỏ điều xấu",
+    en: "Chu (Remove)",
+    enDesc: "Good for cleansing and removing bad luck",
+  },
+  满: {
+    vi: "Mãn",
+    viDesc: "Tốt cho lễ tạ, cầu phước; hạn chế khởi sự",
+    en: "Man (Full)",
+    enDesc: "Good for offerings; avoid big starts",
+  },
+  平: {
+    vi: "Bình",
+    viDesc: "Ngày ổn định — hợp hòa giải, sửa sang",
+    en: "Ping (Level)",
+    enDesc: "Stable day; good for reconciliation",
+  },
+  定: {
+    vi: "Định",
+    viDesc: "Tốt cho ký kết, đặt đáy, an định",
+    en: "Ding (Settle)",
+    enDesc: "Good for agreements and foundations",
+  },
+  执: {
+    vi: "Chấp",
+    viDesc: "Tốt cho thi cử, củng cố; tránh tranh chấp",
+    en: "Zhi (Hold)",
+    enDesc: "Good for exams; avoid disputes",
+  },
+  破: {
+    vi: "Phá",
+    viDesc: "Chỉ hợp phá dỡ, tháo gỡ; không khởi sự",
+    en: "Po (Break)",
+    enDesc: "Only for demolition; avoid new starts",
+  },
+  危: {
+    vi: "Nguy",
+    viDesc: "Nên thận trọng, hạn chế việc lớn",
+    en: "Wei (Peril)",
+    enDesc: "Be cautious; avoid major actions",
+  },
+  成: {
+    vi: "Thành",
+    viDesc: "Tốt cho thành lập, cưới hỏi, khai trương",
+    en: "Cheng (Complete)",
+    enDesc: "Good for weddings and openings",
+  },
+  收: {
+    vi: "Thu",
+    viDesc: "Tốt cho thu hoạch, tích trữ, an táng",
+    en: "Shou (Harvest)",
+    enDesc: "Good for harvest and storage",
+  },
+  开: {
+    vi: "Khai",
+    viDesc: "Tốt cho khai trương, khai quang, khởi công",
+    en: "Kai (Open)",
+    enDesc: "Good for openings and beginnings",
+  },
+  闭: {
+    vi: "Bế",
+    viDesc: "Hợp an táng, đắp nền; hạn chế việc khác",
+    en: "Bi (Close)",
+    enDesc: "Good for burial; avoid other matters",
+  },
+};
+
+// Con giáp cho mục "tuổi xung khắc ngày"
+const SHENG_XIAO_VIET: Record<string, string> = {
+  鼠: "Chuột",
+  牛: "Trâu",
+  虎: "Hổ",
+  兔: "Mèo",
+  龙: "Rồng",
+  蛇: "Rắn",
+  马: "Ngựa",
+  羊: "Dê",
+  猴: "Khỉ",
+  鸡: "Gà",
+  狗: "Chó",
+  猪: "Lợn",
+};
+
+const SHENG_XIAO_EN: Record<string, string> = {
+  鼠: "Rat",
+  牛: "Ox",
+  虎: "Tiger",
+  兔: "Rabbit",
+  龙: "Dragon",
+  蛇: "Snake",
+  马: "Horse",
+  羊: "Goat",
+  猴: "Monkey",
+  鸡: "Rooster",
+  狗: "Dog",
+  猪: "Pig",
+};
+
+// Phiên âm chi địa cho bản tiếng Anh
+const ZHI_PINYIN: Record<string, string> = {
+  子: "Zi",
+  丑: "Chou",
+  寅: "Yin",
+  卯: "Mao",
+  辰: "Chen",
+  巳: "Si",
+  午: "Wu",
+  未: "Wei",
+  申: "Shen",
+  酉: "You",
+  戌: "Xu",
+  亥: "Hai",
+};
+
 function getAlmanacInfo(date: Date, language: Language) {
   const solar = Solar.fromYmd(
     date.getFullYear(),
@@ -1703,7 +1854,83 @@ function getAlmanacInfo(date: Date, language: Language) {
     // bỏ qua lỗi
   }
 
-  return { canChi, jieQi, moonIcon, moonLabel, luckyHours, dayLuck, dayLuckLabel, yi, ji };
+  // Hướng xuất hành: Hỷ thần / Tài thần / Phúc thần
+  let directions = "";
+  try {
+    if (language === "vi") {
+      directions = `Hỷ thần: ${
+        DIRECTION_VIET[lunar.getDayPositionXiDesc()] ??
+        lunar.getDayPositionXiDesc()
+      } · Tài thần: ${
+        DIRECTION_VIET[lunar.getDayPositionCaiDesc()] ??
+        lunar.getDayPositionCaiDesc()
+      } · Phúc thần: ${
+        DIRECTION_VIET[lunar.getDayPositionFuDesc(1)] ??
+        lunar.getDayPositionFuDesc(1)
+      }`;
+    } else {
+      directions = `Luck God: ${
+        DIRECTION_EN[lunar.getDayPositionXiDesc()] ??
+        lunar.getDayPositionXiDesc()
+      } · Wealth God: ${
+        DIRECTION_EN[lunar.getDayPositionCaiDesc()] ??
+        lunar.getDayPositionCaiDesc()
+      } · Fortune God: ${
+        DIRECTION_EN[lunar.getDayPositionFuDesc(1)] ??
+        lunar.getDayPositionFuDesc(1)
+      }`;
+    }
+  } catch {
+    // bỏ qua lỗi
+  }
+
+  // 12 Trực (Trực Kiến, Trực Trừ, ...)
+  let truc = "";
+  try {
+    const data = TRUC_DATA[lunar.getZhiXing()];
+    if (data) {
+      truc =
+        language === "vi"
+          ? `Trực ${data.vi} — ${data.viDesc}`
+          : `${data.en} — ${data.enDesc}`;
+    }
+  } catch {
+    // bỏ qua lỗi
+  }
+
+  // Tuổi xung khắc với ngày
+  let chong = "";
+  try {
+    const zhi = lunar.getDayChong();
+    const animal = lunar.getDayChongShengXiao();
+    if (language === "vi") {
+      const zhiVi = ZHI_VIET[ZHI_HAN.indexOf(zhi)] ?? zhi;
+      chong = `Xung tuổi ${zhiVi} (con ${
+        SHENG_XIAO_VIET[animal] ?? animal
+      })`;
+    } else {
+      chong = `Clash: ${SHENG_XIAO_EN[animal] ?? animal} (${
+        ZHI_PINYIN[zhi] ?? zhi
+      })`;
+    }
+  } catch {
+    // bỏ qua lỗi
+  }
+
+  return {
+    canChi,
+    jieQi,
+    moonIcon,
+    moonLabel,
+    luckyHours,
+    dayLuck,
+    dayLuckLabel,
+    yi,
+    ji,
+    directions,
+    truc,
+    chong,
+  };
 }
 
 // Tìm ngày lễ quan trọng kế tiếp (kể cả hôm nay), tìm tối đa 400 ngày tới
@@ -4827,6 +5054,27 @@ function CalendarModal({
                     {almanac.moonIcon} {almanac.moonLabel}
                   </strong>
                 </div>
+                {almanac.directions ? (
+                  <div className="wn-calendar-light-almanac__hours">
+                    <small>Hướng xuất hành</small>
+                    <span>{almanac.directions}</span>
+                  </div>
+                ) : null}
+
+                {almanac.truc ? (
+                  <div className="wn-calendar-light-almanac__hours">
+                    <small>12 Trực</small>
+                    <span>{almanac.truc}</span>
+                  </div>
+                ) : null}
+
+                {almanac.chong ? (
+                  <div className="wn-calendar-light-almanac__row">
+                    <small>Tuổi xung khắc</small>
+                    <strong>{almanac.chong}</strong>
+                  </div>
+                ) : null}
+
                 {almanac.luckyHours.length > 0 ? (
                   <div className="wn-calendar-light-almanac__hours">
                     <small>Giờ hoàng đạo</small>
