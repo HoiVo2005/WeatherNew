@@ -963,6 +963,15 @@ a {
   gap: 8px;
 }
 
+.wn-search-results__label {
+  padding: 10px 11px 7px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wn-muted);
+}
+
 .wn-error {
   margin-bottom: 17px;
   padding: 13px 16px;
@@ -994,6 +1003,29 @@ a {
   border-radius: var(--wn-radius-xl);
   color: #fff;
   background: linear-gradient(135deg, #075fc8 0%, #139be5 48%, #70d8ef 100%);
+}
+
+/* Ảnh nền thành phố (public/images/cities/) — nằm dưới các lớp hiệu ứng trời */
+.wn-hero__city-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Lớp phủ tối nhẹ giúp chữ trắng dễ đọc trên ảnh nền */
+.wn-hero__city-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(4, 24, 54, 0.16) 0%,
+    rgba(4, 24, 54, 0.4) 100%
+  );
 }
 
 .wn-hero__sky,

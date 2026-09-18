@@ -60,6 +60,8 @@ import HistoryChart, { type HistoryEntry } from "@/components/HistoryChart";
 import ComparePanel from "@/components/ComparePanel";
 import { Settings, Share2 } from "lucide-react";
 import type { HolidayEffectsConfig } from "@/types/holiday-effects";
+import { provinces, type Province } from "@/data/provinces";
+import { getCityBackgroundSrc } from "@/data/city-backgrounds";
 
 type HolidayName = {
   vi: string;
@@ -1058,6 +1060,16 @@ type LocationResult = {
   latitude: number;
   longitude: number;
 };
+
+// Bỏ dấu tiếng Việt + viết thường để so khớp tên tỉnh/thành khi tìm kiếm
+function normalizeVietnameseText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/đ/g, "d")
+    .trim();
+}
 
 type CurrentWeather = {
   temperature_2m: number;
@@ -2154,12 +2166,30 @@ export default function HomePage() {
   const [searchResults, setSearchResults] = useState<LocationResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchBlurTimerRef = useRef<number | null>(null);
+
+  // Ảnh nền thành phố cho hero: ẩn tạm khi thiếu file, reset khi đổi địa điểm
+  const [cityPhotoFailed, setCityPhotoFailed] = useState(false);
+
+  useEffect(() => {
+    setCityPhotoFailed(false);
+  }, [locationName]);
 
   const [currentTime, setCurrentTime] = useState<Date>(
     () => new Date("2000-01-01T00:00:00.000Z"),
   );
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  // TEMP-SCREENSHOT: mo trang lich khi URL co ?lich=1 (XOA SAU KHI chup anh)
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).has("lich")
+    ) {
+      setIsCalendarOpen(true);
+    }
+  }, []);
   const [calendarMonth, setCalendarMonth] = useState<Date>(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   );
@@ -2682,6 +2712,12 @@ export default function HomePage() {
       return;
     }
 
+    // Bấm nút tìm kiếm làm input mất focus -> hủy hẹn giờ đóng dropdown
+    if (searchBlurTimerRef.current !== null) {
+      window.clearTimeout(searchBlurTimerRef.current);
+      searchBlurTimerRef.current = null;
+    }
+
     setSearchLoading(true);
     setShowSearchResults(true);
     setError("");
@@ -2734,6 +2770,44 @@ export default function HomePage() {
       }),
     );
   }
+
+  // Chọn nhanh 1 trong 34 tỉnh/thành Việt Nam sau sáp nhập 2025
+  function selectProvince(province: Province) {
+    const selected = {
+      latitude: province.latitude,
+      longitude: province.longitude,
+    };
+
+    setCoordinates(selected);
+    setLocationName(province.name);
+    setSearchKeyword("");
+    setSearchResults([]);
+    setShowSearchResults(false);
+
+    localStorage.setItem(
+      "weather-location",
+      JSON.stringify({
+        ...selected,
+        name: province.name,
+      }),
+    );
+  }
+
+  // Lọc tỉnh/thành theo từ khóa (không phân biệt dấu); ô trống = hiện toàn bộ 34 tỉnh
+  const provinceMatches = useMemo(() => {
+    const keyword = normalizeVietnameseText(searchKeyword);
+
+    if (!keyword) {
+      return provinces;
+    }
+
+    return provinces.filter((province) =>
+      normalizeVietnameseText(province.name).includes(keyword),
+    );
+  }, [searchKeyword]);
+
+  // Ảnh nền thành phố (bạn tự thêm vào public/images/cities/ — xem HUONG-DAN-ANH-NEN-THANH-PHO.md)
+  const cityPhotoSrc = getCityBackgroundSrc(locationName);
 
   const nextHours = useMemo(() => {
     if (!weather) {
@@ -4053,17 +4127,30 @@ export default function HomePage() {
                 setSearchKeyword(nextValue);
 
                 if (!nextValue.trim()) {
-                  setShowSearchResults(false);
                   setSearchResults([]);
+                  // Ô trống: hiển thị danh sách 34 tỉnh/thành để chọn nhanh
+                  setShowSearchResults(true);
                   return;
                 }
 
                 void handleSearch(nextValue);
               }}
               onFocus={() => {
-                if (searchResults.length > 0 || searchKeyword.trim()) {
-                  setShowSearchResults(true);
+                if (searchBlurTimerRef.current !== null) {
+                  window.clearTimeout(searchBlurTimerRef.current);
+                  searchBlurTimerRef.current = null;
                 }
+
+                setShowSearchResults(true);
+              }}
+              onBlur={() => {
+                if (searchBlurTimerRef.current !== null) {
+                  window.clearTimeout(searchBlurTimerRef.current);
+                }
+
+                searchBlurTimerRef.current = window.setTimeout(() => {
+                  setShowSearchResults(false);
+                }, 180);
               }}
               placeholder={text.searchPlaceholder}
               autoComplete="off"
@@ -4082,33 +4169,77 @@ export default function HomePage() {
 
             {showSearchResults && (
               <div className="wn-search-results">
-                {searchLoading ? (
+                {searchLoading && provinceMatches.length === 0 ? (
                   <div className="wn-search-results__message">
                     <LoaderCircle className="spin" size={19} />
                     {text.loading}
                   </div>
-                ) : searchResults.length > 0 ? (
-                  searchResults.map((location) => (
-                    <button
-                      key={location.id}
-                      type="button"
-                      onClick={() => selectSearchLocation(location)}
-                    >
-                      <MapPin size={17} />
-                      <span>
-                        <strong>{location.name}</strong>
-                        <small>
-                          {[location.admin1, location.country]
-                            .filter(Boolean)
-                            .join(", ")}
-                        </small>
-                      </span>
-                    </button>
-                  ))
                 ) : (
-                  <div className="wn-search-results__message">
-                    {text.searchEmpty}
-                  </div>
+                  <>
+                    <div className="wn-search-results__label">
+                      {searchKeyword.trim()
+                        ? language === "vi"
+                          ? "Tỉnh/thành Việt Nam"
+                          : "Vietnam provinces"
+                        : language === "vi"
+                          ? "34 tỉnh/thành sau sáp nhập (2025)"
+                          : "Vietnam's 34 provinces (2025)"}
+                    </div>
+
+                    {provinceMatches.map((province) => (
+                      <button
+                        key={province.name}
+                        type="button"
+                        onClick={() => selectProvince(province)}
+                      >
+                        <MapPin size={17} />
+                        <span>
+                          <strong>{province.name}</strong>
+                          <small>
+                            {language === "vi"
+                              ? "Tỉnh/thành Việt Nam"
+                              : "Vietnam province"}
+                          </small>
+                        </span>
+                      </button>
+                    ))}
+
+                    {searchKeyword.trim() && searchResults.length > 0 && (
+                      <>
+                        {provinceMatches.length > 0 && (
+                          <div className="wn-search-results__label">
+                            {language === "vi" ? "Kết quả khác" : "Other results"}
+                          </div>
+                        )}
+                        {searchResults.map((location) => (
+                          <button
+                            key={location.id}
+                            type="button"
+                            onClick={() => selectSearchLocation(location)}
+                          >
+                            <MapPin size={17} />
+                            <span>
+                              <strong>{location.name}</strong>
+                              <small>
+                                {[location.admin1, location.country]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </small>
+                            </span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+
+                    {searchKeyword.trim() &&
+                    !searchLoading &&
+                    searchResults.length === 0 &&
+                    provinceMatches.length === 0 ? (
+                      <div className="wn-search-results__message">
+                        {text.searchEmpty}
+                      </div>
+                    ) : null}
+                  </>
                 )}
               </div>
             )}
@@ -4140,6 +4271,17 @@ export default function HomePage() {
               </div>
             ) : weather ? (
               <>
+                {cityPhotoSrc && !cityPhotoFailed && (
+                  <img
+                    key={cityPhotoSrc}
+                    className="wn-hero__city-photo"
+                    src={cityPhotoSrc}
+                    alt=""
+                    aria-hidden="true"
+                    onError={() => setCityPhotoFailed(true)}
+                  />
+                )}
+
                 <div className="wn-hero__sky" aria-hidden="true">
                   <span className="wn-hero__sun" />
                   <span className="wn-hero__moon" />
@@ -5112,8 +5254,16 @@ function CalendarModal({
   }
 
   // Mobile: luôn mở ở màn lưới lịch khi vừa mở trang lịch
+  // TEMP-SCREENSHOT: ho tro ?mdetail=1 de chup man chi tiết (XOA SAU KHI chup anh)
   useEffect(() => {
-    if (open) setMobilePane("grid");
+    if (open) {
+      setMobilePane(
+        typeof window !== "undefined" &&
+          window.location.search.includes("mdetail")
+          ? "detail"
+          : "grid",
+      );
+    }
   }, [open]);
 
   // Đóng bằng phím Escape + khóa cuộn nền khi đang xem trang lịch
