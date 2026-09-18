@@ -7425,3 +7425,106 @@ html {
     font-size: 10.5px;
   }
 }
+
+/* =========================================================
+   Banner đếm ngược ngày lễ sắp tới (theo mockup mobile)
+   ========================================================= */
+.wn-holiday-soon {
+  margin-top: 14px;
+}
+
+.wn-holiday-soon__inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+  border: 0;
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  color: #fff;
+  font-family: inherit;
+  background:
+    radial-gradient(120% 170% at 100% 0%, rgba(255, 219, 148, 0.55) 0%, rgba(255, 219, 148, 0) 55%),
+    linear-gradient(120deg, #ff8a4c 0%, #ff5e62 100%);
+  box-shadow: 0 12px 28px rgba(255, 94, 98, 0.26);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.wn-holiday-soon__inner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(255, 94, 98, 0.36);
+}
+
+.wn-holiday-soon__icon {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));
+}
+
+.wn-holiday-soon__text {
+  display: grid;
+  gap: 2px;
+}
+
+.wn-holiday-soon__text strong {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.wn-holiday-soon__text small {
+  font-size: 13px;
+  opacity: 0.94;
+}
+
+/* =========================================================
+   MOBILE: xếp thứ tự section theo mockup (9 màn hình)
+   hero -> chỉ số -> theo giờ -> 7 ngày -> ngày lễ ->
+   Windy -> bản đồ -> mặt trời -> lịch sử -> so sánh ->
+   gợi ý -> windy full -> bản đồ lớn
+   ========================================================= */
+@media (max-width: 800px) {
+  .wn-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wn-container > * {
+    min-width: 0;
+  }
+
+  /* Flattens 2 grid wrapper để các panel thành con trực tiếp */
+  .wn-content-grid,
+  .wn-content-grid--lower {
+    display: contents;
+  }
+
+  /* Khoảng cách giữa các khối (margin của grid mất do display:contents) */
+  .wn-container > * + * {
+    margin-top: 14px;
+  }
+
+  .wn-overview { order: 1; }
+  .wn-metric-strip { order: 2; }
+  .wn-forecast-card { order: 3; }
+  .wn-daily-card { order: 4; }
+  .wn-holiday-soon { order: 5; }
+  .wn-windy-preview { order: 6; }
+  .wn-map-preview { order: 7; }
+  .wn-sun-card { order: 8; }
+  .wn-history-card { order: 9; }
+  .wn-compare-card { order: 10; }
+  .wn-suggestions { order: 11; }
+  #windy-storm { order: 12; }
+  #weather-map { order: 13; }
+
+  .wn-forecast-card,
+  .wn-windy-preview,
+  .wn-daily-card,
+  .wn-map-preview {
+    scroll-margin-top: 76px;
+  }
+}
+

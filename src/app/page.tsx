@@ -4421,54 +4421,6 @@ export default function HomePage() {
               </span>
             </article>
 
-            {upcomingHoliday ? (
-              <article className="wn-panel wn-mini-card wn-mini-card--upcoming">
-                <div>
-                  <span>
-                    {language === "vi" ? "Sắp đến ngày lễ" : "Upcoming holiday"}
-                  </span>
-                  <strong>
-                    {upcomingHoliday.daysUntil === 0
-                      ? language === "vi"
-                        ? "Hôm nay! 🎉"
-                        : "Today! 🎉"
-                      : upcomingHoliday.daysUntil === 1
-                        ? language === "vi"
-                          ? "Ngày mai! 🎉"
-                          : "Tomorrow! 🎉"
-                        : language === "vi"
-                          ? `Còn ${upcomingHoliday.daysUntil} ngày`
-                          : `In ${upcomingHoliday.daysUntil} days`}
-                  </strong>
-                  <small>{upcomingHoliday.name}</small>
-                </div>
-                <button
-                  type="button"
-                  className="wn-mini-card__icon wn-mini-card__icon--holiday"
-                  onClick={() => {
-                    const visual = getHolidayVisual(
-                      upcomingHoliday.date,
-                      language,
-                    );
-                    if (visual) {
-                      openHolidayModal(visual, upcomingHoliday.name, true);
-                    }
-                  }}
-                  aria-label={
-                    language === "vi"
-                      ? "Xem trước ngày lễ"
-                      : "Preview holiday"
-                  }
-                  title={
-                    language === "vi"
-                      ? "Bấm để xem modal chúc mừng"
-                      : "Preview celebration modal"
-                  }
-                >
-                  🎊
-                </button>
-              </article>
-            ) : null}
           </div>
         </section>
 
@@ -4678,6 +4630,54 @@ export default function HomePage() {
                 onSelectLocation={handleMapSelect}
               />
             </article>
+          </section>
+        )}
+
+        {upcomingHoliday && (
+          <section className="wn-holiday-soon">
+            <button
+              type="button"
+              className="wn-holiday-soon__inner"
+              onClick={() => {
+                const visual = getHolidayVisual(
+                  upcomingHoliday.date,
+                  language,
+                );
+                if (visual) {
+                  openHolidayModal(visual, upcomingHoliday.name, true);
+                }
+              }}
+              aria-label={
+                language === "vi"
+                  ? "Xem trước ngày lễ"
+                  : "Preview holiday"
+              }
+              title={
+                language === "vi"
+                  ? "Bấm để xem modal chúc mừng"
+                  : "Preview celebration modal"
+              }
+            >
+              <span className="wn-holiday-soon__icon" aria-hidden="true">
+                📅
+              </span>
+              <span className="wn-holiday-soon__text">
+                <strong>
+                  {upcomingHoliday.daysUntil === 0
+                    ? language === "vi"
+                      ? "Hôm nay! 🎉"
+                      : "Today! 🎉"
+                    : upcomingHoliday.daysUntil === 1
+                      ? language === "vi"
+                        ? "Ngày mai! 🎉"
+                        : "Tomorrow! 🎉"
+                      : language === "vi"
+                        ? `Còn ${upcomingHoliday.daysUntil} ngày`
+                        : `In ${upcomingHoliday.daysUntil} days`}
+                </strong>
+                <small>{upcomingHoliday.name}</small>
+              </span>
+            </button>
           </section>
         )}
 
