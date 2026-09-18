@@ -7733,3 +7733,70 @@ html {
   }
 }
 
+/* =========================================================
+   Trang lịch mobile: 2 màn hình (lưới tháng ⇄ chi tiết ngày)
+   Bấm 1 ngày -> sang màn chi tiết; nút "Quay lại lịch tháng" -> về lưới
+   ========================================================= */
+
+/* Nút quay lại chỉ tồn tại ở chế độ mobile (ẩn trên desktop) */
+.wn-calendar-page__mback {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  /* Màn lưới (mặc định): hiện cột lịch + công cụ, ẩn cột chi tiết */
+  .wn-calendar-page .wn-calendar-light-right {
+    display: none;
+  }
+
+  /* Màn chi tiết: ẩn lưới, hiện panel chi tiết */
+  .wn-calendar-page--m-detail .wn-calendar-light-left {
+    display: none;
+  }
+
+  .wn-calendar-page.wn-calendar-page--m-detail .wn-calendar-light-right {
+    display: grid;
+    gap: 12px;
+  }
+
+  .wn-calendar-page--m-detail .wn-calendar-page__mback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    padding: 11px 16px;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--wn-primary) 11%, transparent);
+    color: var(--wn-primary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: background 160ms ease, transform 160ms ease;
+  }
+
+  .wn-calendar-page--m-detail .wn-calendar-page__mback span {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  .wn-calendar-page--m-detail .wn-calendar-page__mback:hover {
+    background: color-mix(in srgb, var(--wn-primary) 18%, transparent);
+  }
+
+  .wn-calendar-page--m-detail .wn-calendar-page__mback:active {
+    transform: scale(0.98);
+  }
+
+  /* Màn chi tiết: card ngày chọn gọn và nổi hơn */
+  .wn-calendar-page--m-detail .wn-calendar-light-selected-card {
+    padding: 20px 18px;
+    border-radius: 22px;
+  }
+}
+

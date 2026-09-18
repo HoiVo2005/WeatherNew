@@ -5039,9 +5039,26 @@ function CalendarModal({
   const monthLabelEn =
     new Intl.DateTimeFormat("en-US", { month: "long" }).format(displayMonth);
 
+  const [mobilePane, setMobilePane] = useState<"grid" | "detail">("grid");
+
+  function pickDate(date: Date) {
+    onSelectDate(date);
+    setMobilePane("detail");
+    if (typeof window !== "undefined") {
+      // Chỉ cuộn lên đầu trên mobile (nơi màn chi tiết thay thế lưới lịch)
+      const isMobile = window.matchMedia("(max-width: 720px)").matches;
+      if (isMobile) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        document
+          .querySelector(".wn-calendar-page")
+          ?.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  }
+
   function goToDate(date: Date) {
     onDisplayMonthChange(new Date(date.getFullYear(), date.getMonth(), 1));
-    onSelectDate(date);
+    pickDate(date);
   }
 
   function runLunarToSolar() {
@@ -5094,6 +5111,11 @@ function CalendarModal({
     });
   }
 
+  // Mobile: luôn mở ở màn lưới lịch khi vừa mở trang lịch
+  useEffect(() => {
+    if (open) setMobilePane("grid");
+  }, [open]);
+
   // Đóng bằng phím Escape + khóa cuộn nền khi đang xem trang lịch
   useEffect(() => {
     if (!open) return;
@@ -5113,7 +5135,9 @@ function CalendarModal({
 
   return (
     <div
-      className="wn-calendar-page"
+      className={`wn-calendar-page${
+        mobilePane === "detail" ? " wn-calendar-page--m-detail" : ""
+      }`}
       role="dialog"
       aria-modal="true"
       aria-label={language === "vi" ? "Xem lịch" : "Calendar"}
@@ -5206,7 +5230,7 @@ function CalendarModal({
                 onDisplayMonthChange(
                   new Date(now.getFullYear(), now.getMonth(), 1),
                 );
-                onSelectDate(now);
+                pickDate(now);
               }}
             >
               <CalendarDays size={18} />
@@ -5310,7 +5334,7 @@ function CalendarModal({
                         .filter(Boolean)
                         .join(" ")}
                       onClick={() => {
-                        onSelectDate(date);
+                        pickDate(date);
                         setPreviewHoliday(null);
 
                         if (
@@ -5593,6 +5617,17 @@ function CalendarModal({
           </section>
 
           <aside className="wn-calendar-light-right">
+            <button
+              type="button"
+              className="wn-calendar-page__mback"
+              onClick={() => setMobilePane("grid")}
+              aria-label={
+                language === "vi" ? "Quay lại lịch tháng" : "Back to month"
+              }
+            >
+              <span aria-hidden="true">‹</span>
+              {language === "vi" ? "Quay lại lịch tháng" : "Back to month"}
+            </button>
             {upcomingHoliday ? (
               <button
                 type="button"
