@@ -45,7 +45,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import { Solar } from "lunar-javascript";
+import { Lunar, Solar } from "lunar-javascript";
 import HolidayModal from "@/components/HolidayModal";
 import SnowEffect from "@/components/SnowEffect";
 import AdvancedSnow from "@/components/AdvancedSnow";
@@ -1103,6 +1103,15 @@ type DailyWeather = {
   sunset: string[];
 };
 
+// Dự báo 16 ngày rút gọn dùng cho icon thời tiết trên ô lịch
+type CalendarDailyForecast = {
+  key: string;
+  time: string[];
+  weatherCode: number[];
+  tempMax: number[];
+  tempMin: number[];
+};
+
 type WeatherResponse = {
   timezone: string;
   current: CurrentWeather;
@@ -1827,7 +1836,7 @@ function getAlmanacInfo(date: Date, language: Language) {
       : "Yellow-path day — auspicious";
   try {
     const tianShenType = lunar.getDayTianShenType() ?? "";
-    if (tianShenType.includes("heiDao")) {
+    if (tianShenType.includes("黑")) {
       dayLuck = "heiDao";
       dayLuckLabel =
         language === "vi"
@@ -1931,6 +1940,76 @@ function getAlmanacInfo(date: Date, language: Language) {
     truc,
     chong,
   };
+}
+
+// Chi của tuổi người dùng theo năm sinh (lấy giữa năm để thuộc năm âm chính xác)
+function getZhiFromBirthYear(birthYear: number): string | null {
+  try {
+    return Solar.fromYmd(birthYear, 6, 1).getLunar().getYearZhi();
+  } catch {
+    return null;
+  }
+}
+
+// So sánh ngày với tuổi người dùng:
+// - "clash": ngày xung với chi tuổi → nên hạn chế
+// - "good": ngày hoàng đạo và không xung tuổi
+// - null: trung tính / chưa nhập năm sinh
+function getDayUserCompat(
+  date: Date,
+  userZhi: string | null,
+): "clash" | "good" | null {
+  if (!userZhi) return null;
+  try {
+    const lunar = Solar.fromYmd(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate(),
+    ).getLunar();
+    if (lunar.getDayChong() === userZhi) return "clash";
+    if (lunar.getDayTianShenType() === "黄道") return "good";
+  } catch {
+    // bỏ qua lỗi
+  }
+  return null;
+}
+
+// Khóa ngày dạng YYYY-MM-DD để tra dự báo theo ngày
+function toDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+// Danh sách mọi ngày lễ trong một năm (dương lịch), sắp theo ngày
+type YearHolidayItem = {
+  key: string;
+  date: Date;
+  label: string;
+  lunar: string;
+  names: string;
+};
+
+function getYearHolidayList(
+  year: number,
+  language: "vi" | "en",
+): YearHolidayItem[] {
+  const list: YearHolidayItem[] = [];
+  for (let m = 0; m < 12; m += 1) {
+    const daysInMonth = new Date(year, m + 1, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d += 1) {
+      const date = new Date(year, m, d);
+      const names = getCalendarHolidays(date, language);
+      if (names.length > 0) {
+        list.push({
+          key: `${m + 1}-${d}`,
+          date,
+          label: `${d}/${m + 1}`,
+          lunar: getLunarDayLabel(date),
+          names: names.join(" · "),
+        });
+      }
+    }
+  }
+  return list;
 }
 
 // Tìm ngày lễ quan trọng kế tiếp (kể cả hôm nay), tìm tối đa 400 ngày tới
@@ -2073,6 +2152,9 @@ export default function HomePage() {
   const [calendarMonth, setCalendarMonth] = useState<Date>(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   );
+  // Dự báo 16 ngày rút gọn cho icon thời tiết trên ô lịch
+  const [calendarDaily, setCalendarDaily] =
+    useState<CalendarDailyForecast | null>(null);
 
   const [holidayModalOpen, setHolidayModalOpen] = useState(false);
   const [todayHolidayVisual, setTodayHolidayVisual] =
@@ -2297,6 +2379,55 @@ export default function HomePage() {
       if (timerId) window.clearTimeout(timerId);
     };
   }, [hasMounted, language, openHolidayModal]);
+
+  // Tải dự báo 16 ngày (nhẹ) khi mở lịch để vẽ icon thời tiết lên từng ô
+  useEffect(() => {
+    if (!isCalendarOpen) return;
+    const key = `${coordinates.latitude},${coordinates.longitude}`;
+    if (calendarDaily && calendarDaily.key === key) return;
+
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const params = new URLSearchParams({
+          latitude: String(coordinates.latitude),
+          longitude: String(coordinates.longitude),
+          timezone: "auto",
+          forecast_days: "16",
+          temperature_unit: temperatureUnit,
+          daily: ["weather_code", "temperature_2m_max", "temperature_2m_min"].join(
+            ",",
+          ),
+        });
+        const response = await fetch(
+          `https://api.open-meteo.com/v1/forecast?${params.toString()}`,
+        );
+        if (!response.ok) throw new Error("Forecast request failed");
+        const data = (await response.json()) as {
+          daily: {
+            time: string[];
+            weather_code: number[];
+            temperature_2m_max: number[];
+            temperature_2m_min: number[];
+          };
+        };
+        if (cancelled) return;
+        setCalendarDaily({
+          key,
+          time: data.daily.time,
+          weatherCode: data.daily.weather_code,
+          tempMax: data.daily.temperature_2m_max,
+          tempMin: data.daily.temperature_2m_min,
+        });
+      } catch {
+        // Không tải được thì lịch vẫn dùng được (chỉ thiếu icon thời tiết)
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [isCalendarOpen, coordinates, temperatureUnit, calendarDaily]);
 
   const loadWeather = useCallback(async () => {
     setWeatherLoading(true);
@@ -4714,6 +4845,7 @@ export default function HomePage() {
       <CalendarModal
         open={isCalendarOpen}
         language={language}
+        dailyForecast={calendarDaily}
         selectedDate={selectedDate}
         displayMonth={calendarMonth}
         onDisplayMonthChange={setCalendarMonth}
@@ -4773,6 +4905,7 @@ type CalendarModalProps = {
   onDisplayMonthChange: (date: Date) => void;
   onSelectDate: (date: Date) => void;
   onClose: () => void;
+  dailyForecast: CalendarDailyForecast | null;
 };
 
 function CalendarModal({
@@ -4783,11 +4916,42 @@ function CalendarModal({
   onDisplayMonthChange,
   onSelectDate,
   onClose,
+  dailyForecast,
 }: CalendarModalProps) {
   const [previewHoliday, setPreviewHoliday] = useState<{
     visual: HolidayVisual;
     title: string;
     dateLabel: string;
+  } | null>(null);
+
+  // ----- Điểm hợp tuổi: năm sinh lưu localStorage ("wn-birth-year") -----
+  const [birthYearInput, setBirthYearInput] = useState<string>(() => {
+    try {
+      return window.localStorage.getItem("wn-birth-year") ?? "";
+    } catch {
+      return "";
+    }
+  });
+
+  // ----- Công cụ: máy chuyển đổi Âm↔Dương + ngày lễ trong năm -----
+  const [toolView, setToolView] = useState<"none" | "convert" | "holidays">(
+    "none",
+  );
+  const [convertMode, setConvertMode] = useState<"lunar" | "solar">("lunar");
+  const [convertDay, setConvertDay] = useState(1);
+  const [convertMonth, setConvertMonth] = useState(1);
+  const [convertYear, setConvertYear] = useState(
+    () => new Date().getFullYear(),
+  );
+  const [convertLeap, setConvertLeap] = useState(false);
+  const [convertSolarDate, setConvertSolarDate] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  });
+  const [convertResult, setConvertResult] = useState<{
+    text: string;
+    date?: Date;
+    error?: boolean;
   } | null>(null);
 
   const year = displayMonth.getFullYear();
@@ -4829,6 +4993,75 @@ function CalendarModal({
       ),
     [almanacYear, almanacMonth, almanacDay, language],
   );
+
+  // Chi tuổi của người dùng (từ năm sinh) + trạng thái ngày đang chọn
+  const userZhi = useMemo(
+    () => (birthYearInput ? getZhiFromBirthYear(Number(birthYearInput)) : null),
+    [birthYearInput],
+  );
+
+  const selectedCompat = useMemo(
+    () => getDayUserCompat(selectedDate, userZhi),
+    [selectedDate, userZhi],
+  );
+
+  // Danh sách mọi ngày lễ trong năm đang xem (đã sắp theo ngày)
+  const yearHolidays = getYearHolidayList(year, language);
+
+  function goToDate(date: Date) {
+    onDisplayMonthChange(new Date(date.getFullYear(), date.getMonth(), 1));
+    onSelectDate(date);
+  }
+
+  function runLunarToSolar() {
+    try {
+      const lunar = Lunar.fromYmd(
+        convertYear,
+        convertLeap ? -convertMonth : convertMonth,
+        convertDay,
+      );
+      const solar = lunar.getSolar();
+      const date = new Date(
+        solar.getYear(),
+        solar.getMonth() - 1,
+        solar.getDay(),
+      );
+      setConvertResult({
+        text:
+          language === "vi"
+            ? `→ Dương lịch: ${formatDate(date, language)}`
+            : `→ Solar: ${formatDate(date, language)}`,
+        date,
+      });
+    } catch {
+      setConvertResult({
+        text:
+          language === "vi"
+            ? "Ngày âm lịch không hợp lệ (số ngày/tháng nhuận không tồn tại)."
+            : "Invalid lunar date.",
+        error: true,
+      });
+    }
+  }
+
+  function runSolarToLunar() {
+    const parts = convertSolarDate.split("-").map(Number);
+    if (parts.length !== 3 || parts.some((n) => !n)) {
+      setConvertResult({
+        text: language === "vi" ? "Chưa chọn ngày." : "Pick a date first.",
+        error: true,
+      });
+      return;
+    }
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    setConvertResult({
+      text:
+        language === "vi"
+          ? `→ Âm lịch: ${getLunarDate(date, language)}`
+          : `→ Lunar: ${getLunarDate(date, language)}`,
+      date,
+    });
+  }
 
   if (!open) return null;
 
@@ -4979,6 +5212,18 @@ function CalendarModal({
                   const isSunday = date.getDay() === 0;
                   const isSaturday = date.getDay() === 6;
 
+                  // Thời tiết mini (16 ngày dự báo) + trạng thái so với tuổi
+                  let weatherCode: number | null = null;
+                  let weatherMax: number | null = null;
+                  if (dailyForecast) {
+                    const index = dailyForecast.time.indexOf(toDateKey(date));
+                    if (index >= 0) {
+                      weatherCode = dailyForecast.weatherCode[index];
+                      weatherMax = dailyForecast.tempMax[index];
+                    }
+                  }
+                  const compat = getDayUserCompat(date, userZhi);
+
                   return (
                     <button
                       key={`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
@@ -5011,6 +5256,31 @@ function CalendarModal({
                     >
                       <strong>{date.getDate()}</strong>
                       <small>{getLunarDayLabel(date)}</small>
+                      {weatherCode !== null ? (
+                        <span
+                          className="wn-calendar-light-day__weather"
+                          title={getWeatherDescription(weatherCode, language)}
+                        >
+                          <WeatherIcon code={weatherCode} size={12} />
+                          <em>{Math.round(weatherMax ?? 0)}°</em>
+                        </span>
+                      ) : null}
+                      {compat ? (
+                        <i
+                          className={
+                            compat === "clash" ? "is-clash" : "is-compatible"
+                          }
+                          title={
+                            compat === "clash"
+                              ? language === "vi"
+                                ? "Ngày xung với tuổi của bạn"
+                                : "Clashes with your zodiac"
+                              : language === "vi"
+                                ? "Ngày hoàng đạo hợp tuổi"
+                                : "Auspicious for your zodiac"
+                          }
+                        />
+                      ) : null}
                       {holiday ? (
                         <span
                           className="wn-calendar-light-day__bubble"
@@ -5023,6 +5293,176 @@ function CalendarModal({
                   );
                 })}
               </div>
+            </div>
+
+            <div className="wn-calendar-light-tools">
+              <div className="wn-calendar-light-tools__tabs">
+                <button
+                  type="button"
+                  className={toolView === "convert" ? "is-active" : ""}
+                  onClick={() =>
+                    setToolView(toolView === "convert" ? "none" : "convert")
+                  }
+                >
+                  {language === "vi"
+                    ? "🔄 Máy chuyển đổi Âm ↔ Dương"
+                    : "🔄 Lunar ↔ Solar converter"}
+                </button>
+                <button
+                  type="button"
+                  className={toolView === "holidays" ? "is-active" : ""}
+                  onClick={() =>
+                    setToolView(toolView === "holidays" ? "none" : "holidays")
+                  }
+                >
+                  {language === "vi"
+                    ? `⭐ Ngày lễ năm ${year}`
+                    : `⭐ Holidays in ${year}`}
+                </button>
+              </div>
+
+              {/* TOOL_PANELS */}
+              {toolView === "convert" ? (
+                <div className="wn-calendar-light-tools__panel">
+                  <div className="wn-calendar-light-tools__modes">
+                    <button
+                      type="button"
+                      className={convertMode === "lunar" ? "is-active" : ""}
+                      onClick={() => {
+                        setConvertMode("lunar");
+                        setConvertResult(null);
+                      }}
+                    >
+                      {language === "vi" ? "Âm → Dương" : "Lunar → Solar"}
+                    </button>
+                    <button
+                      type="button"
+                      className={convertMode === "solar" ? "is-active" : ""}
+                      onClick={() => {
+                        setConvertMode("solar");
+                        setConvertResult(null);
+                      }}
+                    >
+                      {language === "vi" ? "Dương → Âm" : "Solar → Lunar"}
+                    </button>
+                  </div>
+
+                  {convertMode === "lunar" ? (
+                    <div className="wn-calendar-light-tools__form">
+                      <select
+                        value={convertDay}
+                        onChange={(e) => setConvertDay(Number(e.target.value))}
+                      >
+                        {Array.from({ length: 30 }, (_, i) => (
+                          <option key={i + 1} value={i + 1}>
+                            {language === "vi" ? `Ngày ${i + 1}` : `Day ${i + 1}`}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={convertMonth}
+                        onChange={(e) => setConvertMonth(Number(e.target.value))}
+                      >
+                        {Array.from({ length: 12 }, (_, i) => (
+                          <option key={i + 1} value={i + 1}>
+                            {language === "vi"
+                              ? `Tháng ${i + 1}`
+                              : `Month ${i + 1}`}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={convertYear}
+                        onChange={(e) => setConvertYear(Number(e.target.value))}
+                      >
+                        {Array.from({ length: 201 }, (_, i) => {
+                          const optionYear = 1900 + i;
+                          return (
+                            <option key={optionYear} value={optionYear}>
+                              {optionYear}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      <label className="wn-calendar-light-tools__leap">
+                        <input
+                          type="checkbox"
+                          checked={convertLeap}
+                          onChange={(e) => setConvertLeap(e.target.checked)}
+                        />
+                        {language === "vi" ? "Tháng nhuận" : "Leap month"}
+                      </label>
+                      <button
+                        type="button"
+                        className="wn-calendar-light-tools__run"
+                        onClick={runLunarToSolar}
+                      >
+                        {language === "vi" ? "Chuyển đổi" : "Convert"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="wn-calendar-light-tools__form">
+                      <input
+                        type="date"
+                        value={convertSolarDate}
+                        onChange={(e) => setConvertSolarDate(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="wn-calendar-light-tools__run"
+                        onClick={runSolarToLunar}
+                      >
+                        {language === "vi" ? "Chuyển đổi" : "Convert"}
+                      </button>
+                    </div>
+                  )}
+
+                  {convertResult ? (
+                    <div
+                      className={`wn-calendar-light-tools__result ${
+                        convertResult.error ? "is-error" : ""
+                      }`}
+                    >
+                      <span>{convertResult.text}</span>
+                      {convertResult.date ? (
+                        <button
+                          type="button"
+                          onClick={() => goToDate(convertResult.date as Date)}
+                        >
+                          {language === "vi" ? "Xem trên lịch" : "View"}
+                        </button>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {toolView === "holidays" ? (
+                <div className="wn-calendar-light-tools__panel">
+                  {yearHolidays.length > 0 ? (
+                    <div className="wn-calendar-light-holiday-list">
+                      {yearHolidays.map((item) => (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => goToDate(item.date)}
+                          title={item.names}
+                        >
+                          <strong>{item.label}</strong>
+                          <small>{item.lunar}</small>
+                          <span>{item.names}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="wn-calendar-light-tools__empty">
+                      {language === "vi"
+                        ? `Không có ngày lễ nổi bật trong năm ${year}.`
+                        : `No major holidays in ${year}.`}
+                    </p>
+                  )}
+                </div>
+              ) : null}
             </div>
           </section>
 
@@ -5074,6 +5514,73 @@ function CalendarModal({
                     <strong>{almanac.chong}</strong>
                   </div>
                 ) : null}
+
+                <div className="wn-calendar-light-almanac__row wn-calendar-light-birthyear">
+                  <small>Tuổi của bạn</small>
+                  <input
+                    type="number"
+                    min={1900}
+                    max={2100}
+                    inputMode="numeric"
+                    placeholder={language === "vi" ? "Năm sinh" : "Birth year"}
+                    value={birthYearInput}
+                    onChange={(e) => {
+                      const value = e.target.value
+                        .replace(/[^0-9]/g, "")
+                        .slice(0, 4);
+                      setBirthYearInput(value);
+                      try {
+                        window.localStorage.setItem("wn-birth-year", value);
+                      } catch {
+                        // bỏ qua lỗi localStorage
+                      }
+                    }}
+                  />
+                </div>
+
+                <div
+                  className={`wn-calendar-light-almanac__row ${
+                    selectedCompat === "clash"
+                      ? "is-clash"
+                      : selectedCompat === "good"
+                        ? "is-good"
+                        : ""
+                  }`}
+                >
+                  <small>Điểm hợp tuổi</small>
+                  <strong>
+                    {userZhi ? (
+                      selectedCompat === "clash" ? (
+                        <>
+                          ⚠️{" "}
+                          {language === "vi"
+                            ? `Xung tuổi ${
+                                ZHI_VIET[ZHI_HAN.indexOf(userZhi)] ?? userZhi
+                              }`
+                            : "Clashes with your zodiac"}
+                        </>
+                      ) : selectedCompat === "good" ? (
+                        <>
+                          ✅{" "}
+                          {language === "vi"
+                            ? "Ngày tốt với tuổi bạn"
+                            : "Auspicious for your zodiac"}
+                        </>
+                      ) : (
+                        <>
+                          ➖{" "}
+                          {language === "vi" ? "Trung tính" : "Neutral"}
+                        </>
+                      )
+                    ) : (
+                      <span>
+                        {language === "vi"
+                          ? "Nhập năm sinh để xem"
+                          : "Enter birth year"}
+                      </span>
+                    )}
+                  </strong>
+                </div>
 
                 {almanac.luckyHours.length > 0 ? (
                   <div className="wn-calendar-light-almanac__hours">

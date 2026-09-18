@@ -1,5 +1,8 @@
 declare module "lunar-javascript" {
-  export type Lunar = {
+  export class Lunar {
+    /** Tạo ngày âm lịch; tháng nhuận dùng số âm (vd -2 cho tháng nhuận 2) */
+    static fromYmd(year: number, month: number, day: number): Lunar;
+
     getDay(): number;
     getMonth(): number;
     getYear(): number;
@@ -25,7 +28,13 @@ declare module "lunar-javascript" {
     getDayChong(): string;
     /** Con giáp bị xung với ngày (ví dụ 马) */
     getDayChongShengXiao(): string;
-  };
+    /** Chi của năm âm lịch (ví dụ 辰) */
+    getYearZhi(): string;
+    /** Chi của ngày (ví dụ 未) */
+    getDayZhi(): string;
+    /** Ngày dương lịch tương ứng */
+    getSolar(): Solar;
+  }
 
   export type JieQi = {
     getName(): string;
@@ -42,6 +51,11 @@ declare module "lunar-javascript" {
 
   export class Solar {
     static fromYmd(year: number, month: number, day: number): Solar;
+    getYear(): number;
+    getMonth(): number;
+    getDay(): number;
+    /** Chuỗi YYYY-MM-DD */
+    toYmd(): string;
     getLunar(): Lunar;
   }
 }

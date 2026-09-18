@@ -6324,3 +6324,292 @@ a {
     justify-self: center;
   }
 }
+
+/* =========================================================
+   LỊCH: thời tiết mini trên ô + điểm hợp tuổi + công cụ
+   ========================================================= */
+
+/* Icon thời tiết mini góc trên ô ngày */
+.wn-calendar-light-day__weather {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.wn-calendar-light-day__weather em {
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 800;
+  color: #33507a;
+  line-height: 1;
+}
+
+.wn-calendar-light-day__weather svg {
+  flex: none;
+}
+
+/* Chấm trạng thái hợp tuổi dưới ô ngày */
+.wn-calendar-light-day i.is-compatible,
+.wn-calendar-light-day i.is-clash {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.wn-calendar-light-day i.is-compatible {
+  background: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.wn-calendar-light-day i.is-clash {
+  background: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Dòng "Tuổi của bạn" + "Điểm hợp tuổi" trong khung vạn niên */
+.wn-calendar-light-birthyear input {
+  width: 96px;
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  border-radius: 10px;
+  padding: 5px 9px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.wn-calendar-light-almanac__row.is-good strong {
+  color: #15803d;
+}
+
+.wn-calendar-light-almanac__row.is-clash strong {
+  color: #dc2626;
+}
+
+/* Khu công cụ dưới lưới lịch */
+.wn-calendar-light-tools {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.wn-calendar-light-tools__tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wn-calendar-light-tools__tabs button {
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #1e3a8a;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.wn-calendar-light-tools__tabs button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.14);
+}
+
+.wn-calendar-light-tools__tabs button.is-active {
+  background: linear-gradient(135deg, #2563eb, #38bdf8);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.wn-calendar-light-tools__panel {
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  border-radius: 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.72),
+    rgba(233, 244, 255, 0.85)
+  );
+  padding: 12px 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.wn-calendar-light-tools__modes {
+  display: inline-flex;
+  gap: 6px;
+  width: fit-content;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.wn-calendar-light-tools__modes button {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #33507a;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.wn-calendar-light-tools__modes button.is-active {
+  background: #ffffff;
+  color: #1d4ed8;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.16);
+}
+
+.wn-calendar-light-tools__form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.wn-calendar-light-tools__form select,
+.wn-calendar-light-tools__form input[type="date"] {
+  border: 1px solid rgba(59, 130, 246, 0.24);
+  border-radius: 12px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wn-calendar-light-tools__leap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #33507a;
+}
+
+.wn-calendar-light-tools__run {
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #38bdf8);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 16px;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
+  transition: transform 0.16s ease;
+}
+
+.wn-calendar-light-tools__run:hover {
+  transform: translateY(-1px);
+}
+
+.wn-calendar-light-tools__result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-radius: 14px;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  background: rgba(34, 197, 94, 0.08);
+  color: #166534;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wn-calendar-light-tools__result.is-error {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  color: #b91c1c;
+}
+
+.wn-calendar-light-tools__result button {
+  border: 1px solid rgba(22, 101, 52, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #166534;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.wn-calendar-light-tools__result.is-error button {
+  border-color: rgba(185, 28, 28, 0.28);
+  color: #b91c1c;
+}
+
+/* Danh sách ngày lễ trong năm */
+.wn-calendar-light-holiday-list {
+  display: grid;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.wn-calendar-light-holiday-list button {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-areas:
+    "date names"
+    "date lunar";
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  text-align: left;
+  border: 1px solid rgba(59, 130, 246, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.wn-calendar-light-holiday-list button:hover {
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+
+.wn-calendar-light-holiday-list strong {
+  grid-area: date;
+  font-size: 16px;
+  color: #1d4ed8;
+}
+
+.wn-calendar-light-holiday-list span {
+  grid-area: names;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ef2f67;
+  line-height: 1.35;
+}
+
+.wn-calendar-light-holiday-list small {
+  grid-area: lunar;
+  font-size: 11px;
+  color: #55709d;
+}
+
+.wn-calendar-light-tools__empty {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+@media (max-width: 620px) {
+  .wn-calendar-light-day__weather em {
+    display: none;
+  }
+
+  .wn-calendar-light-holiday-list button {
+    grid-template-columns: 46px minmax(0, 1fr);
+  }
+}
