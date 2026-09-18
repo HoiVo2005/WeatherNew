@@ -2012,6 +2012,17 @@ function getYearHolidayList(
   return list;
 }
 
+// Tách tên sự kiện đầu tiên và phần mô tả còn lại từ chuỗi tên ngày lễ
+function firstEventName(names: string) {
+  return names.split(" · ")[0] ?? names;
+}
+
+function firstEventDesc(names: string, language: "vi" | "en") {
+  const rest = names.split(" · ").slice(1).join(" · ");
+
+  return rest || (language === "vi" ? "Ngày đáng nhớ" : "A day to remember");
+}
+
 // Tìm ngày lễ quan trọng kế tiếp (kể cả hôm nay), tìm tối đa 400 ngày tới
 function getUpcomingImportantHoliday(from: Date, language: Language) {
   for (let i = 0; i < 400; i += 1) {
@@ -5015,6 +5026,19 @@ function CalendarModal({
   // Danh sách mọi ngày lễ trong năm đang xem (đã sắp theo ngày)
   const yearHolidays = getYearHolidayList(year, language);
 
+  // Sự kiện nổi bật của tháng đang xem (cho section dưới lưới lịch)
+  const monthEvents = yearHolidays
+    .filter((item) => item.date.getMonth() === month)
+    .map((item) => ({
+      ...item,
+      labelFull: language === "vi"
+        ? `${String(item.date.getDate()).padStart(2, "0")}/${String(item.date.getMonth() + 1).padStart(2, "0")}/${year}`
+        : `${new Intl.DateTimeFormat("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }).format(item.date)}`,
+    }));
+
+  const monthLabelEn =
+    new Intl.DateTimeFormat("en-US", { month: "long" }).format(displayMonth);
+
   function goToDate(date: Date) {
     onDisplayMonthChange(new Date(date.getFullYear(), date.getMonth(), 1));
     onSelectDate(date);
@@ -5101,6 +5125,11 @@ function CalendarModal({
               {language === "vi" ? "Lịch vạn niên" : "Perpetual calendar"}
             </span>
             <h2>{monthLabel}</h2>
+            <p className="wn-calendar-page__quote">
+              {language === "vi"
+                ? "“Thời gian trôi đi, giá trị tốt đẹp luôn ở lại.”"
+                : "“Time passes, good values remain.”"}
+            </p>
           </div>
 
           <div className="wn-calendar-page__controls">
@@ -5199,16 +5228,30 @@ function CalendarModal({
           <section className="wn-calendar-light-left">
 
             <div className="wn-calendar-page__legend" aria-hidden="true">
-              <span>✦ {language === "vi" ? "Ngày lễ" : "Holiday"}</span>
               <span>
-                <i className="is-compatible" />{" "}
-                {language === "vi" ? "Hợp tuổi" : "Zodiac match"}
+                <i className="is-good" />{" "}
+                {language === "vi" ? "Ngày tốt" : "Good day"}
               </span>
               <span>
                 <i className="is-clash" />{" "}
-                {language === "vi" ? "Xung tuổi" : "Zodiac clash"}
+                {language === "vi" ? "Ngày xấu" : "Bad day"}
               </span>
-              <span>🌦 {language === "vi" ? "Dự báo 16 ngày" : "16-day forecast"}</span>
+              <span>
+                <i className="is-hoangdao" />{" "}
+                {language === "vi" ? "Ngày hoàng đạo" : "Auspicious"}
+              </span>
+              <span>
+                <i className="is-hacdao" />{" "}
+                {language === "vi" ? "Ngày hắc đạo" : "Inauspicious"}
+              </span>
+              <span>
+                <i className="is-le" />{" "}
+                {language === "vi" ? "Ngày lễ" : "Holiday"}
+              </span>
+              <span>
+                <i className="is-event" />{" "}
+                {language === "vi" ? "Sự kiện" : "Event"}
+              </span>
             </div>
 
             <div className="wn-calendar-light-grid">
@@ -5319,6 +5362,63 @@ function CalendarModal({
                   );
                 })}
               </div>
+            </div>
+
+            <div className="wn-calendar-page__events">
+              <div className="wn-calendar-page__events-head">
+                <h3>
+                  {language === "vi"
+                    ? `Sự kiện nổi bật tháng ${month + 1}`
+                    : `Featured events in ${monthLabelEn}`}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setToolView("holidays")}
+                >
+                  {language === "vi" ? "Xem tất cả" : "View all"}{" "}
+                  <ChevronRight size={15} />
+                </button>
+              </div>
+
+              {monthEvents.length > 0 ? (
+                <div className="wn-calendar-page__events-grid">
+                  {monthEvents.map((item) => {
+                    const visual = getHolidayVisual(item.date, language);
+
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        className="wn-calendar-page__event-card"
+                        onClick={() => goToDate(item.date)}
+                      >
+                        <span className="wn-calendar-page__event-thumb">
+                          {visual ? (
+                            <img
+                              src={visual.src}
+                              alt={visual.alt[language]}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <span aria-hidden="true">🎉</span>
+                          )}
+                        </span>
+                        <span className="wn-calendar-page__event-info">
+                          <small>{item.labelFull}</small>
+                          <strong>{firstEventName(item.names)}</strong>
+                          <em>{firstEventDesc(item.names, language)}</em>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="wn-calendar-light-tools__empty">
+                  {language === "vi"
+                    ? "Tháng này không có sự kiện nổi bật."
+                    : "No featured events this month."}
+                </p>
+              )}
             </div>
 
             <div className="wn-calendar-light-tools">
