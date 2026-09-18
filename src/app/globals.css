@@ -6787,13 +6787,215 @@ a {
 }
 
 @media (max-width: 720px) {
+  /* Khung trang */
+  .wn-calendar-page__inner {
+    padding: 12px 10px 40px;
+  }
+
+  .wn-calendar-page__body {
+    gap: 14px;
+  }
+
+  /* Header: hàng 1 = tiêu đề + đóng, hàng 2 = điều khiển, hàng 3 = Hôm nay */
   .wn-calendar-page__header {
     position: static;
-    padding: 14px 16px;
+    padding: 12px;
+    border-radius: 20px;
+    gap: 10px;
+  }
+
+  .wn-calendar-page__title {
+    flex: 1 1 calc(100% - 52px);
+    min-width: 0;
+  }
+
+  .wn-calendar-page__title h2 {
+    font-size: 22px;
+    letter-spacing: -0.6px;
+  }
+
+  .wn-calendar-page__title .wn-calendar-light-kicker {
+    font-size: 10px;
+    letter-spacing: 0.6px;
+  }
+
+  .wn-calendar-page__close {
+    width: 42px;
+    height: 42px;
+  }
+
+  .wn-calendar-page__controls {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    gap: 6px;
+  }
+
+  .wn-calendar-page__controls .wn-calendar-light-arrow {
+    width: 42px;
+    height: 42px;
+    flex: none;
+  }
+
+  .wn-calendar-page__controls .wn-calendar-light-select-wrap {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 42px;
+    padding: 0 10px;
+  }
+
+  .wn-calendar-page__controls .wn-calendar-light-select-wrap select {
+    font-size: 12.5px;
+  }
+
+  .wn-calendar-page__controls .wn-calendar-light-select-wrap > svg:first-child {
+    display: none;
+  }
+
+  .wn-calendar-page__today {
+    flex: 1 1 100%;
+    justify-content: center;
+    height: 42px;
+  }
+
+  /* Lưới lịch gọn mà vẫn thoáng */
+  .wn-calendar-page .wn-calendar-light-grid {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 20px;
   }
 
   .wn-calendar-page .wn-calendar-light-day {
-    min-height: 64px;
-    padding: 8px 9px 16px;
+    min-height: 66px;
+    padding: 7px 7px 16px;
+    border-radius: 14px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day strong {
+    font-size: 18px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day small {
+    font-size: 9px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day__weather {
+    top: 5px;
+    left: 6px;
+    gap: 3px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day__weather svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day__bubble {
+    width: 15px;
+    height: 15px;
+    font-size: 8.5px;
+    top: 5px;
+    right: 5px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day i {
+    bottom: 4px;
+  }
+
+  /* Cột phải: card gọn lại */
+  .wn-calendar-page .wn-calendar-light-selected-card {
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-today-card {
+    padding: 14px 16px;
+  }
+
+  /* Công cụ: nút tab chia đôi, form cân đối */
+  .wn-calendar-light-tools {
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .wn-calendar-light-tools__tabs {
+    gap: 6px;
+  }
+
+  .wn-calendar-light-tools__tabs button {
+    flex: 1 1 calc(50% - 4px);
+    text-align: center;
+    padding: 9px 10px;
+    font-size: 11.5px;
+  }
+
+  .wn-calendar-light-tools__panel {
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .wn-calendar-light-tools__form select {
+    flex: 1 1 calc(33.33% - 6px);
+    min-width: 0;
+    padding: 8px 8px;
+    font-size: 12.5px;
+    text-align: center;
+  }
+
+  .wn-calendar-light-tools__form input[type="date"] {
+    flex: 1 1 100%;
+    padding: 9px 10px;
+  }
+
+  .wn-calendar-light-tools__leap {
+    flex: 1 1 auto;
+    padding: 4px 2px;
+  }
+
+  .wn-calendar-light-tools__run {
+    flex: 1 1 100%;
+    padding: 10px 16px;
+  }
+
+  .wn-calendar-light-holiday-list {
+    max-height: 220px;
+  }
+}
+
+@media (max-width: 420px) {
+  .wn-calendar-page__title h2 {
+    font-size: 20px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-grid {
+    padding: 8px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day {
+    min-height: 58px;
+    padding: 6px 6px 14px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day strong {
+    font-size: 16.5px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day small {
+    font-size: 8.5px;
+  }
+
+  .wn-calendar-light-weekdays span {
+    font-size: 9.5px;
+  }
+
+  .wn-calendar-light-days,
+  .wn-calendar-light-weekdays {
+    gap: 4px;
+  }
+
+  .wn-calendar-page .wn-calendar-light-day__bubble {
+    width: 13px;
+    height: 13px;
+    font-size: 8px;
   }
 }
