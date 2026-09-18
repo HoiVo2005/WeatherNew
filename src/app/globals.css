@@ -7001,6 +7001,216 @@ a {
 }
 
 /* =========================================================
+   TRANG CHỦ — LỚP ĐÁNH BÓNG THỐNG NHẤT (áp cả dark mode
+   bằng biến chủ đề; đặt cuối file để thắng cascade cũ)
+   ========================================================= */
+
+/* Cuộn mượt khi bấm menu điều hướng */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar mảnh, bo tròn */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2.5px solid transparent;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--wn-muted) 38%, transparent);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--wn-primary) 45%, transparent);
+  background-clip: content-box;
+}
+
+/* Vòng focus rõ ràng cho bàn phím */
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--wn-primary) 65%, transparent);
+  outline-offset: 2px;
+}
+
+/* Header: bóng nhẹ tạo chiều sâu */
+.wn-header {
+  box-shadow: 0 12px 32px rgba(2, 32, 71, 0.05);
+}
+
+/* Panel: viền + bóng mềm, hover nhấc lên (trừ bản đồ lớn) */
+.wn-panel {
+  border: 1px solid var(--wn-border);
+  box-shadow: 0 16px 38px rgba(2, 32, 71, 0.06);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.wn-panel:not(.wn-full-map):hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--wn-primary) 26%, var(--wn-border));
+  box-shadow: 0 26px 56px rgba(2, 32, 71, 0.1);
+}
+
+/* Kicker heading (24H, 7 DAYS, HISTORY...) thành pill gradient */
+.wn-section-heading > div > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--wn-primary) 12%, transparent),
+    rgba(56, 189, 248, 0.13)
+  );
+  color: var(--wn-primary);
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+
+.wn-section-heading h2 {
+  font-size: clamp(21px, 2.3vw, 28px);
+  letter-spacing: -1.1px;
+}
+
+/* Nút/select: phản hồi nhẹ khi hover */
+.wn-select,
+.wn-icon-button,
+.wn-menu-button,
+.wn-calendar-button {
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    border-color 0.16s ease,
+    background 0.16s ease;
+}
+
+.wn-icon-button:hover,
+.wn-calendar-button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--wn-primary) 38%, var(--wn-border));
+  box-shadow: 0 10px 24px rgba(17, 118, 232, 0.14);
+}
+
+.wn-icon-button--on {
+  box-shadow: 0 10px 24px rgba(34, 197, 94, 0.2);
+}
+
+/* Khoảng cách lưới thoáng hơn một nhịp */
+.wn-content-grid {
+  gap: 16px;
+}
+
+.wn-content-grid,
+.wn-content-grid--lower {
+  margin-top: 18px;
+}
+
+/* Giảm chuyển động nếu người dùng hệ điều hành yêu cầu */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .wn-panel,
+  .wn-icon-button,
+  .wn-calendar-button {
+    transition: none !important;
+  }
+
+  .wn-panel:not(.wn-full-map):hover {
+    transform: none;
+  }
+}
+
+/* Hero: chiều sâu + vệt sáng phụ (dưới nội dung, trên nền trời) */
+.wn-hero {
+  box-shadow: 0 30px 70px rgba(7, 95, 200, 0.26);
+}
+
+.wn-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 80% 6%,
+    rgba(255, 255, 255, 0.15),
+    transparent 36%
+  );
+}
+
+.wn-hero__temperature {
+  font-weight: 700;
+  text-shadow: 0 8px 34px rgba(0, 42, 92, 0.35);
+}
+
+.wn-hero__condition h1 {
+  text-shadow: 0 3px 16px rgba(0, 42, 92, 0.28);
+}
+
+.wn-hero__condition svg {
+  filter: drop-shadow(0 8px 16px rgba(0, 42, 92, 0.32));
+}
+
+/* Dải chỉ số thành dải kính bo tròn nổi bên trong hero */
+.wn-hero__metrics {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.wn-hero__metrics > div {
+  transition: background 0.18s ease;
+}
+
+.wn-hero__metrics > div:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* Nút tim (lưu địa điểm) trên hero có phản hồi */
+.wn-hero__location button {
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.wn-hero__location button:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+/* Thanh điều hướng dưới (mobile): kính mờ nổi */
+.wn-bottom-nav {
+  backdrop-filter: blur(20px);
+}
+
+.wn-bottom-nav a {
+  transition:
+    color 0.16s ease,
+    background 0.16s ease,
+    transform 0.16s ease;
+}
+
+.wn-bottom-nav a:active {
+  transform: scale(0.96);
+}
+
+/* HOMEPAGE_PART_2 */
+
+/* =========================================================
    TRANG LỊCH — bố cục tinh chỉnh: badges, mini-stats,
    card ngày lễ sắp tới, legend, đếm ngược
    ========================================================= */
