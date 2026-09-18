@@ -4846,6 +4846,7 @@ export default function HomePage() {
         open={isCalendarOpen}
         language={language}
         dailyForecast={calendarDaily}
+        upcomingHoliday={upcomingHoliday}
         selectedDate={selectedDate}
         displayMonth={calendarMonth}
         onDisplayMonthChange={setCalendarMonth}
@@ -4906,6 +4907,11 @@ type CalendarModalProps = {
   onSelectDate: (date: Date) => void;
   onClose: () => void;
   dailyForecast: CalendarDailyForecast | null;
+  upcomingHoliday: {
+    date: Date;
+    name: string;
+    daysUntil: number;
+  } | null;
 };
 
 function CalendarModal({
@@ -4917,6 +4923,7 @@ function CalendarModal({
   onSelectDate,
   onClose,
   dailyForecast,
+  upcomingHoliday,
 }: CalendarModalProps) {
   const [previewHoliday, setPreviewHoliday] = useState<{
     visual: HolidayVisual;
@@ -5190,6 +5197,19 @@ function CalendarModal({
 
         <div className="wn-calendar-page__body">
           <section className="wn-calendar-light-left">
+
+            <div className="wn-calendar-page__legend" aria-hidden="true">
+              <span>✦ {language === "vi" ? "Ngày lễ" : "Holiday"}</span>
+              <span>
+                <i className="is-compatible" />{" "}
+                {language === "vi" ? "Hợp tuổi" : "Zodiac match"}
+              </span>
+              <span>
+                <i className="is-clash" />{" "}
+                {language === "vi" ? "Xung tuổi" : "Zodiac clash"}
+              </span>
+              <span>🌦 {language === "vi" ? "Dự báo 16 ngày" : "16-day forecast"}</span>
+            </div>
 
             <div className="wn-calendar-light-grid">
               <div className="wn-calendar-light-weekdays">
@@ -5473,6 +5493,40 @@ function CalendarModal({
           </section>
 
           <aside className="wn-calendar-light-right">
+            {upcomingHoliday ? (
+              <button
+                type="button"
+                className="wn-calendar-page__upcoming"
+                onClick={() => goToDate(upcomingHoliday.date)}
+              >
+                <span
+                  className="wn-calendar-page__upcoming-icon"
+                  aria-hidden="true"
+                >
+                  🎉
+                </span>
+                <span className="wn-calendar-page__upcoming-info">
+                  <small>
+                    {language === "vi" ? "Ngày lễ sắp tới" : "Upcoming holiday"}
+                  </small>
+                  <strong>{upcomingHoliday.name}</strong>
+                  <em>
+                    {upcomingHoliday.daysUntil === 0
+                      ? language === "vi"
+                        ? "Hôm nay! 🎉"
+                        : "Today! 🎉"
+                      : upcomingHoliday.daysUntil === 1
+                        ? language === "vi"
+                          ? "Ngày mai! 🎉"
+                          : "Tomorrow! 🎉"
+                        : language === "vi"
+                          ? `Còn ${upcomingHoliday.daysUntil} ngày`
+                          : `In ${upcomingHoliday.daysUntil} days`}
+                  </em>
+                </span>
+              </button>
+            ) : null}
+
             <div className="wn-calendar-light-selected-card">
               <span className="wn-calendar-light-selected-kicker">
                 {language === "vi" ? "Ngày đang chọn" : "Selected date"}
@@ -5485,20 +5539,70 @@ function CalendarModal({
                 <span>{getLunarDate(selectedDate, language)}</span>
               </div>
 
+              <div className="wn-calendar-page__badges">
+                <span
+                  className={`wn-calendar-page__badge ${
+                    almanac.dayLuck === "hoangDao" ? "is-good" : "is-bad"
+                  }`}
+                >
+                  {almanac.dayLuck === "hoangDao" ? "☀️" : "🌑"}{" "}
+                  {almanac.dayLuck === "hoangDao"
+                    ? language === "vi"
+                      ? "Ngày hoàng đạo"
+                      : "Auspicious day"
+                    : language === "vi"
+                      ? "Ngày hắc đạo"
+                      : "Inauspicious day"}
+                </span>
+
+                {userZhi ? (
+                  <span
+                    className={`wn-calendar-page__badge ${
+                      selectedCompat === "clash"
+                        ? "is-clash"
+                        : selectedCompat === "good"
+                          ? "is-good"
+                          : "is-neutral"
+                    }`}
+                  >
+                    {selectedCompat === "clash"
+                      ? "⚠️"
+                      : selectedCompat === "good"
+                        ? "✅"
+                        : "➖"}{" "}
+                    {selectedCompat === "clash"
+                      ? language === "vi"
+                        ? `Xung tuổi ${
+                            ZHI_VIET[ZHI_HAN.indexOf(userZhi)] ?? userZhi
+                          }`
+                        : "Clashes zodiac"
+                      : selectedCompat === "good"
+                        ? language === "vi"
+                          ? "Hợp tuổi"
+                          : "Zodiac match"
+                        : language === "vi"
+                          ? "Trung tính"
+                          : "Neutral"}
+                  </span>
+                ) : null}
+              </div>
+
               <div className="wn-calendar-light-almanac">
-                <div className="wn-calendar-light-almanac__row">
-                  <small>Can chi</small>
-                  <strong>{almanac.canChi}</strong>
-                </div>
-                <div className="wn-calendar-light-almanac__row">
-                  <small>Tiết khí</small>
-                  <strong>{almanac.jieQi}</strong>
-                </div>
-                <div className="wn-calendar-light-almanac__row">
-                  <small>Pha trăng</small>
-                  <strong>
-                    {almanac.moonIcon} {almanac.moonLabel}
-                  </strong>
+                <div className="wn-calendar-page__stats">
+                  <div className="wn-calendar-page__stat is-wide">
+                    <small>Can chi</small>
+                    <strong>{almanac.canChi}</strong>
+                  </div>
+                  <div className="wn-calendar-page__stat">
+                    <small>Tiết khí</small>
+                    <strong>{almanac.jieQi}</strong>
+                  </div>
+                  <div className="wn-calendar-page__stat">
+                    <small>Pha trăng</small>
+                    <strong>
+                      {almanac.moonIcon} {almanac.moonLabel}
+                    </strong>
+                  </div>
                 </div>
                 {almanac.directions ? (
                   <div className="wn-calendar-light-almanac__hours">
@@ -5544,65 +5648,12 @@ function CalendarModal({
                   />
                 </div>
 
-                <div
-                  className={`wn-calendar-light-almanac__row ${
-                    selectedCompat === "clash"
-                      ? "is-clash"
-                      : selectedCompat === "good"
-                        ? "is-good"
-                        : ""
-                  }`}
-                >
-                  <small>Điểm hợp tuổi</small>
-                  <strong>
-                    {userZhi ? (
-                      selectedCompat === "clash" ? (
-                        <>
-                          ⚠️{" "}
-                          {language === "vi"
-                            ? `Xung tuổi ${
-                                ZHI_VIET[ZHI_HAN.indexOf(userZhi)] ?? userZhi
-                              }`
-                            : "Clashes with your zodiac"}
-                        </>
-                      ) : selectedCompat === "good" ? (
-                        <>
-                          ✅{" "}
-                          {language === "vi"
-                            ? "Ngày tốt với tuổi bạn"
-                            : "Auspicious for your zodiac"}
-                        </>
-                      ) : (
-                        <>
-                          ➖{" "}
-                          {language === "vi" ? "Trung tính" : "Neutral"}
-                        </>
-                      )
-                    ) : (
-                      <span>
-                        {language === "vi"
-                          ? "Nhập năm sinh để xem"
-                          : "Enter birth year"}
-                      </span>
-                    )}
-                  </strong>
-                </div>
-
                 {almanac.luckyHours.length > 0 ? (
                   <div className="wn-calendar-light-almanac__hours">
                     <small>Giờ hoàng đạo</small>
                     <span>{almanac.luckyHours.join(" · ")}</span>
                   </div>
                 ) : null}
-
-                <div
-                  className={`wn-calendar-light-dayluck ${
-                    almanac.dayLuck === "hoangDao" ? "is-good" : "is-bad"
-                  }`}
-                >
-                  {almanac.dayLuck === "hoangDao" ? "☀️" : "🌑"}{" "}
-                  {almanac.dayLuckLabel}
-                </div>
 
                 {almanac.yi ? (
                   <div className="wn-calendar-light-almanac__hours">
