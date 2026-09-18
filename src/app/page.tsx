@@ -5618,7 +5618,7 @@ function CalendarModal({
                   </div>
                 ) : null}
 
-                {almanac.chong ? (
+                {almanac.chong && !(userZhi && selectedCompat === "clash") ? (
                   <div className="wn-calendar-light-almanac__row">
                     <small>Tuổi xung khắc</small>
                     <strong>{almanac.chong}</strong>
@@ -5670,9 +5670,11 @@ function CalendarModal({
                 ) : null}
               </div>
 
-              <div className="wn-calendar-light-countdown">
-                <span>{countdownLabel}</span>
-              </div>
+              {countdownLabel !== (language === "vi" ? "Hôm nay" : "Today") ? (
+                <div className="wn-calendar-light-countdown">
+                  <span>{countdownLabel}</span>
+                </div>
+              ) : null}
 
               {selectedHolidayVisual ? (
                 <button
