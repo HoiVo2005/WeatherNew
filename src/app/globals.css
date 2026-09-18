@@ -972,6 +972,15 @@ a {
   color: var(--wn-muted);
 }
 
+/* Mục xã/phường (đơn vị hành chính mới) — thụt vào để phân cấp với tỉnh */
+.wn-search-results>button.wn-ward-option {
+  padding: 9px 11px 9px 28px;
+}
+
+.wn-search-results>button.wn-ward-option strong {
+  font-weight: 700;
+}
+
 .wn-error {
   margin-bottom: 17px;
   padding: 13px 16px;

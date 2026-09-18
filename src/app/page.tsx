@@ -38,6 +38,7 @@ import {
   X,
 } from "lucide-react";
 import {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -1071,6 +1072,46 @@ function normalizeVietnameseText(value: string) {
     .trim();
 }
 
+// ----- Đơn vị hành chính Việt Nam MỚI (34 tỉnh/thành + ~3.321 xã/phường, sau 1/7/2025) -----
+// Nguồn: zuydd/vn-geo (tải sẵn vào public/data/admin/), nạp lười 1 lần rồi cache.
+type NewAdminProvince = {
+  code: string;
+  name: string;
+  slug: string;
+  type: string;
+  fullName: string;
+};
+
+type NewAdminWard = {
+  code: string;
+  name: string;
+  fullName: string;
+  slug: string;
+  type: string;
+  provinceCode: string;
+};
+
+type AdminData = {
+  provinces: NewAdminProvince[];
+  wards: NewAdminWard[];
+};
+
+let adminDataCache: Promise<AdminData> | null = null;
+
+function loadAdminData(): Promise<AdminData> {
+  if (!adminDataCache) {
+    adminDataCache = Promise.all([
+      fetch("/data/admin/provinces.json").then((response) => response.json()),
+      fetch("/data/admin/wards.json").then((response) => response.json()),
+    ]).then(([provinceList, wardList]) => ({
+      provinces: provinceList as NewAdminProvince[],
+      wards: wardList as NewAdminWard[],
+    }));
+  }
+
+  return adminDataCache;
+}
+
 type CurrentWeather = {
   temperature_2m: number;
   apparent_temperature: number;
@@ -2096,6 +2137,8 @@ async function fetchPlaceName(
   longitude: number,
   language: Language,
 ) {
+  const fallback = `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
+
   try {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=${language}`,
@@ -2108,6 +2151,72 @@ async function fetchPlaceName(
     const data = await response.json();
     const address = data.address ?? {};
 
+    // Ưu tiên địa chỉ theo đơn vị hành chính MỚI (xã/phường + 34 tỉnh/thành)
+    let adminData: AdminData | null = null;
+
+    try {
+      adminData = await loadAdminData();
+    } catch {
+      adminData = null;
+    }
+
+    if (adminData) {
+      const stateName = normalizeVietnameseText(address.state ?? "");
+      const newProvince = stateName
+        ? adminData.provinces.find((province) => {
+            const provinceName = normalizeVietnameseText(province.fullName);
+
+            return (
+              stateName.includes(provinceName) ||
+              provinceName.includes(stateName)
+            );
+          })
+        : undefined;
+
+      const wardCandidates = [
+        address.quarter,
+        address.suburb,
+        address.city_district,
+        address.borough,
+        address.village,
+        address.town,
+        address.municipality,
+      ];
+
+      const matchedWard = adminData.wards.find((ward) => {
+        const wardName = normalizeVietnameseText(ward.name);
+
+        return (
+          wardName.length > 0 &&
+          wardCandidates.some(
+            (candidate) =>
+              candidate && normalizeVietnameseText(candidate) === wardName,
+          )
+        );
+      });
+
+      if (matchedWard) {
+        return matchedWard.fullName;
+      }
+
+      const wardName =
+        address.quarter ||
+        address.suburb ||
+        address.city_district ||
+        address.borough ||
+        address.village ||
+        address.town ||
+        "";
+
+      if (wardName && newProvince) {
+        return `${wardName}, ${newProvince.fullName}`;
+      }
+
+      if (newProvince) {
+        return newProvince.fullName;
+      }
+    }
+
     return (
       address.city ||
       address.town ||
@@ -2115,10 +2224,10 @@ async function fetchPlaceName(
       address.state ||
       address.village ||
       data.display_name?.split(",")[0] ||
-      `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`
+      fallback
     );
   } catch {
-    return `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
+    return fallback;
   }
 }
 
@@ -2171,9 +2280,32 @@ export default function HomePage() {
   // Ảnh nền thành phố cho hero: ẩn tạm khi thiếu file, reset khi đổi địa điểm
   const [cityPhotoFailed, setCityPhotoFailed] = useState(false);
 
+  // Danh mục hành chính mới (34 tỉnh + xã/phường) + tỉnh đang bung danh sách xã/phường
+  const [adminData, setAdminData] = useState<AdminData | null>(null);
+  const [expandedProvinceCode, setExpandedProvinceCode] = useState<
+    string | null
+  >(null);
+
   useEffect(() => {
     setCityPhotoFailed(false);
   }, [locationName]);
+
+  // Nạp danh mục hành chính mới 1 lần khi mở trang
+  useEffect(() => {
+    let cancelled = false;
+
+    void loadAdminData()
+      .then((data) => {
+        if (!cancelled) {
+          setAdminData(data);
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const [currentTime, setCurrentTime] = useState<Date>(
     () => new Date("2000-01-01T00:00:00.000Z"),
@@ -2808,6 +2940,134 @@ export default function HomePage() {
 
   // Ảnh nền thành phố (bạn tự thêm vào public/images/cities/ — xem HUONG-DAN-ANH-NEN-THANH-PHO.md)
   const cityPhotoSrc = getCityBackgroundSrc(locationName);
+
+  // Ghép 34 tỉnh (có tọa độ) với danh mục hành chính mới (để lấy code + fullName)
+  const adminProvinceByCenter = useMemo(() => {
+    const map = new Map<string, NewAdminProvince>();
+
+    if (!adminData) {
+      return map;
+    }
+
+    for (const adminProvince of adminData.provinces) {
+      const adminName = normalizeVietnameseText(adminProvince.name);
+      const match = provinces.find((province) => {
+        const centerName = normalizeVietnameseText(province.name);
+
+        return (
+          centerName.includes(adminName) || adminName.includes(centerName)
+        );
+      });
+
+      if (match) {
+        map.set(match.name, adminProvince);
+      }
+    }
+
+    return map;
+  }, [adminData]);
+
+  // Gom xã/phường theo mã tỉnh
+  const wardsByProvinceCode = useMemo(() => {
+    const map = new Map<string, NewAdminWard[]>();
+
+    if (!adminData) {
+      return map;
+    }
+
+    for (const ward of adminData.wards) {
+      const list = map.get(ward.provinceCode);
+
+      if (list) {
+        list.push(ward);
+      } else {
+        map.set(ward.provinceCode, [ward]);
+      }
+    }
+
+    return map;
+  }, [adminData]);
+
+  // Tìm xã/phường khớp từ khóa tìm kiếm
+  const wardMatches = useMemo(() => {
+    const keyword = normalizeVietnameseText(searchKeyword);
+
+    if (!adminData || !keyword) {
+      return [];
+    }
+
+    return adminData.wards
+      .filter(
+        (ward) =>
+          normalizeVietnameseText(ward.name).includes(keyword) ||
+          normalizeVietnameseText(ward.fullName).includes(keyword),
+      )
+      .slice(0, 40);
+  }, [adminData, searchKeyword]);
+
+  // Chọn 1 xã/phường mới: lấy tọa độ chính xác (Nominatim), fallback về trung tâm tỉnh
+  async function selectCommune(ward: NewAdminWard) {
+    setSearchLoading(true);
+
+    const adminProvince = adminData?.provinces.find(
+      (province) => province.code === ward.provinceCode,
+    );
+    let coords: Coordinates = defaultCoordinates;
+
+    if (adminProvince) {
+      const center = provinces.find((province) => {
+        const centerName = normalizeVietnameseText(province.name);
+        const adminName = normalizeVietnameseText(adminProvince.name);
+
+        return centerName.includes(adminName) || adminName.includes(centerName);
+      });
+
+      if (center) {
+        coords = { latitude: center.latitude, longitude: center.longitude };
+      }
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(
+          `${ward.fullName}, Việt Nam`,
+        )}`,
+      );
+
+      if (response.ok) {
+        const results = (await response.json()) as Array<{
+          lat?: string;
+          lon?: string;
+        }>;
+        const first = results[0];
+
+        if (first?.lat && first?.lon) {
+          coords = {
+            latitude: Number(first.lat),
+            longitude: Number(first.lon),
+          };
+        }
+      }
+    } catch {
+      // Giữ tọa độ trung tâm tỉnh nếu không định vị được xã/phường
+    }
+
+    setCoordinates(coords);
+    setLocationName(ward.fullName);
+    setSearchKeyword("");
+    setSearchResults([]);
+    setShowSearchResults(false);
+    setExpandedProvinceCode(null);
+    setSearchLoading(false);
+
+    localStorage.setItem(
+      "weather-location",
+      JSON.stringify({
+        ...coords,
+        name: ward.fullName,
+      }),
+    );
+  }
 
   const nextHours = useMemo(() => {
     if (!weather) {
@@ -4186,23 +4446,128 @@ export default function HomePage() {
                           : "Vietnam's 34 provinces (2025)"}
                     </div>
 
-                    {provinceMatches.map((province) => (
-                      <button
-                        key={province.name}
-                        type="button"
-                        onClick={() => selectProvince(province)}
-                      >
-                        <MapPin size={17} />
-                        <span>
-                          <strong>{province.name}</strong>
-                          <small>
-                            {language === "vi"
-                              ? "Tỉnh/thành Việt Nam"
-                              : "Vietnam province"}
-                          </small>
-                        </span>
-                      </button>
-                    ))}
+                    {provinceMatches.map((province) => {
+                      const adminProvince = adminProvinceByCenter.get(
+                        province.name,
+                      );
+                      const wardList = adminProvince
+                        ? (wardsByProvinceCode.get(adminProvince.code) ?? [])
+                        : [];
+                      const isExpanded =
+                        adminProvince !== undefined &&
+                        expandedProvinceCode === adminProvince.code;
+
+                      return (
+                        <Fragment key={province.name}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (wardList.length > 0) {
+                                setExpandedProvinceCode(
+                                  isExpanded ? null : (adminProvince?.code ?? null),
+                                );
+                              } else {
+                                selectProvince(province);
+                              }
+                            }}
+                          >
+                            <MapPin size={17} />
+                            <span>
+                              <strong>{province.name}</strong>
+                              <small>
+                                {wardList.length > 0
+                                  ? language === "vi"
+                                    ? `${wardList.length} xã/phường mới — bấm để chọn`
+                                    : `${wardList.length} wards — tap to pick`
+                                  : language === "vi"
+                                    ? "Tỉnh/thành Việt Nam"
+                                    : "Vietnam province"}
+                              </small>
+                            </span>
+                          </button>
+
+                          {isExpanded && adminProvince && (
+                            <>
+                              <div className="wn-search-results__label">
+                                {language === "vi"
+                                  ? `Xã/phường của ${adminProvince.fullName}`
+                                  : `Wards of ${adminProvince.fullName}`}
+                              </div>
+
+                              <button
+                                type="button"
+                                className="wn-ward-option"
+                                onClick={() => selectProvince(province)}
+                              >
+                                <MapPin size={15} />
+                                <span>
+                                  <strong>
+                                    {language === "vi"
+                                      ? "Cả tỉnh/thành phố"
+                                      : "Whole province/city"}
+                                  </strong>
+                                  <small>
+                                    {adminProvince.fullName} —{" "}
+                                    {language === "vi"
+                                      ? "dự báo tại trung tâm"
+                                      : "forecast at center"}
+                                  </small>
+                                </span>
+                              </button>
+
+                              {wardList.map((ward) => (
+                                <button
+                                  key={ward.code}
+                                  type="button"
+                                  className="wn-ward-option"
+                                  onClick={() => void selectCommune(ward)}
+                                >
+                                  <MapPin size={15} />
+                                  <span>
+                                    <strong>{ward.fullName}</strong>
+                                    <small>
+                                      {ward.type === "ward"
+                                        ? language === "vi"
+                                          ? "Phường"
+                                          : "Ward"
+                                        : language === "vi"
+                                          ? "Xã/Đặc khu"
+                                          : "Commune"}
+                                    </small>
+                                  </span>
+                                </button>
+                              ))}
+                            </>
+                          )}
+                        </Fragment>
+                      );
+                    })}
+
+                    {wardMatches.length > 0 && (
+                      <>
+                        <div className="wn-search-results__label">
+                          {language === "vi" ? "Xã/phường" : "Wards"}
+                        </div>
+                        {wardMatches.map((ward) => (
+                          <button
+                            key={ward.code}
+                            type="button"
+                            className="wn-ward-option"
+                            onClick={() => void selectCommune(ward)}
+                          >
+                            <MapPin size={15} />
+                            <span>
+                              <strong>{ward.fullName}</strong>
+                              <small>
+                                {language === "vi"
+                                  ? "Xã/phường (đơn vị hành chính mới)"
+                                  : "New administrative unit"}
+                              </small>
+                            </span>
+                          </button>
+                        ))}
+                      </>
+                    )}
 
                     {searchKeyword.trim() && searchResults.length > 0 && (
                       <>
