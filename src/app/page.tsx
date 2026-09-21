@@ -1072,6 +1072,85 @@ function normalizeVietnameseText(value: string) {
     .trim();
 }
 
+// ----- Gợi ý địa chỉ Việt Nam qua API Nominatim (OSM) -----
+// Có dữ liệu đường/phố + phường/xã + tỉnh/thành MỚI (sau sáp nhập 2025), miễn phí, không cần key.
+type AddressResult = {
+  id: string;
+  name: string;
+  detail: string;
+  latitude: number;
+  longitude: number;
+  category: "road" | "admin" | "poi";
+};
+
+type NominatimResult = {
+  place_id: number;
+  name?: string;
+  display_name: string;
+  lat: string;
+  lon: string;
+  addresstype?: string;
+  type?: string;
+};
+
+const ADDRESS_ROAD_TYPES = [
+  "road",
+  "residential",
+  "pedestrian",
+  "living_street",
+  "footway",
+  "cycleway",
+  "path",
+  "service",
+  "track",
+  "primary",
+  "secondary",
+  "tertiary",
+  "trunk",
+  "unclassified",
+];
+
+const ADDRESS_ADMIN_TYPES = [
+  "province",
+  "state",
+  "city",
+  "town",
+  "municipality",
+  "county",
+  "borough",
+  "suburb",
+  "quarter",
+  "village",
+  "city_district",
+];
+
+function toAddressResult(
+  item: NominatimResult,
+): AddressResult {
+  const kind = item.addresstype ?? item.type ?? "";
+
+  const category: AddressResult["category"] = ADDRESS_ROAD_TYPES.includes(kind)
+    ? "road"
+    : ADDRESS_ADMIN_TYPES.includes(kind)
+      ? "admin"
+      : "poi";
+
+  const parts = item.display_name
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return {
+    id: String(item.place_id),
+    name: item.name || parts[0] || item.display_name,
+    // Các phần sau tên chính: phường/xã, tỉnh/thành... để làm mô tả nhỏ
+    detail: parts.slice(1, 4).join(", "),
+    latitude: Number(item.lat),
+    longitude: Number(item.lon),
+    category,
+  };
+}
+
 // ----- Đơn vị hành chính Việt Nam MỚI (34 tỉnh/thành + ~3.321 xã/phường, sau 1/7/2025) -----
 // Nguồn: zuydd/vn-geo (tải sẵn vào public/data/admin/), nạp lười 1 lần rồi cache.
 type NewAdminProvince = {
@@ -2275,7 +2354,20 @@ export default function HomePage() {
   const [searchResults, setSearchResults] = useState<LocationResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  // Gợi ý địa chỉ VN (đường, phường/xã, tỉnh/thành) từ API Nominatim
+  const [addressResults, setAddressResults] = useState<AddressResult[]>([]);
   const searchBlurTimerRef = useRef<number | null>(null);
+  const searchDebounceRef = useRef<number | null>(null);
+  const addressRequestRef = useRef(0);
+
+  // Dọn hẹn giờ debounce khi component unmount
+  useEffect(() => {
+    return () => {
+      if (searchDebounceRef.current !== null) {
+        window.clearTimeout(searchDebounceRef.current);
+      }
+    };
+  }, []);
 
   // Ảnh nền thành phố cho hero: ẩn tạm khi thiếu file, reset khi đổi địa điểm
   const [cityPhotoFailed, setCityPhotoFailed] = useState(false);
@@ -2766,6 +2858,7 @@ export default function HomePage() {
     setCoordinates(selected);
     setLocationLoading(true);
     setSearchResults([]);
+    setAddressResults([]);
     setShowSearchResults(false);
 
     const placeName = await fetchPlaceName(
@@ -2892,6 +2985,8 @@ export default function HomePage() {
     setCoordinates(selected);
     setLocationName(name);
     setSearchKeyword("");
+    setSearchResults([]);
+    setAddressResults([]);
     setShowSearchResults(false);
 
     localStorage.setItem(
@@ -2901,6 +2996,61 @@ export default function HomePage() {
         name,
       }),
     );
+  }
+
+  // Gọi API Nominatim lấy gợi ý địa chỉ Việt Nam (đường/phố, phường/xã, tỉnh/thành mới 2025)
+  async function fetchAddressSuggestions(keyword: string) {
+    const requestId = ++addressRequestRef.current;
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&countrycodes=vn&accept-language=${language}&limit=8&q=${encodeURIComponent(keyword)}`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Address search failed");
+      }
+
+      const data = (await response.json()) as NominatimResult[];
+
+      // Kết quả cũ của từ khóa trước đó -> bỏ qua (chống race condition)
+      if (requestId !== addressRequestRef.current) {
+        return;
+      }
+
+      setAddressResults(data.map((item) => toAddressResult(item)));
+    } catch {
+      if (requestId === addressRequestRef.current) {
+        setAddressResults([]);
+      }
+    }
+  }
+
+  // Chạy tìm kiếm trên cả 2 nguồn: Open-Meteo (địa điểm) + Nominatim (địa chỉ VN)
+  function runSearch(keyword: string) {
+    void handleSearch(keyword);
+
+    if (!keyword.trim()) {
+      addressRequestRef.current += 1; // vô hiệu hóa kết quả đang chờ
+      setAddressResults([]);
+      return;
+    }
+
+    void fetchAddressSuggestions(keyword.trim());
+  }
+
+  // Chọn 1 gợi ý địa chỉ -> dùng handleMapSelect (tự gọi fetchPlaceName
+  // để hiển thị tên theo đơn vị hành chính MỚI: "Phường X, Tỉnh Y")
+  function selectAddressResult(item: AddressResult) {
+    setSearchKeyword("");
+    setSearchResults([]);
+    setAddressResults([]);
+    setShowSearchResults(false);
+
+    void handleMapSelect({
+      latitude: item.latitude,
+      longitude: item.longitude,
+    });
   }
 
   // Chọn nhanh 1 trong 34 tỉnh/thành Việt Nam sau sáp nhập 2025
@@ -2914,6 +3064,7 @@ export default function HomePage() {
     setLocationName(province.name);
     setSearchKeyword("");
     setSearchResults([]);
+    setAddressResults([]);
     setShowSearchResults(false);
 
     localStorage.setItem(
@@ -3056,6 +3207,7 @@ export default function HomePage() {
     setLocationName(ward.fullName);
     setSearchKeyword("");
     setSearchResults([]);
+    setAddressResults([]);
     setShowSearchResults(false);
     setExpandedProvinceCode(null);
     setSearchLoading(false);
@@ -4386,14 +4538,36 @@ export default function HomePage() {
                 const nextValue = event.target.value;
                 setSearchKeyword(nextValue);
 
+                if (searchDebounceRef.current !== null) {
+                  window.clearTimeout(searchDebounceRef.current);
+                  searchDebounceRef.current = null;
+                }
+
                 if (!nextValue.trim()) {
                   setSearchResults([]);
+                  setAddressResults([]);
                   // Ô trống: hiển thị danh sách 34 tỉnh/thành để chọn nhanh
                   setShowSearchResults(true);
                   return;
                 }
 
-                void handleSearch(nextValue);
+                // Chờ người dùng ngừng gõ 350ms rồi mới gọi API (tránh gọi liên tục từng ký tự)
+                searchDebounceRef.current = window.setTimeout(() => {
+                  searchDebounceRef.current = null;
+                  runSearch(nextValue);
+                }, 350);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+
+                  if (searchDebounceRef.current !== null) {
+                    window.clearTimeout(searchDebounceRef.current);
+                    searchDebounceRef.current = null;
+                  }
+
+                  runSearch(searchKeyword);
+                }
               }}
               onFocus={() => {
                 if (searchBlurTimerRef.current !== null) {
@@ -4417,7 +4591,14 @@ export default function HomePage() {
             />
             <button
               type="button"
-              onClick={() => void handleSearch(searchKeyword)}
+              onClick={() => {
+                if (searchDebounceRef.current !== null) {
+                  window.clearTimeout(searchDebounceRef.current);
+                  searchDebounceRef.current = null;
+                }
+
+                runSearch(searchKeyword);
+              }}
               disabled={searchLoading}
             >
               {searchLoading ? (
@@ -4569,6 +4750,43 @@ export default function HomePage() {
                       </>
                     )}
 
+                    {addressResults.length > 0 && (
+                      <>
+                        <div className="wn-search-results__label">
+                          {language === "vi"
+                            ? "Địa chỉ (đường, phường/xã, tỉnh/thành...)"
+                            : "Addresses (streets, wards, provinces...)"}
+                        </div>
+                        {addressResults.map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            className="wn-ward-option"
+                            onClick={() => selectAddressResult(item)}
+                          >
+                            <MapPin size={15} />
+                            <span>
+                              <strong>{item.name}</strong>
+                              <small>
+                                {item.category === "road"
+                                  ? language === "vi"
+                                    ? "Đường/phố"
+                                    : "Street"
+                                  : item.category === "admin"
+                                    ? language === "vi"
+                                      ? "Hành chính"
+                                      : "Administrative"
+                                    : language === "vi"
+                                      ? "Địa điểm"
+                                      : "Place"}
+                                {item.detail ? ` • ${item.detail}` : ""}
+                              </small>
+                            </span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+
                     {searchKeyword.trim() && searchResults.length > 0 && (
                       <>
                         {provinceMatches.length > 0 && (
@@ -4599,6 +4817,7 @@ export default function HomePage() {
                     {searchKeyword.trim() &&
                     !searchLoading &&
                     searchResults.length === 0 &&
+                    addressResults.length === 0 &&
                     provinceMatches.length === 0 ? (
                       <div className="wn-search-results__message">
                         {text.searchEmpty}
