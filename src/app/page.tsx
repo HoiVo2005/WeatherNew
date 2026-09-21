@@ -2320,6 +2320,8 @@ export default function HomePage() {
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [readAlertSignature, setReadAlertSignature] = useState("");
   const [windyOverlay, setWindyOverlay] = useState<WindyOverlay>("wind");
+  // Chế độ xem cho khu bản đồ gộp: bản đồ Việt Nam (Leaflet) hoặc Windy
+  const [mapView, setMapView] = useState<"vn" | "windy">("vn");
   const [notifyPermission, setNotifyPermission] =
     useState<NotificationPermission | "unsupported">("default");
   const [shareBusy, setShareBusy] = useState(false);
@@ -3672,6 +3674,26 @@ export default function HomePage() {
 
   const windyConfig = windyLayerConfig[windyOverlay];
 
+  // Hero mockup mới: nhãn đơn vị + tên đơn vị lớn (bỏ tiền tố) + khẩu hiệu
+  const heroCityName =
+    (locationName.split(",").pop() ?? locationName).trim() || locationName;
+  const heroCityIsProvince = /^tỉnh/i.test(heroCityName);
+  const heroCityLabel =
+    language === "vi"
+      ? heroCityIsProvince
+        ? "TỈNH"
+        : "THÀNH PHỐ"
+      : heroCityName.toLowerCase().startsWith("province")
+        ? "PROVINCE"
+        : "CITY";
+  const heroCityTitle =
+    heroCityName
+      .replace(/^tỉnh\s+/i, "")
+      .replace(/^thành phố\s+/i, "")
+      .replace(/^province of\s+/i, "")
+      .replace(/^city of\s+/i, "")
+      .trim() || heroCityName;
+
   const windyEmbedUrl = new URL("https://embed.windy.com/embed.html");
   windyEmbedUrl.search = new URLSearchParams({
     type: "map",
@@ -3941,7 +3963,7 @@ export default function HomePage() {
               <span>{text.map}</span>
             </a>
             <a
-              href="#windy-storm"
+              href="#weather-map"
               className={activeSection === "windy-storm" ? "is-active" : ""}
               onClick={() => setActiveSection("windy-storm")}
             >
@@ -4511,7 +4533,7 @@ export default function HomePage() {
               <span>{text.map}</span>
             </a>
             <a
-              href="#windy-storm"
+              href="#weather-map"
               className={activeSection === "windy-storm" ? "is-active" : ""}
               onClick={() => {
                 setActiveSection("windy-storm");
@@ -4900,13 +4922,26 @@ export default function HomePage() {
                         {formatHourlyUpdateLabel(currentTime, language)}
                       </small>
                     </div>
-                    <button
-                      type="button"
-                      onClick={saveCurrentFavorite}
-                      aria-label="Lưu địa điểm"
-                    >
-                      <Heart size={20} />
-                    </button>
+                    <div className="wn-hero__location-actions">
+                      <span className="wn-hero__script">WeatherNow</span>
+                      <button
+                        type="button"
+                        onClick={saveCurrentFavorite}
+                        aria-label="Lưu địa điểm"
+                      >
+                        <Heart size={20} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="wn-hero__branding">
+                    <span className="wn-hero__eyebrow">{heroCityLabel}</span>
+                    <p className="wn-hero__city">{heroCityTitle}</p>
+                    <p className="wn-hero__slogan">
+                      {language === "vi"
+                        ? "Vùng vàng bản sắc — Vươn tầm thế giới"
+                        : "Golden identity — Rising to the world"}
+                    </p>
                   </div>
 
                   <div className="wn-hero__main">
@@ -5279,34 +5314,7 @@ export default function HomePage() {
             </div>
           </article>
 
-          <article className="wn-panel wn-windy-preview">
-            <div className="wn-section-heading">
-              <div>
-                <span>
-                  Windy <b>LIVE</b>
-                </span>
-                <h2>{language === "vi" ? "Bão & Windy" : "Storm & Windy"}</h2>
-              </div>
-              <a
-                href={windyFullUrl.toString()}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <ExternalLink size={16} />
-              </a>
-            </div>
-
-            <iframe
-              title="Windy preview"
-              src={windyEmbedUrl.toString()}
-              loading="lazy"
-              allowFullScreen
-            />
-          </article>
-        </section>
-
-        {weather && (
-          <section className="wn-content-grid wn-content-grid--lower">
+          {weather && (
             <article className="wn-panel wn-daily-card">
               <div className="wn-section-heading">
                 <div>
@@ -5350,25 +5358,8 @@ export default function HomePage() {
                 ))}
               </div>
             </article>
-
-            <article className="wn-panel wn-map-preview">
-              <div className="wn-section-heading">
-                <div>
-                  <span>OpenStreetMap</span>
-                  <h2>{text.weatherMap}</h2>
-                </div>
-                <a href="#weather-map">
-                  {language === "vi" ? "Xem bản đồ" : "View map"}
-                </a>
-              </div>
-              <WeatherMap
-                coordinates={coordinates}
-                locationName={locationName}
-                onSelectLocation={handleMapSelect}
-              />
-            </article>
-          </section>
-        )}
+          )}
+        </section>
 
         {upcomingHoliday && (
           <section className="wn-holiday-soon">
@@ -5505,77 +5496,96 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="windy-storm" className="wn-panel wn-full-map">
-          <div className="wn-section-heading wn-section-heading--wrap">
-            <div>
-              <span>WINDY</span>
-              <h2>
-                {language === "vi"
-                  ? "Theo dõi mưa bão và thời tiết nguy hiểm"
-                  : "Storm and severe weather tracking"}
-              </h2>
-            </div>
-            <a
-              href={windyFullUrl.toString()}
-              target="_blank"
-              rel="noreferrer"
-              className="wn-outline-button"
-            >
-              <ExternalLink size={16} />
-              {language === "vi" ? "Mở Windy" : "Open Windy"}
-            </a>
-          </div>
-
-          <div className="wn-layer-tabs">
-            {(Object.keys(windyLayerConfig) as WindyOverlay[]).map((layer) => (
-              <button
-                type="button"
-                className={windyOverlay === layer ? "is-active" : ""}
-                onClick={() => setWindyOverlay(layer)}
-                key={layer}
-              >
-                {windyLayerConfig[layer][language]}
-              </button>
-            ))}
-          </div>
-
-          <iframe
-            key={`${windyOverlay}-${coordinates.latitude}-${coordinates.longitude}-${windUnit}`}
-            title={`Windy ${windyConfig[language]}`}
-            src={windyEmbedUrl.toString()}
-            loading="lazy"
-            allowFullScreen
-          />
-
-          <p className="wn-map-note">
-            <AlertTriangle size={17} />
-            {language === "vi"
-              ? "Dữ liệu Windy dùng để tham khảo. Khi có bão hoặc thời tiết nguy hiểm, hãy ưu tiên cảnh báo chính thức từ cơ quan khí tượng Việt Nam."
-              : "Windy data is for reference. Follow official national warnings during severe weather."}
-          </p>
-        </section>
-
         <section id="weather-map" className="wn-panel wn-full-map">
           <div className="wn-section-heading wn-section-heading--wrap">
             <div>
               <span>MAP</span>
-              <h2>{text.weatherMap}</h2>
+              <h2>
+                {mapView === "windy"
+                  ? language === "vi"
+                    ? "Theo dõi mưa bão và thời tiết nguy hiểm"
+                    : "Storm and severe weather tracking"
+                  : text.weatherMap}
+              </h2>
             </div>
+            {mapView === "windy" ? (
+              <a
+                href={windyFullUrl.toString()}
+                target="_blank"
+                rel="noreferrer"
+                className="wn-outline-button"
+              >
+                <ExternalLink size={16} />
+                {language === "vi" ? "Mở Windy" : "Open Windy"}
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="wn-outline-button"
+                onClick={handleCurrentLocation}
+              >
+                <LocateFixed size={16} />
+                {text.currentLocation}
+              </button>
+            )}
+          </div>
+
+          <div className="wn-map-view-tabs">
             <button
               type="button"
-              className="wn-outline-button"
-              onClick={handleCurrentLocation}
+              className={mapView === "vn" ? "is-active" : ""}
+              onClick={() => setMapView("vn")}
             >
-              <LocateFixed size={16} />
-              {text.currentLocation}
+              {language === "vi" ? "Bản đồ Việt Nam" : "Vietnam map"}
+            </button>
+            <button
+              type="button"
+              className={mapView === "windy" ? "is-active" : ""}
+              onClick={() => setMapView("windy")}
+            >
+              Windy
             </button>
           </div>
 
-          <WeatherMap
-            coordinates={coordinates}
-            locationName={locationName}
-            onSelectLocation={handleMapSelect}
-          />
+          {mapView === "windy" ? (
+            <>
+              <div className="wn-layer-tabs">
+                {(Object.keys(windyLayerConfig) as WindyOverlay[]).map(
+                  (layer) => (
+                    <button
+                      type="button"
+                      className={windyOverlay === layer ? "is-active" : ""}
+                      onClick={() => setWindyOverlay(layer)}
+                      key={layer}
+                    >
+                      {windyLayerConfig[layer][language]}
+                    </button>
+                  ),
+                )}
+              </div>
+
+              <iframe
+                key={`${windyOverlay}-${coordinates.latitude}-${coordinates.longitude}-${windUnit}`}
+                title={`Windy ${windyConfig[language]}`}
+                src={windyEmbedUrl.toString()}
+                loading="lazy"
+                allowFullScreen
+              />
+
+              <p className="wn-map-note">
+                <AlertTriangle size={17} />
+                {language === "vi"
+                  ? "Dữ liệu Windy dùng để tham khảo. Khi có bão hoặc thời tiết nguy hiểm, hãy ưu tiên cảnh báo chính thức từ cơ quan khí tượng Việt Nam."
+                  : "Windy data is for reference. Follow official national warnings during severe weather."}
+              </p>
+            </>
+          ) : (
+            <WeatherMap
+              coordinates={coordinates}
+              locationName={locationName}
+              onSelectLocation={handleMapSelect}
+            />
+          )}
         </section>
       </div>
 
@@ -5619,7 +5629,7 @@ export default function HomePage() {
           <span>{text.map}</span>
         </a>
         <a
-          href="#windy-storm"
+          href="#weather-map"
           className={activeSection === "windy-storm" ? "is-active" : ""}
           onClick={() => setActiveSection("windy-storm")}
         >
