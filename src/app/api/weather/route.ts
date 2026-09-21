@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 900;
 
-function numberAt(values: unknown, index = 0): number | null {
-  return Array.isArray(values) && typeof values[index] === "number" ? values[index] : null;
-}
-
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const latitude = Number(params.get("latitude"));

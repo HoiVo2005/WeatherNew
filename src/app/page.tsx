@@ -10,7 +10,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Cloud,
   CloudFog,
   CloudLightning,
   CloudRain,
@@ -21,7 +20,6 @@ import {
   Gauge,
   Heart,
   Languages,
-  Layers3,
   LoaderCircle,
   LocateFixed,
   MapPin,
@@ -641,10 +639,7 @@ function getDynamicHolidayImageKey(date: Date): string | null {
   return null;
 }
 
-function getHolidayVisual(
-  date: Date,
-  language: "vi" | "en",
-): HolidayVisual | null {
+function getHolidayVisual(date: Date): HolidayVisual | null {
   // Kiểm tra Giao thừa âm lịch trước
   if (isLunarNewYearEve(date)) {
     return {
@@ -1124,9 +1119,7 @@ const ADDRESS_ADMIN_TYPES = [
   "city_district",
 ];
 
-function toAddressResult(
-  item: NominatimResult,
-): AddressResult {
+function toAddressResult(item: NominatimResult): AddressResult {
   const kind = item.addresstype ?? item.type ?? "";
 
   const category: AddressResult["category"] = ADDRESS_ROAD_TYPES.includes(kind)
@@ -1480,37 +1473,6 @@ function getWindDirection(degrees: number) {
   const directions = ["B", "ĐB", "Đ", "ĐN", "N", "TN", "T", "TB"];
   const index = Math.round(degrees / 45) % 8;
   return directions[index];
-}
-
-function formatDuration(seconds: number, language: Language) {
-  if (!Number.isFinite(seconds)) return "--";
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.round((seconds % 3600) / 60);
-
-  return language === "vi"
-    ? `${hours} giờ ${minutes} phút`
-    : `${hours}h ${minutes}m`;
-}
-
-function getDewPointLabel(value: number, language: Language) {
-  if (value >= 24) {
-    return language === "vi" ? "Rất oi bức" : "Very muggy";
-  }
-
-  if (value >= 20) {
-    return language === "vi" ? "Oi bức" : "Muggy";
-  }
-
-  if (value >= 16) {
-    return language === "vi" ? "Hơi ẩm" : "Slightly humid";
-  }
-
-  if (value >= 10) {
-    return language === "vi" ? "Dễ chịu" : "Comfortable";
-  }
-
-  return language === "vi" ? "Khô ráo" : "Dry";
 }
 
 function formatDay(date: string, language: Language) {
@@ -1917,8 +1879,7 @@ function getAlmanacInfo(date: Date, language: Language) {
   let jieQi = language === "vi" ? "—" : "—";
   try {
     const raw = lunar.getPrevJieQi(true).getName();
-    jieQi =
-      language === "vi" ? (JIE_QI_VIET[raw] ?? raw) : raw;
+    jieQi = language === "vi" ? (JIE_QI_VIET[raw] ?? raw) : raw;
   } catch {
     // bỏ qua lỗi đọc tiết khí
   }
@@ -1941,7 +1902,8 @@ function getAlmanacInfo(date: Date, language: Language) {
     moonLabel = language === "vi" ? "Trăng tròn (Vọng)" : "Full moon";
   } else if (day >= 18 && day <= 21) {
     moonIcon = "🌖";
-    moonLabel = language === "vi" ? "Trăng khuyết cuối tháng" : "Waning gibbous";
+    moonLabel =
+      language === "vi" ? "Trăng khuyết cuối tháng" : "Waning gibbous";
   } else if (day >= 22 && day <= 23) {
     moonIcon = "🌗";
     moonLabel = language === "vi" ? "Trăng hạ huyền" : "Last quarter";
@@ -1963,9 +1925,7 @@ function getAlmanacInfo(date: Date, language: Language) {
   // Ngày hoàng đạo / hắc đạo (thiên thần của ngày)
   let dayLuck: "hoangDao" | "heiDao" = "hoangDao";
   let dayLuckLabel =
-    language === "vi"
-      ? "Ngày hoàng đạo — tốt"
-      : "Yellow-path day — auspicious";
+    language === "vi" ? "Ngày hoàng đạo — tốt" : "Yellow-path day — auspicious";
   try {
     const tianShenType = lunar.getDayTianShenType() ?? "";
     if (tianShenType.includes("黑")) {
@@ -2046,9 +2006,7 @@ function getAlmanacInfo(date: Date, language: Language) {
     const animal = lunar.getDayChongShengXiao();
     if (language === "vi") {
       const zhiVi = ZHI_VIET[ZHI_HAN.indexOf(zhi)] ?? zhi;
-      chong = `Xung tuổi ${zhiVi} (con ${
-        SHENG_XIAO_VIET[animal] ?? animal
-      })`;
+      chong = `Xung tuổi ${zhiVi} (con ${SHENG_XIAO_VIET[animal] ?? animal})`;
     } else {
       chong = `Clash: ${SHENG_XIAO_EN[animal] ?? animal} (${
         ZHI_PINYIN[zhi] ?? zhi
@@ -2168,7 +2126,7 @@ function getUpcomingImportantHoliday(from: Date, language: Language) {
     const name =
       getSolarHoliday(date, language) ??
       getCalendarNote(date, language) ??
-      getHolidayVisual(date, language)?.alt?.[language] ??
+      getHolidayVisual(date)?.alt?.[language] ??
       "";
 
     return { date, name, daysUntil: i };
@@ -2322,8 +2280,9 @@ export default function HomePage() {
   const [windyOverlay, setWindyOverlay] = useState<WindyOverlay>("wind");
   // Chế độ xem cho khu bản đồ gộp: bản đồ Việt Nam (Leaflet) hoặc Windy
   const [mapView, setMapView] = useState<"vn" | "windy">("vn");
-  const [notifyPermission, setNotifyPermission] =
-    useState<NotificationPermission | "unsupported">("default");
+  const [notifyPermission, setNotifyPermission] = useState<
+    NotificationPermission | "unsupported"
+  >("default");
   const [shareBusy, setShareBusy] = useState(false);
   const [weatherHistory, setWeatherHistory] = useState<HistoryEntry[]>(() => {
     try {
@@ -2373,16 +2332,19 @@ export default function HomePage() {
 
   // Ảnh nền thành phố cho hero: ẩn tạm khi thiếu file, reset khi đổi địa điểm
   const [cityPhotoFailed, setCityPhotoFailed] = useState(false);
+  const [cityPhotoLocation, setCityPhotoLocation] = useState(locationName);
+
+  // Reset cờ lỗi ảnh khi đổi địa điểm (điều chỉnh state trong lúc render thay vì useEffect)
+  if (cityPhotoLocation !== locationName) {
+    setCityPhotoLocation(locationName);
+    setCityPhotoFailed(false);
+  }
 
   // Danh mục hành chính mới (34 tỉnh + xã/phường) + tỉnh đang bung danh sách xã/phường
   const [adminData, setAdminData] = useState<AdminData | null>(null);
   const [expandedProvinceCode, setExpandedProvinceCode] = useState<
     string | null
   >(null);
-
-  useEffect(() => {
-    setCityPhotoFailed(false);
-  }, [locationName]);
 
   // Nạp danh mục hành chính mới 1 lần khi mở trang
   useEffect(() => {
@@ -2407,15 +2369,6 @@ export default function HomePage() {
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  // TEMP-SCREENSHOT: mo trang lich khi URL co ?lich=1 (XOA SAU KHI chup anh)
-  useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).has("lich")
-    ) {
-      setIsCalendarOpen(true);
-    }
-  }, []);
   const [calendarMonth, setCalendarMonth] = useState<Date>(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   );
@@ -2608,12 +2561,13 @@ export default function HomePage() {
     if (!hasMounted) return;
 
     const today = new Date();
-    const visual = getHolidayVisual(today, language);
+    const visual = getHolidayVisual(today);
 
     if (!visual) return;
 
     const dateKey = getDateKey(today);
     const dismissedKey = `holiday-dismissed-${dateKey}`;
+
     const title =
       getSolarHoliday(today, language) ??
       getCalendarNote(today, language) ??
@@ -2662,9 +2616,11 @@ export default function HomePage() {
           timezone: "auto",
           forecast_days: "16",
           temperature_unit: temperatureUnit,
-          daily: ["weather_code", "temperature_2m_max", "temperature_2m_min"].join(
-            ",",
-          ),
+          daily: [
+            "weather_code",
+            "temperature_2m_max",
+            "temperature_2m_min",
+          ].join(","),
         });
         const response = await fetch(
           `https://api.open-meteo.com/v1/forecast?${params.toString()}`,
@@ -3107,9 +3063,7 @@ export default function HomePage() {
       const match = provinces.find((province) => {
         const centerName = normalizeVietnameseText(province.name);
 
-        return (
-          centerName.includes(adminName) || adminName.includes(centerName)
-        );
+        return centerName.includes(adminName) || adminName.includes(centerName);
       });
 
       if (match) {
@@ -3462,7 +3416,9 @@ export default function HomePage() {
 
       ctx.beginPath();
       ctx.arc(1020, 130, 60, 0, Math.PI * 2);
-      ctx.fillStyle = isNight ? "rgba(226, 232, 240, 0.9)" : "rgba(253, 230, 138, 0.95)";
+      ctx.fillStyle = isNight
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(253, 230, 138, 0.95)";
       ctx.fill();
 
       ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
@@ -3495,8 +3451,10 @@ export default function HomePage() {
 
       ctx.font = "400 24px 'Segoe UI', system-ui, sans-serif";
       ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-      const hi = weather.daily.temperature_2m_max[0] ?? weather.current.temperature_2m;
-      const lo = weather.daily.temperature_2m_min[0] ?? weather.current.temperature_2m;
+      const hi =
+        weather.daily.temperature_2m_max[0] ?? weather.current.temperature_2m;
+      const lo =
+        weather.daily.temperature_2m_min[0] ?? weather.current.temperature_2m;
       const rain = weather.daily.precipitation_probability_max[0] ?? 0;
       const sunriseText = weather.daily.sunrise[0]?.slice(11, 16) ?? "--:--";
       const sunsetText = weather.daily.sunset[0]?.slice(11, 16) ?? "--:--";
@@ -3723,113 +3681,6 @@ export default function HomePage() {
     zoom: windyOverlay === "waves" ? "5" : "6",
   }).toString();
 
-  const todayDetails = weather
-    ? [
-        {
-          label: language === "vi" ? "Điểm sương" : "Dew point",
-          value: `${Math.round(weather.current.dew_point_2m)}°`,
-          detail: getDewPointLabel(weather.current.dew_point_2m, language),
-          icon: Droplets,
-        },
-        {
-          label: language === "vi" ? "Gió giật hiện tại" : "Current gust",
-          value: `${Math.round(weather.current.wind_gusts_10m)} ${
-            windUnit === "kmh" ? "km/h" : "m/s"
-          }`,
-          detail:
-            language === "vi"
-              ? "Tốc độ gió giật tức thời"
-              : "Instantaneous wind gust",
-          icon: Wind,
-        },
-        {
-          label: language === "vi" ? "Tổng lượng mưa hôm nay" : "Today's rain",
-          value: `${(weather.daily.precipitation_sum[0] ?? 0).toFixed(1)} mm`,
-          detail:
-            language === "vi"
-              ? `Mưa thuần ${(weather.daily.rain_sum[0] ?? 0).toFixed(1)} mm`
-              : `Rain ${(weather.daily.rain_sum[0] ?? 0).toFixed(1)} mm`,
-          icon: CloudRain,
-        },
-        {
-          label: language === "vi" ? "Thời gian ban ngày" : "Daylight",
-          value: formatDuration(
-            weather.daily.daylight_duration[0] ?? 0,
-            language,
-          ),
-          detail:
-            language === "vi"
-              ? `Có nắng ${formatDuration(
-                  weather.daily.sunshine_duration[0] ?? 0,
-                  language,
-                )}`
-              : `Sunshine ${formatDuration(
-                  weather.daily.sunshine_duration[0] ?? 0,
-                  language,
-                )}`,
-          icon: Sun,
-        },
-      ]
-    : [];
-
-  const dayComparison = weather
-    ? [0, 1].map((index) => ({
-        label:
-          index === 0
-            ? language === "vi"
-              ? "Hôm nay"
-              : "Today"
-            : language === "vi"
-              ? "Ngày mai"
-              : "Tomorrow",
-        date: weather.daily.time[index],
-        weatherCode: weather.daily.weather_code[index],
-        max: weather.daily.temperature_2m_max[index],
-        min: weather.daily.temperature_2m_min[index],
-        rainChance: weather.daily.precipitation_probability_max[index] ?? 0,
-        rainTotal: weather.daily.precipitation_sum[index] ?? 0,
-        uv: weather.daily.uv_index_max[index] ?? 0,
-        gust: weather.daily.wind_gusts_10m_max[index] ?? 0,
-      }))
-    : [];
-
-  const statistics = weather
-    ? [
-        {
-          label: text.humidity,
-          value: `${weather.current.relative_humidity_2m}%`,
-          icon: Droplets,
-        },
-        {
-          label: text.wind,
-          value: `${Math.round(weather.current.wind_speed_10m)} ${windUnit === "kmh" ? "km/h" : "m/s"} ${getWindDirection(
-            weather.current.wind_direction_10m,
-          )}`,
-          icon: Wind,
-        },
-        {
-          label: text.pressure,
-          value: `${Math.round(weather.current.pressure_msl)} hPa`,
-          icon: Gauge,
-        },
-        {
-          label: text.visibility,
-          value: `${(weather.current.visibility / 1000).toFixed(1)} km`,
-          icon: Eye,
-        },
-        {
-          label: text.clouds,
-          value: `${weather.current.cloud_cover}%`,
-          icon: Cloud,
-        },
-        {
-          label: text.precipitation,
-          value: `${weather.current.precipitation.toFixed(1)} mm`,
-          icon: CloudRain,
-        },
-      ]
-    : [];
-
   useEffect(() => {
     const sectionIds = ["overview", "forecast", "weather-map", "windy-storm"];
     const sections = sectionIds
@@ -3880,10 +3731,7 @@ export default function HomePage() {
     : "clear-day";
 
   const selectedCalendarHoliday = getCalendarNote(selectedDate, language);
-  const selectedCalendarHolidayVisual = getHolidayVisual(
-    selectedDate,
-    language,
-  );
+  const selectedCalendarHolidayVisual = getHolidayVisual(selectedDate);
 
   const bubbleData = Array.from({ length: 14 }, (_, index) => {
     const size = 18 + (index % 6) * 12;
@@ -3976,258 +3824,268 @@ export default function HomePage() {
             <div
               className={`wn-actions-settings ${actionsMenuOpen ? "is-open" : ""}`}
             >
-            <div className="wn-action-row">
-              <span className="wn-actions-label">
-                {language === "vi" ? "Nhiệt độ" : "Temperature"}
-              </span>
-              <select
-                className="wn-select"
-                value={temperatureUnit}
-                onChange={(event) =>
-                  setTemperatureUnit(event.target.value as TemperatureUnit)
+              <div className="wn-action-row">
+                <span className="wn-actions-label">
+                  {language === "vi" ? "Nhiệt độ" : "Temperature"}
+                </span>
+                <select
+                  className="wn-select"
+                  value={temperatureUnit}
+                  onChange={(event) =>
+                    setTemperatureUnit(event.target.value as TemperatureUnit)
+                  }
+                  aria-label="Temperature unit"
+                >
+                  <option value="celsius">°C</option>
+                  <option value="fahrenheit">°F</option>
+                </select>
+              </div>
+
+              <div className="wn-action-row">
+                <span className="wn-actions-label">
+                  {language === "vi" ? "Gió" : "Wind"}
+                </span>
+                <select
+                  className="wn-select wn-select--wind"
+                  value={windUnit}
+                  onChange={(event) =>
+                    setWindUnit(event.target.value as WindUnit)
+                  }
+                  aria-label="Wind unit"
+                >
+                  <option value="kmh">km/h</option>
+                  <option value="ms">m/s</option>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                className="wn-icon-button wn-language"
+                onClick={() =>
+                  setLanguage((previous) => (previous === "vi" ? "en" : "vi"))
                 }
-                aria-label="Temperature unit"
+                aria-label="Đổi ngôn ngữ"
               >
-                <option value="celsius">°C</option>
-                <option value="fahrenheit">°F</option>
-              </select>
-            </div>
+                <Languages size={18} />
+                <span className="wn-actions-label">
+                  {language === "vi" ? "Ngôn ngữ" : "Language"}
+                </span>
+                <span>{language.toUpperCase()}</span>
+              </button>
 
-            <div className="wn-action-row">
-              <span className="wn-actions-label">
-                {language === "vi" ? "Gió" : "Wind"}
-              </span>
-              <select
-                className="wn-select wn-select--wind"
-                value={windUnit}
-                onChange={(event) => setWindUnit(event.target.value as WindUnit)}
-                aria-label="Wind unit"
-              >
-                <option value="kmh">km/h</option>
-                <option value="ms">m/s</option>
-              </select>
-            </div>
-
-            <button
-              type="button"
-              className="wn-icon-button wn-language"
-              onClick={() =>
-                setLanguage((previous) => (previous === "vi" ? "en" : "vi"))
-              }
-              aria-label="Đổi ngôn ngữ"
-            >
-              <Languages size={18} />
-              <span className="wn-actions-label">
-                {language === "vi" ? "Ngôn ngữ" : "Language"}
-              </span>
-              <span>{language.toUpperCase()}</span>
-            </button>
-
-            <button
-              type="button"
-              className={`wn-icon-button ${notifyPermission === "granted" ? "wn-icon-button--on" : ""}`}
-              onClick={async () => {
-                if (notifyPermission === "unsupported") return;
-                if (notifyPermission === "granted") return;
-                try {
-                  const result = await Notification.requestPermission();
-                  setNotifyPermission(result);
-                  if (result === "granted") {
-                    new Notification(
-                      language === "vi"
-                        ? "WeatherNow — Đã bật thông báo!"
-                        : "WeatherNow — Notifications enabled!",
-                      {
-                        body:
-                          language === "vi"
-                            ? "Bạn sẽ nhận cảnh báo thời tiết ngay khi có."
-                            : "You will receive weather alerts as they happen.",
-                      },
-                    );
-                  }
-                } catch {
-                  // ignore
-                }
-              }}
-              title={
-                notifyPermission === "granted"
-                  ? language === "vi"
-                    ? "Thông báo đã bật"
-                    : "Notifications on"
-                  : notifyPermission === "unsupported"
-                    ? language === "vi"
-                      ? "Trình duyệt không hỗ trợ thông báo"
-                      : "Notifications not supported"
-                    : language === "vi"
-                      ? "Bật thông báo cảnh báo thời tiết"
-                      : "Enable weather alerts"
-              }
-              aria-label="Bật thông báo thời tiết"
-            >
-              <Bell size={18} />
-              <span className="wn-actions-label">
-                {notifyPermission === "granted"
-                  ? language === "vi"
-                    ? "Đã bật thông báo"
-                    : "Notifications on"
-                  : language === "vi"
-                    ? "Bật thông báo"
-                    : "Enable alerts"}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              className="wn-icon-button"
-              onClick={() => void shareWeatherCard()}
-              disabled={shareBusy || !weather}
-              title={
-                language === "vi"
-                  ? "Tạo ảnh chia sẻ thời tiết"
-                  : "Create shareable weather image"
-              }
-              aria-label="Chia sẻ ảnh thời tiết"
-            >
-              <Share2 size={18} />
-              <span className="wn-actions-label">
-                {language === "vi" ? "Chia sẻ ảnh" : "Share image"}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              className="wn-icon-button"
-              onClick={() =>
-                setTheme((previous) =>
-                  previous === "light" ? "dark" : "light",
-                )
-              }
-              aria-label="Đổi giao diện sáng tối"
-              title={language === "vi" ? "Đổi giao diện (T)" : "Toggle theme (T)"}
-            >
-              {theme === "light" ? <Moon size={19} /> : <Sun size={19} />}
-              <span className="wn-actions-label">
-                {language === "vi" ? "Giao diện" : "Theme"}
-              </span>
-              <span className="wn-actions-value">
-                {theme === "light"
-                  ? language === "vi"
-                    ? "Sáng"
-                    : "Light"
-                  : language === "vi"
-                    ? "Tối"
-                    : "Dark"}
-              </span>
-            </button>
-
-            {holidayModalOpen && todayHolidayVisual && todayHolidayTitle ? (
-              <>
-                <HolidayModal
-                  src={todayHolidayVisual.src}
-                  alt={todayHolidayVisual.alt?.[language] ?? todayHolidayTitle}
-                  title={todayHolidayTitle}
-                  celebration={todayHolidayImportant}
-                  greeting={
-                    language === "vi"
-                      ? `Chúc mừng ${todayHolidayTitle}!`
-                      : `Happy ${todayHolidayTitle}!`
-                  }
-                  subtitle={
-                    language === "vi"
-                      ? "Chúc bạn và gia đình một ngày lễ thật vui vẻ, an lành và tràn ngập hạnh phúc!"
-                      : "Wishing you and your family a joyful, peaceful and happy holiday!"
-                  }
-                  onClose={() => {
-                    const key = `holiday-dismissed-${getDateKey(new Date())}`;
-                    try {
-                      window.localStorage.setItem(key, "1");
-                    } catch {}
-                    setHolidayModalOpen(false);
-                  }}
-                />
-
-                {/* Snow for Christmas-like days */}
-                {(() => {
-                  const k = getDateKey(new Date());
-                  const snowDays = new Set([
-                    "12-24",
-                    "12-25",
-                    "12-31",
-                    "01-01",
-                  ]);
-                  // If effectsConfig exists, prefer its settings per holiday
-                  const cfgKey = `holiday-effects-config`;
-                  let cfg: HolidayEffectsConfig | null = null;
+              <button
+                type="button"
+                className={`wn-icon-button ${notifyPermission === "granted" ? "wn-icon-button--on" : ""}`}
+                onClick={async () => {
+                  if (notifyPermission === "unsupported") return;
+                  if (notifyPermission === "granted") return;
                   try {
-                    cfg =
-                      effectsConfig ??
-                      (window.localStorage.getItem(cfgKey)
-                        ? (JSON.parse(
-                            window.localStorage.getItem(cfgKey) as string,
-                          ) as HolidayEffectsConfig)
-                        : null);
+                    const result = await Notification.requestPermission();
+                    setNotifyPermission(result);
+                    if (result === "granted") {
+                      new Notification(
+                        language === "vi"
+                          ? "WeatherNow — Đã bật thông báo!"
+                          : "WeatherNow — Notifications enabled!",
+                        {
+                          body:
+                            language === "vi"
+                              ? "Bạn sẽ nhận cảnh báo thời tiết ngay khi có."
+                              : "You will receive weather alerts as they happen.",
+                        },
+                      );
+                    }
                   } catch {
-                    cfg = effectsConfig;
+                    // ignore
                   }
+                }}
+                title={
+                  notifyPermission === "granted"
+                    ? language === "vi"
+                      ? "Thông báo đã bật"
+                      : "Notifications on"
+                    : notifyPermission === "unsupported"
+                      ? language === "vi"
+                        ? "Trình duyệt không hỗ trợ thông báo"
+                        : "Notifications not supported"
+                      : language === "vi"
+                        ? "Bật thông báo cảnh báo thời tiết"
+                        : "Enable weather alerts"
+                }
+                aria-label="Bật thông báo thời tiết"
+              >
+                <Bell size={18} />
+                <span className="wn-actions-label">
+                  {notifyPermission === "granted"
+                    ? language === "vi"
+                      ? "Đã bật thông báo"
+                      : "Notifications on"
+                    : language === "vi"
+                      ? "Bật thông báo"
+                      : "Enable alerts"}
+                </span>
+              </button>
 
-                  // Người dùng tắt riêng ngày này → không hiện hiệu ứng
-                  const entry = cfg?.holidays?.[k];
-                  if (entry && !entry.enabled) return null;
+              <button
+                type="button"
+                className="wn-icon-button"
+                onClick={() => void shareWeatherCard()}
+                disabled={shareBusy || !weather}
+                title={
+                  language === "vi"
+                    ? "Tạo ảnh chia sẻ thời tiết"
+                    : "Create shareable weather image"
+                }
+                aria-label="Chia sẻ ảnh thời tiết"
+              >
+                <Share2 size={18} />
+                <span className="wn-actions-label">
+                  {language === "vi" ? "Chia sẻ ảnh" : "Share image"}
+                </span>
+              </button>
 
-                  // Chế độ cài chung: dùng một bộ hiệu ứng duy nhất cho mọi
-                  // ngày lễ; ngược lại dùng cài đặt riêng của từng ngày.
-                  const e =
-                    cfg?.global?.enabled && cfg.global
-                      ? cfg.global.effects
-                      : entry?.effects;
+              <button
+                type="button"
+                className="wn-icon-button"
+                onClick={() =>
+                  setTheme((previous) =>
+                    previous === "light" ? "dark" : "light",
+                  )
+                }
+                aria-label="Đổi giao diện sáng tối"
+                title={
+                  language === "vi" ? "Đổi giao diện (T)" : "Toggle theme (T)"
+                }
+              >
+                {theme === "light" ? <Moon size={19} /> : <Sun size={19} />}
+                <span className="wn-actions-label">
+                  {language === "vi" ? "Giao diện" : "Theme"}
+                </span>
+                <span className="wn-actions-value">
+                  {theme === "light"
+                    ? language === "vi"
+                      ? "Sáng"
+                      : "Light"
+                    : language === "vi"
+                      ? "Tối"
+                      : "Dark"}
+                </span>
+              </button>
 
-                  if (e) {
-                    const snow = e.snow || { density: 1, wind: 0.3, layers: 3 };
-                    const confetti = e.confetti || { count: 0, colors: [] };
-                    const fireworks = e.fireworks || { enabled: false };
-                    const lanterns = e.lanterns || { enabled: false };
+              {holidayModalOpen && todayHolidayVisual && todayHolidayTitle ? (
+                <>
+                  <HolidayModal
+                    src={todayHolidayVisual.src}
+                    alt={
+                      todayHolidayVisual.alt?.[language] ?? todayHolidayTitle
+                    }
+                    title={todayHolidayTitle}
+                    celebration={todayHolidayImportant}
+                    greeting={
+                      language === "vi"
+                        ? `Chúc mừng ${todayHolidayTitle}!`
+                        : `Happy ${todayHolidayTitle}!`
+                    }
+                    subtitle={
+                      language === "vi"
+                        ? "Chúc bạn và gia đình một ngày lễ thật vui vẻ, an lành và tràn ngập hạnh phúc!"
+                        : "Wishing you and your family a joyful, peaceful and happy holiday!"
+                    }
+                    onClose={() => {
+                      const key = `holiday-dismissed-${getDateKey(new Date())}`;
+                      try {
+                        window.localStorage.setItem(key, "1");
+                      } catch {}
+                      setHolidayModalOpen(false);
+                    }}
+                  />
 
-                    return (
-                      <>
-                        {snow ? (
-                          <AdvancedSnow
-                            density={snow.density}
-                            wind={snow.wind}
-                            layers={snow.layers}
-                          />
-                        ) : null}
-                        {confetti && confetti.count > 0 ? (
-                          <ConfettiSVG
-                            count={confetti.count}
-                            colors={confetti.colors}
-                          />
-                        ) : null}
-                        {fireworks && fireworks.enabled ? (
-                          <Fireworks max={4} />
-                        ) : null}
-                        {lanterns && lanterns.enabled ? (
-                          <Lanterns count={8} />
-                        ) : null}
-                      </>
-                    );
-                  }
+                  {/* Snow for Christmas-like days */}
+                  {(() => {
+                    const k = getDateKey(new Date());
+                    const snowDays = new Set([
+                      "12-24",
+                      "12-25",
+                      "12-31",
+                      "01-01",
+                    ]);
+                    // If effectsConfig exists, prefer its settings per holiday
+                    const cfgKey = `holiday-effects-config`;
+                    let cfg: HolidayEffectsConfig | null = null;
+                    try {
+                      cfg =
+                        effectsConfig ??
+                        (window.localStorage.getItem(cfgKey)
+                          ? (JSON.parse(
+                              window.localStorage.getItem(cfgKey) as string,
+                            ) as HolidayEffectsConfig)
+                          : null);
+                    } catch {
+                      cfg = effectsConfig;
+                    }
 
-                  return snowDays.has(k) ? <SnowEffect count={80} /> : null;
-                })()}
-              </>
-            ) : null}
+                    // Người dùng tắt riêng ngày này → không hiện hiệu ứng
+                    const entry = cfg?.holidays?.[k];
+                    if (entry && !entry.enabled) return null;
 
-            <button
-              type="button"
-              className="wn-icon-button"
-              aria-label="Cài đặt hiệu ứng"
-              onClick={() => setSettingsOpen(true)}
-            >
-              <Settings size={18} />
-              <span className="wn-actions-label">
-                {language === "vi" ? "Hiệu ứng ngày lễ" : "Holiday effects"}
-              </span>
-            </button>
+                    // Chế độ cài chung: dùng một bộ hiệu ứng duy nhất cho mọi
+                    // ngày lễ; ngược lại dùng cài đặt riêng của từng ngày.
+                    const e =
+                      cfg?.global?.enabled && cfg.global
+                        ? cfg.global.effects
+                        : entry?.effects;
+
+                    if (e) {
+                      const snow = e.snow || {
+                        density: 1,
+                        wind: 0.3,
+                        layers: 3,
+                      };
+                      const confetti = e.confetti || { count: 0, colors: [] };
+                      const fireworks = e.fireworks || { enabled: false };
+                      const lanterns = e.lanterns || { enabled: false };
+
+                      return (
+                        <>
+                          {snow ? (
+                            <AdvancedSnow
+                              density={snow.density}
+                              wind={snow.wind}
+                              layers={snow.layers}
+                            />
+                          ) : null}
+                          {confetti && confetti.count > 0 ? (
+                            <ConfettiSVG
+                              count={confetti.count}
+                              colors={confetti.colors}
+                            />
+                          ) : null}
+                          {fireworks && fireworks.enabled ? (
+                            <Fireworks max={4} />
+                          ) : null}
+                          {lanterns && lanterns.enabled ? (
+                            <Lanterns count={8} />
+                          ) : null}
+                        </>
+                      );
+                    }
+
+                    return snowDays.has(k) ? <SnowEffect count={80} /> : null;
+                  })()}
+                </>
+              ) : null}
+
+              <button
+                type="button"
+                className="wn-icon-button"
+                aria-label="Cài đặt hiệu ứng"
+                onClick={() => setSettingsOpen(true)}
+              >
+                <Settings size={18} />
+                <span className="wn-actions-label">
+                  {language === "vi" ? "Hiệu ứng ngày lễ" : "Holiday effects"}
+                </span>
+              </button>
             </div>
 
             <div className="wn-popover-anchor wn-more-anchor">
@@ -4667,7 +4525,9 @@ export default function HomePage() {
                             onClick={() => {
                               if (wardList.length > 0) {
                                 setExpandedProvinceCode(
-                                  isExpanded ? null : (adminProvince?.code ?? null),
+                                  isExpanded
+                                    ? null
+                                    : (adminProvince?.code ?? null),
                                 );
                               } else {
                                 selectProvince(province);
@@ -4813,7 +4673,9 @@ export default function HomePage() {
                       <>
                         {provinceMatches.length > 0 && (
                           <div className="wn-search-results__label">
-                            {language === "vi" ? "Kết quả khác" : "Other results"}
+                            {language === "vi"
+                              ? "Kết quả khác"
+                              : "Other results"}
                           </div>
                         )}
                         {searchResults.map((location) => (
@@ -4878,14 +4740,24 @@ export default function HomePage() {
             ) : weather ? (
               <>
                 {cityPhotoSrc && !cityPhotoFailed && (
-                  <img
-                    key={cityPhotoSrc}
-                    className="wn-hero__city-photo"
-                    src={cityPhotoSrc}
-                    alt=""
-                    aria-hidden="true"
-                    onError={() => setCityPhotoFailed(true)}
-                  />
+                  <>
+                    <img
+                      key={`backdrop-${cityPhotoSrc}`}
+                      className="wn-hero__city-photo-backdrop"
+                      src={cityPhotoSrc}
+                      alt=""
+                      aria-hidden="true"
+                      onError={() => setCityPhotoFailed(true)}
+                    />
+                    <img
+                      key={cityPhotoSrc}
+                      className="wn-hero__city-photo"
+                      src={cityPhotoSrc}
+                      alt=""
+                      aria-hidden="true"
+                      onError={() => setCityPhotoFailed(true)}
+                    />
+                  </>
                 )}
 
                 <div className="wn-hero__sky" aria-hidden="true">
@@ -4903,12 +4775,6 @@ export default function HomePage() {
                   <span className="wn-hero__mountain wn-hero__mountain--one" />
                   <span className="wn-hero__mountain wn-hero__mountain--two" />
                   <span className="wn-hero__water" />
-                  {/* Parallax cloud layers */}
-                  <div className="wn-parallax" aria-hidden>
-                    <div className="wn-parallax__layer wn-parallax__layer--back" />
-                    <div className="wn-parallax__layer wn-parallax__layer--mid" />
-                    <div className="wn-parallax__layer wn-parallax__layer--front" />
-                  </div>
                 </div>
 
                 <div className="wn-hero__content">
@@ -5192,7 +5058,6 @@ export default function HomePage() {
                 <CloudRain size={28} />
               </span>
             </article>
-
           </div>
         </section>
 
@@ -5245,8 +5110,8 @@ export default function HomePage() {
                 compass: true,
                 degrees: weather.current.wind_direction_10m,
               },
-            ].map((
-              {
+            ].map(
+              ({
                 icon: Icon,
                 label,
                 value,
@@ -5258,22 +5123,22 @@ export default function HomePage() {
                 value: string;
                 compass?: boolean;
                 degrees?: number;
-              },
-            ) => (
-              <div key={label}>
-                <span>
-                  {compass ? (
-                    <WindCompass degrees={degrees ?? 0} size={24} />
-                  ) : (
-                    <Icon size={19} />
-                  )}
-                </span>
-                <p>
-                  <small>{label}</small>
-                  <strong>{value}</strong>
-                </p>
-              </div>
-            ))}
+              }) => (
+                <div key={label}>
+                  <span>
+                    {compass ? (
+                      <WindCompass degrees={degrees ?? 0} size={24} />
+                    ) : (
+                      <Icon size={19} />
+                    )}
+                  </span>
+                  <p>
+                    <small>{label}</small>
+                    <strong>{value}</strong>
+                  </p>
+                </div>
+              ),
+            )}
           </section>
         )}
 
@@ -5367,18 +5232,13 @@ export default function HomePage() {
               type="button"
               className="wn-holiday-soon__inner"
               onClick={() => {
-                const visual = getHolidayVisual(
-                  upcomingHoliday.date,
-                  language,
-                );
+                const visual = getHolidayVisual(upcomingHoliday.date);
                 if (visual) {
                   openHolidayModal(visual, upcomingHoliday.name, true);
                 }
               }}
               aria-label={
-                language === "vi"
-                  ? "Xem trước ngày lễ"
-                  : "Preview holiday"
+                language === "vi" ? "Xem trước ngày lễ" : "Preview holiday"
               }
               title={
                 language === "vi"
@@ -5409,16 +5269,19 @@ export default function HomePage() {
           </section>
         )}
 
-        {weather && next48Hours.length > 1 && weather.daily.sunrise[0] && weather.daily.sunset[0] && (
-          <SunCard
-            sunrise={weather.daily.sunrise[0]}
-            sunset={weather.daily.sunset[0]}
-            uvIndex={currentUv}
-            hours={next48Hours}
-            currentTime={currentTime}
-            language={language}
-          />
-        )}
+        {weather &&
+          next48Hours.length > 1 &&
+          weather.daily.sunrise[0] &&
+          weather.daily.sunset[0] && (
+            <SunCard
+              sunrise={weather.daily.sunrise[0]}
+              sunset={weather.daily.sunset[0]}
+              uvIndex={currentUv}
+              hours={next48Hours}
+              currentTime={currentTime}
+              language={language}
+            />
+          )}
 
         {weather && weatherHistory.length >= 0 && (
           <section className="wn-panel wn-history-card">
@@ -5694,8 +5557,8 @@ function CalendarModal({
   const [convertMode, setConvertMode] = useState<"lunar" | "solar">("lunar");
   const [convertDay, setConvertDay] = useState(1);
   const [convertMonth, setConvertMonth] = useState(1);
-  const [convertYear, setConvertYear] = useState(
-    () => new Date().getFullYear(),
+  const [convertYear, setConvertYear] = useState(() =>
+    new Date().getFullYear(),
   );
   const [convertLeap, setConvertLeap] = useState(false);
   const [convertSolarDate, setConvertSolarDate] = useState(() => {
@@ -5732,7 +5595,7 @@ function CalendarModal({
         }).format(displayMonth);
 
   const selectedHoliday = getCalendarNote(selectedDate, language);
-  const selectedHolidayVisual = getHolidayVisual(selectedDate, language);
+  const selectedHolidayVisual = getHolidayVisual(selectedDate);
   const countdownLabel = getDateCountdownLabel(selectedDate, language);
 
   // Thông tin vạn niên cho ngày đang chọn (can chi, tiết khí, pha trăng, giờ hoàng đạo)
@@ -5741,10 +5604,7 @@ function CalendarModal({
   const almanacDay = selectedDate.getDate();
   const almanac = useMemo(
     () =>
-      getAlmanacInfo(
-        new Date(almanacYear, almanacMonth, almanacDay),
-        language,
-      ),
+      getAlmanacInfo(new Date(almanacYear, almanacMonth, almanacDay), language),
     [almanacYear, almanacMonth, almanacDay, language],
   );
 
@@ -5767,13 +5627,15 @@ function CalendarModal({
     .filter((item) => item.date.getMonth() === month)
     .map((item) => ({
       ...item,
-      labelFull: language === "vi"
-        ? `${String(item.date.getDate()).padStart(2, "0")}/${String(item.date.getMonth() + 1).padStart(2, "0")}/${year}`
-        : `${new Intl.DateTimeFormat("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }).format(item.date)}`,
+      labelFull:
+        language === "vi"
+          ? `${String(item.date.getDate()).padStart(2, "0")}/${String(item.date.getMonth() + 1).padStart(2, "0")}/${year}`
+          : `${new Intl.DateTimeFormat("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }).format(item.date)}`,
     }));
 
-  const monthLabelEn =
-    new Intl.DateTimeFormat("en-US", { month: "long" }).format(displayMonth);
+  const monthLabelEn = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+  }).format(displayMonth);
 
   const [mobilePane, setMobilePane] = useState<"grid" | "detail">("grid");
 
@@ -5847,18 +5709,7 @@ function CalendarModal({
     });
   }
 
-  // Mobile: luôn mở ở màn lưới lịch khi vừa mở trang lịch
-  // TEMP-SCREENSHOT: ho tro ?mdetail=1 de chup man chi tiết (XOA SAU KHI chup anh)
-  useEffect(() => {
-    if (open) {
-      setMobilePane(
-        typeof window !== "undefined" &&
-          window.location.search.includes("mdetail")
-          ? "detail"
-          : "grid",
-      );
-    }
-  }, [open]);
+  // Mobile: luôn mở ở màn lưới lịch khi vừa mở trang lịch (mặc định là "grid")
 
   // Đóng bằng phím Escape + khóa cuộn nền khi đang xem trang lịch
   useEffect(() => {
@@ -5994,7 +5845,6 @@ function CalendarModal({
 
         <div className="wn-calendar-page__body">
           <section className="wn-calendar-light-left">
-
             <div className="wn-calendar-page__legend" aria-hidden="true">
               <span>
                 <i className="is-good" />{" "}
@@ -6139,10 +5989,7 @@ function CalendarModal({
                     ? `Sự kiện nổi bật tháng ${month + 1}`
                     : `Featured events in ${monthLabelEn}`}
                 </h3>
-                <button
-                  type="button"
-                  onClick={() => setToolView("holidays")}
-                >
+                <button type="button" onClick={() => setToolView("holidays")}>
                   {language === "vi" ? "Xem tất cả" : "View all"}{" "}
                   <ChevronRight size={15} />
                 </button>
@@ -6151,7 +5998,7 @@ function CalendarModal({
               {monthEvents.length > 0 ? (
                 <div className="wn-calendar-page__events-grid">
                   {monthEvents.map((item) => {
-                    const visual = getHolidayVisual(item.date, language);
+                    const visual = getHolidayVisual(item.date);
 
                     return (
                       <button
@@ -6249,13 +6096,17 @@ function CalendarModal({
                       >
                         {Array.from({ length: 30 }, (_, i) => (
                           <option key={i + 1} value={i + 1}>
-                            {language === "vi" ? `Ngày ${i + 1}` : `Day ${i + 1}`}
+                            {language === "vi"
+                              ? `Ngày ${i + 1}`
+                              : `Day ${i + 1}`}
                           </option>
                         ))}
                       </select>
                       <select
                         value={convertMonth}
-                        onChange={(e) => setConvertMonth(Number(e.target.value))}
+                        onChange={(e) =>
+                          setConvertMonth(Number(e.target.value))
+                        }
                       >
                         {Array.from({ length: 12 }, (_, i) => (
                           <option key={i + 1} value={i + 1}>

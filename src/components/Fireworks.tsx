@@ -54,11 +54,9 @@ export default function Fireworks({ max = 3 }: { max?: number }) {
       createBurst(Math.random() * w, Math.random() * (h * 0.6));
     }
 
-    let tick = 0;
     let raf = 0;
 
     function loop() {
-      tick++;
       safeCtx.clearRect(0, 0, w, h);
       for (let b = bursts.length - 1; b >= 0; b--) {
         const arr = bursts[b];

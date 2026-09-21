@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Cloud, CloudFog, CloudLightning, CloudRain, CloudSun, Moon, Sun, X } from "lucide-react";
+import { CloudFog, CloudLightning, CloudRain, CloudSun, Moon, Sun, X } from "lucide-react";
 
 type WidgetData = {
   name: string;

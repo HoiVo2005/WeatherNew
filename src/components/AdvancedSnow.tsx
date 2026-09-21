@@ -67,7 +67,6 @@ export default function AdvancedSnow({
       // draw layered flakes with parallax effect
       for (let l = 0; l < layerCount; l++) {
         safeCtx.save();
-        const depth = 1 + l * 0.5;
         safeCtx.globalAlpha = 0.9 - l * 0.2;
         safeCtx.fillStyle = "#ffffff";
         for (let i = 0; i < flakes.length; i++) {

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Droplets, Thermometer, Wind } from "lucide-react";
 import {
-  Cloud,
   CloudFog,
   CloudLightning,
   CloudRain,
