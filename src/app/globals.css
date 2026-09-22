@@ -8021,3 +8021,487 @@ html {
   color: #fff;
 }
 
+
+.wn-alerts-card__ok {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 16px;
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.wn-alerts-card__ok > span {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.16);
+  color: #16a34a;
+}
+
+.wn-alerts-card__ok strong {
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+
+.wn-alerts-card__ok p {
+  margin: 4px 0 0;
+  color: var(--wn-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.wn-alerts-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+}
+
+.wn-alerts-card__list li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px 12px;
+  border: 1px solid rgba(240, 68, 68, 0.22);
+  border-radius: 14px;
+  background: rgba(240, 68, 68, 0.07);
+}
+
+.wn-alerts-card__list li > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(240, 68, 68, 0.14);
+  color: #dc2626;
+}
+
+.wn-alerts-card__list p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.wn-map-quick-layers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.wn-map-quick-layers button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 15px;
+  border: 1px solid var(--wn-border);
+  border-radius: 999px;
+  background: var(--wn-surface);
+  color: var(--wn-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.wn-map-quick-layers button:hover {
+  border-color: color-mix(in srgb, var(--wn-primary) 45%, transparent);
+  color: var(--wn-primary);
+}
+
+.wn-map-quick-layers button.is-active {
+  background: linear-gradient(145deg, var(--wn-primary), var(--wn-primary-2));
+  border-color: transparent;
+  color: #fff;
+}
+
+/* =========================================================================
+   DASHBOARD THEO MOCKUP M?I
+   - Card "D? b�o 5 ng�y t?i" (c?t ph?i hero)
+   - Bi?u d? di?n bi?n nhi?t du?i d?i theo gi?
+   - Card "M?t tr?i & M?t trang" g?n + "C?nh b�o th?i ti?t"
+   - Pills ch?n l?p b?n d? (Nhi?t d? / Mua / Gi� / Radar)
+   ========================================================================= */
+
+.wn-five-day {
+  grid-column: 1 / -1;
+}
+
+.wn-section-heading.wn-five-day__head {
+  align-items: center;
+}
+
+.wn-section-heading.wn-five-day__head h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.wn-five-day__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--wn-primary);
+  font-size: 12.5px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.wn-five-day__more:hover {
+  text-decoration: underline;
+}
+
+.wn-five-day__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wn-five-day__item {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding: 12px 6px 10px;
+  border: 1px solid var(--wn-border);
+  border-radius: 16px;
+  background: var(--wn-surface-soft);
+  text-align: center;
+}
+
+.wn-five-day__item > strong {
+  font-size: 13px;
+}
+
+.wn-five-day__item > span {
+  color: var(--wn-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wn-five-day__item .wn-five-day__max {
+  font-size: 20px;
+}
+
+.wn-five-day__item p {
+  margin: 0;
+  color: var(--wn-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.wn-five-day__rain {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--wn-primary);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.wn-hourly-chart {
+  margin-top: 10px;
+}
+
+.wn-hourly-chart svg {
+  display: block;
+  width: 100%;
+  height: 56px;
+}
+
+.wn-mid-side .wn-section-heading h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.wn-sunmoon-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.wn-sunmoon-card__time {
+  display: grid;
+  gap: 2px;
+  min-width: 64px;
+  text-align: left;
+}
+
+.wn-sunmoon-card__time--set {
+  text-align: right;
+}
+
+.wn-sunmoon-card__time small {
+  color: var(--wn-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wn-sunmoon-card__time strong {
+  font-size: 21px;
+  letter-spacing: -0.3px;
+}
+
+.wn-sunmoon-card__arc {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 78px;
+}
+
+.wn-sunmoon-card__length {
+  margin: 6px 0 0;
+  text-align: center;
+  color: var(--wn-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.wn-sunmoon-card__length strong {
+  color: var(--wn-text);
+}
+
+.wn-alerts-card__ok {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 16px;
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.wn-alerts-card__ok > span {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.16);
+  color: #16a34a;
+}
+
+.wn-alerts-card__ok strong {
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+
+.wn-alerts-card__ok p {
+  margin: 4px 0 0;
+  color: var(--wn-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.wn-alerts-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+}
+
+.wn-alerts-card__list li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px 12px;
+  border: 1px solid rgba(240, 68, 68, 0.22);
+  border-radius: 14px;
+  background: rgba(240, 68, 68, 0.07);
+}
+
+.wn-alerts-card__list li > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(240, 68, 68, 0.14);
+  color: #dc2626;
+}
+
+.wn-alerts-card__list p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.wn-map-quick-layers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.wn-map-quick-layers button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 15px;
+  border: 1px solid var(--wn-border);
+  border-radius: 999px;
+  background: var(--wn-surface);
+  color: var(--wn-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.wn-map-quick-layers button:hover {
+  border-color: color-mix(in srgb, var(--wn-primary) 45%, transparent);
+  color: var(--wn-primary);
+}
+
+.wn-map-quick-layers button.is-active {
+  background: linear-gradient(145deg, var(--wn-primary), var(--wn-primary-2));
+  border-color: transparent;
+
+/* =========================================================================
+   LƯỚI DASHBOARD DESKTOP (≥1181px) theo mockup:
+   Hàng 1: hero (trái) | cột phải: 5 ngày + AQI + UV + lịch + khả năng mưa
+   Hàng 2: Diễn biến trong ngày | Bản đồ thời tiết | Mặt trời + Cảnh báo
+   Các panel còn lại tự xếp lưới 3 cột bên dưới
+   ========================================================================= */
+@media (min-width: 1181px) {
+  .wn-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-areas:
+      "search search search"
+      "ov ov ov"
+      "strip strip strip"
+      "hourly map side";
+    gap: 16px;
+  }
+
+  .wn-search-row {
+    grid-area: search;
+  }
+
+  .wn-overview {
+    grid-area: ov;
+    display: grid;
+    grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .wn-overview > .wn-hero {
+    height: 100%;
+  }
+
+  .wn-side-cards {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "five five"
+      "aqi uv"
+      "time rain";
+    gap: 14px;
+    align-content: start;
+  }
+
+  .wn-side-cards > .wn-five-day {
+    grid-area: five;
+  }
+
+  .wn-side-cards > .wn-aqi-card {
+    grid-area: aqi;
+  }
+
+  .wn-side-cards > .wn-mini-card--uv {
+    grid-area: uv;
+  }
+
+  .wn-side-cards > .wn-time-card {
+    grid-area: time;
+  }
+
+  .wn-side-cards > .wn-mini-card--rain {
+    grid-area: rain;
+  }
+
+  .wn-metric-strip {
+    grid-area: strip;
+  }
+
+  #forecast {
+    display: contents;
+  }
+
+  .wn-forecast-card {
+    grid-area: hourly;
+  }
+
+  .wn-mid-side {
+    grid-area: side;
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+
+  #weather-map {
+    grid-area: map;
+  }
+
+  #weather-map .weather-map-container {
+    height: 400px;
+    aspect-ratio: auto;
+  }
+
+  #weather-map iframe {
+    height: 400px !important;
+    min-height: 400px !important;
+  }
+}
+
+@media (min-width: 801px) and (max-width: 1180px) {
+  .wn-side-cards {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "five five"
+      "aqi uv"
+      "time rain";
+    gap: 14px;
+    align-content: start;
+  }
+
+  .wn-mid-side {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 800px) {
+  .wn-mid-side {
+    order: 8;
+  }
+
+  .wn-five-day__grid {
+    grid-template-columns: repeat(5, minmax(118px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+  }
+
+  .wn-five-day__item {
+    scroll-snap-align: start;
+  }
+}
+  color: #fff;
+}

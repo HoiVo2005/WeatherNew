@@ -1263,7 +1263,14 @@ type FavoriteLocation = Coordinates & {
 
 type TemperatureUnit = "celsius" | "fahrenheit";
 type WindUnit = "kmh" | "ms";
-type WindyOverlay = "wind" | "gust" | "rain" | "radar" | "waves" | "satellite";
+type WindyOverlay =
+  | "wind"
+  | "gust"
+  | "rain"
+  | "radar"
+  | "waves"
+  | "satellite"
+  | "temp";
 
 const defaultCoordinates: Coordinates = {
   latitude: 10.8231,
@@ -3267,6 +3274,53 @@ export default function HomePage() {
   const currentAqi = airQuality?.hourly.european_aqi[currentAqiIndex] ?? 0;
   const currentUv = weather?.hourly.uv_index[currentHourIndex] ?? 0;
 
+  const hourlySparkPoints = useMemo(() => {
+    if (nextHours.length < 2) {
+      return "";
+    }
+    const temps = nextHours.map((hour) => hour.temperature);
+    const min = Math.min(...temps);
+    const max = Math.max(...temps);
+    const span = max - min || 1;
+    const step = 528 / (nextHours.length - 1);
+    return temps
+      .map(
+        (temp, index) =>
+          `${(index * step).toFixed(1)},${(46 - ((temp - min) / span) * 34).toFixed(1)}`,
+      )
+      .join(" ");
+  }, [nextHours]);
+
+  const sunmoon = useMemo(() => {
+    if (!weather || !weather.daily.sunrise[0] || !weather.daily.sunset[0]) {
+      return null;
+    }
+    const rise = new Date(weather.daily.sunrise[0]).getTime();
+    const set = new Date(weather.daily.sunset[0]).getTime();
+    if (!Number.isFinite(rise) || !Number.isFinite(set) || set <= rise) {
+      return null;
+    }
+    const t = Math.min(
+      1,
+      Math.max(0, (currentTime.getTime() - rise) / (set - rise)),
+    );
+    const cx = (1 - t) ** 2 * 16 + 2 * (1 - t) * t * 160 + t ** 2 * 304;
+    const cy = (1 - t) ** 2 * 84 + 2 * (1 - t) * t * -12 + t ** 2 * 84;
+    const durationMs = set - rise;
+    const hours = Math.floor(durationMs / 3600000);
+    const minutes = Math.round((durationMs % 3600000) / 60000);
+    return {
+      cx,
+      cy,
+      riseLabel: formatApiTime(weather.daily.sunrise[0]),
+      setLabel: formatApiTime(weather.daily.sunset[0]),
+      durationLabel:
+        language === "vi"
+          ? `${hours} giờ ${minutes} phút`
+          : `${hours}h ${minutes}m`,
+    };
+  }, [weather, currentTime, language]);
+
   const weatherAlerts = (() => {
     if (!weather) return [] as string[];
 
@@ -3613,6 +3667,12 @@ export default function HomePage() {
       product: "ecmwf",
       vi: "Gió",
       en: "Wind",
+    },
+    temp: {
+      overlay: "temperature",
+      product: "ecmwf",
+      vi: "Nhiệt độ",
+      en: "Temperature",
     },
     gust: {
       overlay: "gust",
@@ -4925,6 +4985,62 @@ export default function HomePage() {
           </article>
 
           <div className="wn-side-cards">
+            {weather && (
+              <article className="wn-panel wn-five-day">
+                <div className="wn-section-heading wn-five-day__head">
+                  <div>
+                    <span>5 DAYS</span>
+                    <h3>
+                      {language === "vi" ? "Dự báo 5 ngày tới" : "Next 5 days"}
+                    </h3>
+                  </div>
+                  <a className="wn-five-day__more" href="#forecast">
+                    {language === "vi" ? "Xem chi tiết" : "Details"}
+                    <ChevronRight size={15} />
+                  </a>
+                </div>
+                <div className="wn-five-day__grid">
+                  {weather.daily.time.slice(0, 5).map((date, index) => (
+                    <article className="wn-five-day__item" key={date}>
+                      <strong>
+                        {index === 0
+                          ? language === "vi"
+                            ? "Hôm nay"
+                            : "Today"
+                          : formatDay(date, language)}
+                      </strong>
+                      <span>
+                        {new Intl.DateTimeFormat(
+                          language === "vi" ? "vi-VN" : "en-US",
+                          { day: "2-digit", month: "2-digit" },
+                        ).format(new Date(`${date}T12:00:00`))}
+                      </span>
+                      <WeatherIcon
+                        code={weather.daily.weather_code[index]}
+                        size={30}
+                      />
+                      <strong className="wn-five-day__max">
+                        {Math.round(weather.daily.temperature_2m_max[index])}°
+                      </strong>
+                      <small>
+                        {Math.round(weather.daily.temperature_2m_min[index])}°
+                      </small>
+                      <p>
+                        {getWeatherDescription(
+                          weather.daily.weather_code[index],
+                          language,
+                        )}
+                      </p>
+                      <small className="wn-five-day__rain">
+                        <Droplets size={11} />
+                        {weather.daily.precipitation_probability_max[index] ??
+                          0}%
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </article>
+            )}
             <article
               className={`wn-panel wn-time-card ${
                 selectedCalendarHolidayVisual ? "has-holiday-banner" : ""
@@ -5059,7 +5175,7 @@ export default function HomePage() {
               </div>
             </article>
 
-            <article className="wn-panel wn-mini-card">
+            <article className="wn-panel wn-mini-card wn-mini-card--uv">
               <div>
                 <span>{language === "vi" ? "Chỉ số UV" : "UV index"}</span>
                 <strong>{currentUv.toFixed(1)}</strong>
@@ -5078,7 +5194,7 @@ export default function HomePage() {
               </span>
             </article>
 
-            <article className="wn-panel wn-mini-card">
+            <article className="wn-panel wn-mini-card wn-mini-card--rain">
               <div>
                 <span>
                   {language === "vi" ? "Khả năng mưa" : "Rain chance"}
@@ -5190,7 +5306,7 @@ export default function HomePage() {
             <div className="wn-section-heading">
               <div>
                 <span>24H</span>
-                <h2>{text.hourlyForecast}</h2>
+                <h2>{language === "vi" ? "Diễn biến trong ngày" : "Today's trend"}</h2>
               </div>
             </div>
 
@@ -5219,6 +5335,24 @@ export default function HomePage() {
                   </small>
                 </article>
               ))}
+            </div>
+            <div className="wn-hourly-chart" aria-hidden="true">
+              <svg viewBox="0 0 528 56" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="wnSparkStroke" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stopColor="#18bde5" />
+                    <stop offset="1" stopColor="#0876ed" />
+                  </linearGradient>
+                </defs>
+                <polyline
+                  points={hourlySparkPoints}
+                  fill="none"
+                  stroke="url(#wnSparkStroke)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
           </article>
 
@@ -5311,6 +5445,101 @@ export default function HomePage() {
             </button>
           </section>
         )}
+
+        <aside className="wn-mid-side">
+          <article className="wn-panel wn-sunmoon-card">
+            <div className="wn-section-heading wn-sunmoon-card__head">
+              <div>
+                <span>SUN &amp; MOON</span>
+                <h3>
+                  {language === "vi" ? "Mặt trời & Mặt trăng" : "Sun & Moon"}
+                </h3>
+              </div>
+            </div>
+            <div className="wn-sunmoon-card__row">
+              <div className="wn-sunmoon-card__time">
+                <small>{text.sunrise}</small>
+                <strong>{sunmoon?.riseLabel ?? "--:--"}</strong>
+              </div>
+              <svg
+                className="wn-sunmoon-card__arc"
+                viewBox="0 0 320 96"
+                role="presentation"
+                aria-hidden="true"
+              >
+                <path
+                  d="M 16 84 Q 160 -12 304 84"
+                  fill="none"
+                  stroke="rgba(250, 204, 21, 0.5)"
+                  strokeWidth="2"
+                  strokeDasharray="1 7"
+                  strokeLinecap="round"
+                />
+                <circle cx="16" cy="84" r="4" fill="#fbbf24" />
+                <circle cx="304" cy="84" r="4" fill="#94a3b8" />
+                {sunmoon && (
+                  <circle
+                    cx={sunmoon.cx}
+                    cy={sunmoon.cy}
+                    r="11"
+                    fill="#facc15"
+                    stroke="#fde68a"
+                    strokeWidth="3"
+                  />
+                )}
+              </svg>
+              <div className="wn-sunmoon-card__time wn-sunmoon-card__time--set">
+                <small>{text.sunset}</small>
+                <strong>{sunmoon?.setLabel ?? "--:--"}</strong>
+              </div>
+            </div>
+            <p className="wn-sunmoon-card__length">
+              {language === "vi" ? "Độ dài ngày" : "Daylight"}:{" "}
+              <strong>{sunmoon?.durationLabel ?? "--"}</strong>
+            </p>
+          </article>
+
+          <article className="wn-panel wn-alerts-card">
+            <div className="wn-section-heading">
+              <div>
+                <span>ALERTS</span>
+                <h3>
+                  {language === "vi" ? "Cảnh báo thời tiết" : "Weather alerts"}
+                </h3>
+              </div>
+            </div>
+            {weatherAlerts.length === 0 ? (
+              <div className="wn-alerts-card__ok">
+                <span>
+                  <CheckCheck size={17} />
+                </span>
+                <div>
+                  <strong>
+                    {language === "vi"
+                      ? "Hiện tại không có cảnh báo thời tiết nguy hiểm"
+                      : "No dangerous weather alerts right now"}
+                  </strong>
+                  <p>
+                    {language === "vi"
+                      ? "Thời tiết ổn định, an toàn cho các hoạt động ngoài trời."
+                      : "Weather is stable and safe for outdoor activities."}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <ul className="wn-alerts-card__list">
+                {weatherAlerts.map((alert) => (
+                  <li key={alert}>
+                    <span>
+                      <AlertTriangle size={16} />
+                    </span>
+                    <p>{alert}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </article>
+        </aside>
 
         {weather &&
           next48Hours.length > 1 &&
@@ -5451,6 +5680,46 @@ export default function HomePage() {
             >
               Windy
             </button>
+          </div>
+
+          <div className="wn-map-quick-layers">
+            {([
+              {
+                key: "temp",
+                label: language === "vi" ? "Nhiệt độ" : "Temperature",
+                icon: Thermometer,
+              },
+              {
+                key: "rain",
+                label: language === "vi" ? "Mưa" : "Rain",
+                icon: Umbrella,
+              },
+              {
+                key: "wind",
+                label: language === "vi" ? "Gió" : "Wind",
+                icon: Wind,
+              },
+              {
+                key: "radar",
+                label: language === "vi" ? "Radar" : "Radar",
+                icon: Activity,
+              },
+            ] as const).map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                type="button"
+                className={
+                  mapView === "windy" && windyOverlay === key ? "is-active" : ""
+                }
+                onClick={() => {
+                  setWindyOverlay(key);
+                  setMapView("windy");
+                }}
+              >
+                <Icon size={14} />
+                {label}
+              </button>
+            ))}
           </div>
 
           {mapView === "windy" ? (
