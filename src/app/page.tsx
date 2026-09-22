@@ -3095,6 +3095,22 @@ export default function HomePage() {
     return map;
   }, [adminData]);
 
+  // Khi mở rộng 1 tỉnh để chọn xã/phường, cuộn dropdown tới đúng danh sách đó
+  // (trước đây danh sách nằm dưới cùng nên người dùng tưởng "chọn không được")
+  useEffect(() => {
+    if (!expandedProvinceCode || !showSearchResults) {
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      document
+        .getElementById("wn-ward-expanded")
+        ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }, 80);
+
+    return () => window.clearTimeout(timerId);
+  }, [expandedProvinceCode, showSearchResults]);
+
   // Tìm xã/phường khớp từ khóa tìm kiếm
   const wardMatches = useMemo(() => {
     const keyword = normalizeVietnameseText(searchKeyword);
@@ -4438,6 +4454,13 @@ export default function HomePage() {
                 }, 350);
               }}
               onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  event.preventDefault();
+                  setShowSearchResults(false);
+                  event.currentTarget.blur();
+                  return;
+                }
+
                 if (event.key === "Enter") {
                   event.preventDefault();
 
@@ -4464,7 +4487,7 @@ export default function HomePage() {
 
                 searchBlurTimerRef.current = window.setTimeout(() => {
                   setShowSearchResults(false);
-                }, 180);
+                }, 250);
               }}
               placeholder={text.searchPlaceholder}
               autoComplete="off"
@@ -4489,7 +4512,20 @@ export default function HomePage() {
             </button>
 
             {showSearchResults && (
-              <div className="wn-search-results">
+              <div
+                className="wn-search-results"
+                onMouseDown={(event) => {
+                  // Giữ focus trên ô tìm kiếm khi bấm vào mục gợi ý — nếu không
+                  // input sẽ bị blur và dropdown tự đóng sau 180-250ms, khiến
+                  // người dùng thấy "bấm vào địa điểm không ăn" (đặc biệt mobile).
+                  event.preventDefault();
+
+                  if (searchBlurTimerRef.current !== null) {
+                    window.clearTimeout(searchBlurTimerRef.current);
+                    searchBlurTimerRef.current = null;
+                  }
+                }}
+              >
                 {searchLoading && provinceMatches.length === 0 ? (
                   <div className="wn-search-results__message">
                     <LoaderCircle className="spin" size={19} />
@@ -4551,7 +4587,10 @@ export default function HomePage() {
 
                           {isExpanded && adminProvince && (
                             <>
-                              <div className="wn-search-results__label">
+                              <div
+                                id="wn-ward-expanded"
+                                className="wn-search-results__label"
+                              >
                                 {language === "vi"
                                   ? `Xã/phường của ${adminProvince.fullName}`
                                   : `Wards of ${adminProvince.fullName}`}
@@ -4756,6 +4795,10 @@ export default function HomePage() {
                       alt=""
                       aria-hidden="true"
                       onError={() => setCityPhotoFailed(true)}
+                    />
+                    <span
+                      className="wn-hero__city-photo-scrim"
+                      aria-hidden="true"
                     />
                   </>
                 )}

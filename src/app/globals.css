@@ -552,6 +552,13 @@ a {
   color: var(--wn-muted);
 }
 
+.wn-search:focus-within {
+  border-color: rgba(8, 118, 237, 0.45);
+  box-shadow:
+    0 10px 30px rgba(8, 118, 237, 0.12),
+    0 0 0 3px rgba(8, 118, 237, 0.12);
+}
+
 .wn-search input {
   width: 100%;
   border: 0;
@@ -846,13 +853,29 @@ a {
   right: 0;
   left: 0;
   z-index: 50;
-  max-height: 360px;
+  max-height: 420px;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 8px;
   border: 1px solid var(--wn-border);
   border-radius: 16px;
   background: var(--wn-surface-solid);
-  box-shadow: var(--wn-shadow);
+  box-shadow: 0 18px 50px rgba(15, 40, 75, 0.18);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(8, 118, 237, 0.35) transparent;
+}
+
+.wn-search-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.wn-search-results::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(8, 118, 237, 0.3);
+}
+
+.wn-search-results::-webkit-scrollbar-thumb:hover {
+  background: rgba(8, 118, 237, 0.5);
 }
 
 .wn-search-results>button {
@@ -868,10 +891,15 @@ a {
   color: inherit;
   text-align: left;
   cursor: pointer;
+  transition: background 0.14s ease, transform 0.1s ease;
 }
 
 .wn-search-results>button:hover {
-  background: var(--wn-surface-soft);
+  background: color-mix(in srgb, var(--wn-primary) 9%, transparent);
+}
+
+.wn-search-results>button:active {
+  transform: scale(0.99);
 }
 
 .wn-search-results span {
@@ -880,7 +908,7 @@ a {
 }
 
 .wn-search-results strong {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .wn-search-results small,
@@ -957,24 +985,50 @@ a {
   object-position: center bottom;
   pointer-events: none;
   user-select: none;
+  animation: wnHeroPhotoIn 0.55s ease both;
 }
 
-/* Lớp backdrop blur lấp vùng trống 2 bên khi ảnh chính dùng contain */
+@keyframes wnHeroPhotoIn {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Lớp backdrop blur lấp vùng trống 2 bên khi ảnh chính dùng contain.
+   QUAN TRỌNG: phải position:absolute + kích thước đầy đủ ở MỌI breakpoint —
+   nếu ảnh nằm ở luồng trang (không định vị), ảnh gốc ~1600x900px sẽ đẩy
+   hero phồng to và làm vỡ toàn bộ giao diện (lỗi cũ trên mobile/cửa hẹp). */
 .wn-hero__city-photo-backdrop {
-  display: block;
+  position: absolute;
+  inset: -40px;
+  width: calc(100% + 80px);
+  height: calc(100% + 80px);
+  object-fit: cover;
   pointer-events: none;
   user-select: none;
+  filter: blur(26px) saturate(1.15) brightness(0.8);
+  transform: scale(1.05);
 }
 
-/* Lớp phủ tối nhẹ giúp chữ trắng dễ đọc trên ảnh nền */
-.wn-hero__city-photo::after {
-  content: "";
+/* Lớp phủ tối giúp chữ trắng dễ đọc trên ảnh nền.
+   Lưu ý: KHÔNG dùng ::after trên <img> — pseudo-element không render trên
+   ảnh (đây là lý do ảnh nền cũ bị chói, chữ khó đọc, nhìn thô). */
+.wn-hero__city-photo-scrim {
   position: absolute;
   inset: 0;
+  z-index: 1;
+  pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(4, 24, 54, 0.16) 0%,
-    rgba(4, 24, 54, 0.4) 100%
+    rgba(4, 24, 54, 0.2) 0%,
+    rgba(4, 24, 54, 0.34) 55%,
+    rgba(4, 24, 54, 0.58) 100%
   );
 }
 
@@ -7800,21 +7854,11 @@ html {
   }
 
   /* Ảnh hero hiển thị TRỌN VẸN (contain, không bị cắt như cover) —
-     đáy ảnh ép sát đáy hero; vùng trống 2 bên lấp bằng lớp backdrop blur */
+     đáy ảnh ép sát đáy hero; vùng trống 2 bên lấp bằng lớp backdrop blur
+     (đã định vị sẵn ở .wn-hero__city-photo-backdrop phía trên) */
   .wn-hero__city-photo {
     object-fit: contain;
     object-position: center bottom;
-  }
-
-  .wn-hero__city-photo-backdrop {
-    display: block;
-    position: absolute;
-    inset: -40px;
-    width: calc(100% + 80px);
-    height: calc(100% + 80px);
-    object-fit: cover;
-    filter: blur(26px) saturate(1.15) brightness(0.8);
-    transform: scale(1.05);
   }
 
   .wn-hero__content {
